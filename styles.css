@@ -637,9 +637,9 @@ body[data-mode="look"] [data-hero-mode="read"] { display: none; }
    ========================================================= */
 .chroma {
   /* Changed from var(--rhythm) 0 to 64px 0 var(--rhythm) */
-  padding: 64px 0 var(--rhythm); 
+  padding: 0 0 var(--rhythm);
   border-top: 1px solid var(--hair);
-  overflow: hidden;
+  overflow-x: clip;   /* clip, not hidden — hidden would break the ring's position: sticky */
   transition: padding var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 .chroma__head {
@@ -2140,3 +2140,213 @@ html:has(body.modal-open) { overflow: hidden; }
   .chroma__viewall { width: 100%; text-align: center; }
   .chroma-archive__bar { padding-left: 18px; padding-right: 18px; }
 }
+
+/* =========================================================
+   LOOK — CHROMA RING (scroll-driven colour wheel)
+   ========================================================= */
+.ring {
+  position: relative;
+  height: 420vh;               /* scroll length of the pinned sequence */
+}
+.ring__sticky {
+  --ring-h: 30;
+  --ring-mix: 0%;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  perspective: 1500px;
+  perspective-origin: 50% 50%;
+  background: color-mix(in oklch, var(--ground), oklch(0.8 0.1 var(--ring-h)) var(--ring-mix));
+}
+.ring__scene {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* ---- cards ---- */
+.ring__card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+  cursor: pointer;
+  outline: none;
+}
+.ring__face {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.ring__face--front {
+  background: oklch(0.62 0.07 var(--hue, 240));
+  box-shadow: 0 10px 28px -10px rgba(26, 24, 21, 0.45);
+}
+.ring__face--front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0;
+  transition: opacity 500ms var(--ease);
+}
+.ring__card.is-loaded .ring__face--front img { opacity: 1; }
+.ring__card.is-bw .ring__face--front img { filter: grayscale(1); }
+
+/* the back of each card is its colour — the sort made literal */
+.ring__face--back {
+  transform: rotateY(180deg);
+  background: oklch(0.66 0.13 var(--hue, 240));
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: flex-end;
+  padding: 7px 8px;
+}
+.ring__card.is-bw .ring__face--back { background: #2a2724; }
+.ring__card:focus-visible .ring__face--front { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+/* ---- centre copy (reuses the Chroma header) ---- */
+.chroma__head.ring__center {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: min(440px, 52vw);
+  margin: 0;
+  padding: 0;
+  translate: -50% -50%;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+}
+.ring__center .eyebrow { margin-bottom: 14px; }
+.ring__center .chroma__title {
+  margin: 0 0 14px;
+  font-size: clamp(40px, 5.4vw, 76px);
+  font-weight: 300;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+}
+.ring__center .chroma__intro {
+  margin: 0 auto;
+  max-width: 34ch;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+  opacity: 0.78;
+}
+.ring__now {
+  margin-top: 22px;
+  min-height: 1em;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--meta);
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+}
+
+/* ---- stage numbers + progress rail ---- */
+.ring__steps {
+  position: absolute;
+  top: 34px;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  gap: 34px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  font-variant-numeric: tabular-nums;
+  z-index: 2;
+}
+.ring__steps span {
+  color: var(--ink);
+  opacity: 0.22;
+  transition: opacity 400ms var(--ease);
+}
+.ring__steps span.is-on { opacity: 1; }
+.ring__rail {
+  position: absolute;
+  right: var(--page-pad);
+  top: 18vh;
+  bottom: 18vh;
+  width: 1px;
+  background: var(--hair);
+  z-index: 2;
+}
+.ring__rail i {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform-origin: top;
+  transform: scaleY(0);
+}
+
+/* ---- dot cursor (fine pointers only) ---- */
+.ring__cursor { display: none; }
+.ring--fine .ring__sticky { cursor: none; }
+.ring--fine .ring__card { cursor: none; }
+.ring--fine .ring__cursor {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 250ms var(--ease);
+}
+.ring__cursor.is-on { opacity: 1; }
+.ring__cursor::before {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  left: -4px;
+  top: -4px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  box-sizing: border-box;
+  transition: width 300ms var(--ease), height 300ms var(--ease), left 300ms var(--ease),
+              top 300ms var(--ease), background-color 300ms var(--ease);
+}
+.ring__cursor.is-hover::before {
+  width: 48px;
+  height: 48px;
+  left: -24px;
+  top: -24px;
+  background: transparent;
+}
+
+@media (max-width: 700px) {
+  .ring { height: 340vh; }
+  .chroma__head.ring__center { width: 50vw; }
+  .ring__center .chroma__title { font-size: 30px; margin-bottom: 8px; }
+  .ring__center .chroma__intro { font-size: 11.5px; line-height: 1.45; }
+  .ring__center .eyebrow { margin-bottom: 8px; }
+  .ring__now { margin-top: 12px; font-size: 9.5px; }
+  .ring__steps { top: 22px; gap: 22px; }
+  .ring__rail { display: none; }
+}
+
+/* reduced motion: no pinning, no drift — just the finished wheel */
+.ring--static { height: auto; }
+.ring--static .ring__sticky { position: relative; height: 100vh; height: 100svh; }
+.ring--static .ring__steps,
+.ring--static .ring__rail { display: none; }
+.ring--static .chroma__head.ring__center { opacity: 1 !important; }

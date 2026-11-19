@@ -296,15 +296,29 @@
 <!-- ============ LOOK MOMENT — CHROMA ============ -->
 <section class="chroma" data-panel="look" aria-label="Look — Chroma photography">
 
-    <header class="chroma__head">
-        <div class="eyebrow">Look</div>
-        <h2 class="chroma__title">Chroma</h2>
-        <p class="chroma__intro">
-            A growing collection of photographs documenting people, colour, architecture and everyday moments.
-        </p>
-    </header>
+    <!-- Scroll-driven colour wheel: the featured photos, sorted by hue, form a
+         ring that assembles, twists, tilts into an orbit and settles. -->
+    <div class="ring" id="chromaRing">
+      <div class="ring__sticky" id="chromaRingSticky">
+        <nav class="ring__steps" aria-hidden="true">
+          <span data-step="0">01</span><span data-step="1">02</span><span data-step="2">03</span><span data-step="3">04</span>
+        </nav>
 
-    <div class="chroma__field" id="chromaField"></div>
+        <div class="ring__scene" id="chromaField">
+          <header class="chroma__head ring__center" id="chromaRingCenter">
+              <div class="eyebrow">Look</div>
+              <h2 class="chroma__title">Chroma</h2>
+              <p class="chroma__intro">
+                  A growing collection of photographs documenting people, colour, architecture and everyday moments.
+              </p>
+              <div class="ring__now" id="chromaRingNow" aria-hidden="true"></div>
+          </header>
+        </div>
+
+        <div class="ring__rail" aria-hidden="true"><i id="chromaRingRail"></i></div>
+        <div class="ring__cursor" id="chromaRingCursor" aria-hidden="true"></div>
+      </div>
+    </div>
 
     <!-- 1. CAPTION & VIEW ALL BUTTON (Moved ABOVE the video) -->
     <div class="chroma__caption" style="margin-bottom: 80px;">
