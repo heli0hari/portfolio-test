@@ -56,6 +56,7 @@
   function cleanup() {
     observers.forEach(function (o) { o.disconnect(); });
     observers = [];
+    modal._lastTop = 0; modal.classList.remove('nav-tucked');
   }
 
   function render(id, data, all, api) {
@@ -328,6 +329,12 @@
       var max = scroller.scrollHeight - scroller.clientHeight;
       progress.style.transform = 'scaleX(' + (max > 0 ? scroller.scrollTop / max : 0).toFixed(4) + ')';
       modal.classList.toggle('is-scrolled', scroller.scrollTop > 40);
+      // corner marks step out of the way while reading down, and return on the way back up
+      var st = scroller.scrollTop, menuOpen = navChBtn.getAttribute('aria-expanded') === 'true';
+      if (!menuOpen && Math.abs(st - (modal._lastTop || 0)) > 6) {
+        modal.classList.toggle('nav-tucked', st > modal._lastTop && st > 120);
+        modal._lastTop = st;
+      }
       // margin chapter list steps aside whenever a picture runs under it
       var tocEl = toc.parentNode, tr = tocEl.getBoundingClientRect(), hit = false;
       if (tr.width) {
