@@ -83,14 +83,32 @@ if (!webglAvailable()) {
           hint.textContent = HINTS[s];
           document.body.classList.toggle('is-open', s > 0);
           document.body.classList.toggle('is-carousel', s === 2);
-          if (s === 0) nowEl.textContent = api.list.length + ' photographs';
+          if (s === 0) nowEl.textContent = api.total + ' photographs';
         },
         onLoad: (d, n) => {
           loadingBar.style.transform = 'scaleX(' + (d / n) + ')';
           if (d === n) document.body.classList.add('is-ready');
         },
       });
-      nowEl.textContent = api.list.length + ' photographs';
+      nowEl.textContent = api.total + ' photographs';
+
+      // tag filter (single choice) — narrows the carousel
+      const bar = document.getElementById('archiveFilters');
+      function chip(text, count, tag) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'archive__chip';
+        b.innerHTML = text + '<small>' + count + '</small>';
+        b.setAttribute('aria-pressed', tag === null ? 'true' : 'false');
+        b.addEventListener('click', () => {
+          bar.querySelectorAll('.archive__chip').forEach(c => c.setAttribute('aria-pressed', String(c === b)));
+          api.filter(tag);
+          b.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+        });
+        bar.appendChild(b);
+      }
+      chip('All', api.total, null);
+      api.tags.forEach(t => chip(t.tag, t.count, t.tag));
 
       function progress() {
         const r = section.getBoundingClientRect();
@@ -111,7 +129,7 @@ if (!webglAvailable()) {
         if (viewer.classList.contains('is-open') || api.stage() !== 2) return;
         if (e.key === 'ArrowRight') { api.step(1); e.preventDefault(); }
         else if (e.key === 'ArrowLeft') { api.step(-1); e.preventDefault(); }
-        else if (e.key === 'Enter' && api.front() >= 0) open(api.front(), api.list);
+        else if (e.key === 'Enter') api.openFront();
       });
     })
     .catch(err => console.warn('Archive: could not load photos.json', err));

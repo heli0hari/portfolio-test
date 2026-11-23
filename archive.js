@@ -3,7 +3,7 @@
    fragmented sculpture (drag to turn freely)
      -> scroll: photo faces break out of the prisms
      -> they re-form into a photo carousel (scroll / drag / keys)
-   mountArchive(container, photos, opts) -> { list, setProgress, stage, front, step, destroy }
+   mountArchive(container, photos, opts) -> { total, tags, filter, setProgress, stage, openFront, step, destroy }
    ========================================================= */
 import * as THREE from 'three';
 import { RoomEnvironment } from './vendor/three/RoomEnvironment.js';
@@ -181,29 +181,40 @@ export function mountArchive(container, photos, opts = {}) {
     });
   });
 
-  /* ---------- photos: landscape, spread across the hue order ---------- */
-  const land = photos.filter(p => p.w / p.h > 1.3 && p.w / p.h < 1.85);
-  const N = Math.min(slots.length, land.length);
-  const list = [];
-  for (let i = 0; i < N; i++) list.push(land[Math.floor(i * land.length / N)]);
+  /* ---------- photos ----------
+     Every photo goes into the carousel at its own aspect ratio.
+     30 landscape ones (spread across the hue order) also form the sculpture;
+     the rest fly in when the carousel forms. */
+  const all = photos.slice();
+  const land = all.filter(p => p.w / p.h > 1.3 && p.w / p.h < 1.85);
+  const nSculpt = Math.min(slots.length, land.length);
+  const sculptSet = new Set();
+  for (let i = 0; i < nSculpt; i++) sculptSet.add(land[Math.floor(i * land.length / nSculpt)]);
 
-  /* ---------- carousel geometry ---------- */
+  /* ---------- carousel geometry (arc-length layout on one big ring) ---------- */
   const SC = 1.0;
-  const RC = N * PW * SC * 1.12 / (2 * Math.PI);
-  const STEP = 2 * Math.PI / N;
+  const GAP = 0.14;
+  const widthOf = p => PH * clamp(p.w / p.h, 0.55, 2.0);
+  const totalLen = all.reduce((s, p) => s + widthOf(p) * SC + GAP, 0);
+  const RC = Math.max(9, totalLen / (2 * Math.PI) * 1.02);
+  const SCROLL_LEN = 40 * (PW * SC + GAP);            // scroll covers ~40 cards; drag/keys go further
 
   /* ---------- panels ---------- */
-  const geo = new THREE.PlaneGeometry(PW, PH, 24, 1);
-  const rimGeo = new THREE.PlaneGeometry(PW + 0.05, PH + 0.05, 24, 1);
+  const geoCache = new Map();
+  function planes(w) {
+    const k = w.toFixed(3);
+    if (!geoCache.has(k)) geoCache.set(k, [new THREE.PlaneGeometry(w, PH, 24, 1), new THREE.PlaneGeometry(w + 0.05, PH + 0.05, 24, 1)]);
+    return geoCache.get(k);
+  }
   const panels = [];
   const pickables = [];
-  // shuffle which slot each photo takes so hue neighbours spread around the sculpture
   const order = slots.map((_, i) => i);
   for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+  let slotCursor = 0;
 
-  for (let i = 0; i < N; i++) {
-    const p = list[i];
-    const slot = slots[order[i]];
+  all.forEach((p, i) => {
+    const w = widthOf(p);
+    const [geo, rimGeo] = planes(w);
     const curve = { value: 0 };
     const photoMat = bendable(new THREE.MeshStandardMaterial({
       color: new THREE.Color().setHSL((p.hue || 0) / 360, p.bw ? 0 : 0.2, 0.18),
@@ -224,48 +235,95 @@ export function mountArchive(container, photos, opts = {}) {
     g.add(holder);
     rig.add(g);
 
-    // explode outward from the centre, with a tumble
-    const dir = slot.pos.clone().add(new THREE.Vector3(rand() - 0.5, rand() - 0.5, rand() - 0.5).multiplyScalar(0.6)).normalize();
-    const E = slot.pos.clone().add(dir.multiplyScalar(1.5 + rand() * 1.3));
-    const qE = slot.q.clone().multiply(eulerQ([(rand() - 0.5) * 45, (rand() - 0.5) * 45, (rand() - 0.5) * 35]));
-    const aC = i * STEP;
-
-    const panel = {
-      photo: p, index: i, g, holder, photoMat, rimMat, curve, hover: 0,
-      A: slot.pos.clone(), qA: slot.q.clone(), sA: slot.scale,
-      E, qE,
-      C: new THREE.Vector3(Math.sin(aC) * RC, 0, Math.cos(aC) * RC), qC: eulerQ([0, aC / DEG, 0]),
-      kC: SC / RC,
-      delay: rand() * 0.3,
+    const pn = {
+      photo: p, index: i, w, g, holder, photoMat, rimMat, curve, hover: 0,
+      sculpt: sculptSet.has(p), delay: rand() * 0.3,
+      s: 0, ang: 0, angT: 0, vis: 1, visT: 1, tex: null, loading: false,
     };
-    photo.userData.panel = panel;
-    panels.push(panel);
+    if (pn.sculpt) {
+      const slot = slots[order[slotCursor++]];
+      pn.A = slot.pos.clone(); pn.qA = slot.q.clone();
+      pn.sA = Math.min((slot.scale * PW) / w, slot.scale);   // fit inside the prism face
+      const dir = slot.pos.clone().add(new THREE.Vector3(rand() - 0.5, rand() - 0.5, rand() - 0.5).multiplyScalar(0.6)).normalize();
+      pn.E = slot.pos.clone().add(dir.multiplyScalar(1.5 + rand() * 1.3));
+      pn.qE = slot.q.clone().multiply(eulerQ([(rand() - 0.5) * 45, (rand() - 0.5) * 45, (rand() - 0.5) * 35]));
+    } else {
+      // not in the sculpture: waits hidden in the scatter, flies in with the carousel
+      const d = new THREE.Vector3(rand() - 0.5, rand() - 0.5, rand() - 0.5).normalize();
+      pn.A = d.clone().multiplyScalar(5 + rand() * 4); pn.qA = eulerQ([rand() * 360, rand() * 360, 0]);
+      pn.sA = 0; pn.E = pn.A; pn.qE = pn.qA;
+    }
+    photo.userData.panel = pn;
+    panels.push(pn);
     pickables.push(photo, back);
+  });
+
+  /* ---------- filtering + layout ---------- */
+  let visible = panels.slice();
+  let sFirst = 0, sLast = 0, sOffset = 0;
+  const tagCounts = {};
+  all.forEach(p => (p.tags || []).forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; }));
+  const tags = Object.keys(tagCounts).sort();
+
+  function layout(tag) {
+    visible = tag ? panels.filter(pn => (pn.photo.tags || []).includes(tag)) : panels.slice();
+    let s = 0;
+    visible.forEach((pn, j) => {
+      pn.s = s + pn.w * SC / 2;
+      pn.angT = pn.s / RC;
+      pn.vis_i = j;
+      s += pn.w * SC + GAP;
+    });
+    panels.forEach(pn => { pn.visT = visible.includes(pn) ? 1 : 0; });
+    sFirst = visible.length ? visible[0].s : 0;
+    sLast = visible.length ? visible[visible.length - 1].s : 0;
+    sOffset = -scrollS();             // start at the first card
+    vel = 0;
   }
 
-  /* ---------- textures: cover-crop to 3:2, never stretched ---------- */
+  /* ---------- textures: lazy, nearest-first, with paging so memory stays flat ---------- */
   const loader = new THREE.TextureLoader();
   const aniso = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-  let active = 0, next = 0, done = 0;
-  (function pump() {
-    while (active < 6 && next < panels.length) {
-      const pn = panels[next++];
-      active++;
-      loader.load(pn.photo.thumb || pn.photo.src, tex => {
-        tex.colorSpace = THREE.SRGBColorSpace;
-        tex.anisotropy = aniso;
-        const a = tex.image.width / tex.image.height, want = PW / PH;
-        if (a > want) { tex.repeat.set(want / a, 1); tex.offset.set((1 - want / a) / 2, 0); }
-        else { tex.repeat.set(1, a / want); tex.offset.set(0, (1 - a / want) / 2); }
-        pn.photoMat.map = tex; pn.photoMat.emissiveMap = tex;
-        pn.photoMat.color.set(0xffffff);
-        pn.photoMat.needsUpdate = true;
-        pn.fade = 0;
-        active--; done++; pump();
-        if (opts.onLoad) opts.onLoad(done, panels.length);
-      }, undefined, () => { active--; done++; pump(); });
+  let active = 0, loadedSculpt = 0;
+  const MAX_ACTIVE = 6, KEEP = 26;      // cards loaded around the front in the carousel
+
+  function load(pn) {
+    pn.loading = true; active++;
+    loader.load(pn.photo.thumb || pn.photo.src, tex => {
+      active--; pn.loading = false;
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = aniso;
+      pn.tex = tex;
+      pn.photoMat.map = tex; pn.photoMat.emissiveMap = tex;
+      pn.photoMat.color.set(0xffffff);
+      pn.photoMat.needsUpdate = true;
+      pn.fade = 0;
+      if (pn.sculpt && opts.onLoad) opts.onLoad(++loadedSculpt, nSculpt);
+    }, undefined, () => { active--; pn.loading = false; });
+  }
+  function unload(pn) {
+    if (!pn.tex) return;
+    pn.tex.dispose(); pn.tex = null;
+    pn.photoMat.map = null; pn.photoMat.emissiveMap = null;
+    pn.photoMat.color.setHSL((pn.photo.hue || 0) / 360, pn.photo.bw ? 0 : 0.2, 0.18);
+    pn.photoMat.needsUpdate = true;
+  }
+  let pageTimer = 0;
+  function pageTextures(inCarousel, sNow) {
+    // sculpture first; once the carousel forms, keep the nearest cards loaded
+    let want;
+    if (!inCarousel) want = panels.filter(pn => pn.sculpt);
+    else {
+      const byDist = visible.slice().sort((a, b) => Math.abs(a.s - sNow) - Math.abs(b.s - sNow));
+      want = byDist.slice(0, KEEP);
+      const keep = new Set(want);
+      panels.forEach(pn => { if (pn.tex && !keep.has(pn) && !(pn.sculpt && seg(pSmooth, P_FORM) < 0.5)) unload(pn); });
     }
-  })();
+    for (const pn of want) {
+      if (active >= MAX_ACTIVE) break;
+      if (!pn.tex && !pn.loading) load(pn);
+    }
+  }
 
   /* ---------- soft contact shadow ---------- */
   const c2 = document.createElement('canvas'); c2.width = c2.height = 256;
@@ -276,6 +334,7 @@ export function mountArchive(container, photos, opts = {}) {
     new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c2), transparent: true, depthWrite: false }));
   shadow.rotation.x = -Math.PI / 2; shadow.position.y = -2.9; shadow.scale.y = 0.5;
   scene.add(shadow);
+
 
   /* ---------- camera framing ---------- */
   let vw = 1, vh = 1;
@@ -290,11 +349,11 @@ export function mountArchive(container, photos, opts = {}) {
     const tan = Math.tan(camera.fov * DEG / 2);
     const dA = Math.max(R_SCULPT / tan, R_SCULPT / tan / camera.aspect);
     camA.set(0, 0.2, dA * (vw < 700 ? 0.92 : 1.0));
-    const frac = camera.aspect < 1 ? 0.8 : 0.4;          // front card's share of the width
+    const frac = camera.aspect < 1 ? 0.8 : 0.4;          // a 3:2 card's share of the width
     const dC = (PW * SC / frac) / 2 / tan / camera.aspect;
-    // ...but never taller than the space between the title area and the caption bar
+    // ...but never taller than the space between the filter bar and the caption bar
     const pad = Math.min(72, Math.max(22, vw * 0.05));
-    const availH = Math.max(0.3, Math.min(0.62, (vh - 2 * (pad + 48)) / vh));
+    const availH = Math.max(0.3, Math.min(0.58, (vh - 2 * (pad + 56)) / vh));
     const dH = (PH * SC / availH) / 2 / tan;
     camC.set(0, 0, RC + Math.max(dC, dH));   // level: card centred, far side of the ring hidden
   }
@@ -304,11 +363,11 @@ export function mountArchive(container, photos, opts = {}) {
   const pointer = new THREE.Vector2(9, 9);
   const ray = new THREE.Raycaster();
   let px = 0, py = 0, spx = 0, spy = 0;
-  let dragging = false, lastX = 0, lastY = 0, downY = 0, moved = 0, lastInput = 0;
-  let avx = 0, avy = 0;                                 // free-rotation velocity (rad/frame)
-  let spin = 0, vel = 0;                                // carousel yaw
-  let pointerIn = false, hovered = null, progress = 0, pSmooth = 0, frontIdx = -1, stage = -1;
-  const freeQ = eulerQ([12, -20, 0]);                   // opening view of the sculpture
+  let dragging = false, lastX = 0, lastY = 0, moved = 0, lastInput = 0;
+  let avx = 0, avy = 0;                                 // free-rotation velocity
+  let vel = 0;                                          // carousel velocity (arc length / frame)
+  let pointerIn = false, hovered = null, progress = 0, pSmooth = 0, frontPn = null, stage = -1;
+  const freeQ = eulerQ([12, -20, 0]);
   const el = renderer.domElement;
   el.style.touchAction = 'pan-y';
 
@@ -318,6 +377,12 @@ export function mountArchive(container, photos, opts = {}) {
     qy.setFromAxisAngle(AY, dx); qx.setFromAxisAngle(AX, dy);
     freeQ.premultiply(qy).premultiply(qx);
   }
+  function scrollS() {
+    const uS = clamp((pSmooth - P_SPIN[0]) / (P_SPIN[1] - P_SPIN[0]), 0, 1);
+    return uS * Math.min(SCROLL_LEN, sLast - sFirst);
+  }
+  function currentS() { return clamp(sFirst + scrollS() + sOffset, sFirst, sLast); }
+  function cardPx() { return vw * (camera.aspect < 1 ? 0.8 : 0.4); }
 
   function setPointer(e) {
     const r = el.getBoundingClientRect();
@@ -326,7 +391,7 @@ export function mountArchive(container, photos, opts = {}) {
     px = pointer.x; py = pointer.y;
   }
   el.addEventListener('pointerdown', e => {
-    dragging = true; moved = 0; lastX = e.clientX; lastY = downY = e.clientY;
+    dragging = true; moved = 0; lastX = e.clientX; lastY = e.clientY;
     avx = avy = vel = 0;
     setPointer(e);
   });
@@ -338,15 +403,16 @@ export function mountArchive(container, photos, opts = {}) {
     lastX = e.clientX; lastY = e.clientY;
     moved += Math.abs(dx) + Math.abs(dy);
     lastInput = performance.now();
-    const uC = seg(pSmooth, P_FORM);
-    if (uC < 0.5) {
-      // sculpture: turn freely in any direction (vertical only with a mouse; touch keeps page scroll)
+    if (seg(pSmooth, P_FORM) < 0.5) {
       const k = 0.0065;
       avx = dx * k; avy = (e.pointerType === 'mouse' ? dy : 0) * k;
       turnFree(avx, avy);
     } else {
-      const k = STEP / (vw * (camera.aspect < 1 ? 0.8 : 0.4));
-      spin -= dx * k; vel = -dx * k;
+      const k = (PW * SC) / cardPx();
+      const before = currentS();
+      sOffset -= dx * k;
+      sOffset = clamp(sFirst + scrollS() + sOffset, sFirst, sLast) - sFirst - scrollS();
+      vel = currentS() - before;
     }
   });
   window.addEventListener('pointerup', e => {
@@ -356,20 +422,27 @@ export function mountArchive(container, photos, opts = {}) {
     if (moved < 7 && e.target === el) {
       setPointer(e);
       const pn = pick();
-      if (pn) onOpen(pn.index, list);
+      if (pn) openPanel(pn);
     }
   });
   el.addEventListener('pointerleave', () => { pointerIn = false; px = py = 0; pointer.set(9, 9); });
   el.addEventListener('pointercancel', () => { dragging = false; });
 
+  function visibleList() { return visible.map(pn => pn.photo); }
+  function openPanel(pn) {
+    const i = visible.indexOf(pn);
+    if (i >= 0) onOpen(i, visibleList());
+    else onOpen(0, [pn.photo]);
+  }
   function pick() {
     ray.setFromCamera(pointer, camera);
     const hit = ray.intersectObjects(pickables, false)[0];
-    return hit && hit.object.userData.panel ? hit.object.userData.panel : null;
+    const pn = hit && hit.object.userData.panel;
+    return pn && pn.g.visible && pn.g.scale.x > 0.2 ? pn : null;
   }
 
   /* ---------- loop ---------- */
-  const qTmp = new THREE.Quaternion(), vTmp = new THREE.Vector3(), yawQ = new THREE.Quaternion();
+  const qTmp = new THREE.Quaternion(), vTmp = new THREE.Vector3(), cTmp = new THREE.Vector3(), qC = new THREE.Quaternion();
   let running = false, last = 0, t = 0;
 
   function frame(now) {
@@ -381,35 +454,33 @@ export function mountArchive(container, photos, opts = {}) {
     pSmooth += (progress - pSmooth) * (reduce ? 1 : k);
     const uE = seg(pSmooth, P_EXPLODE);
     const uC = seg(pSmooth, P_FORM);
-    const uS = clamp((pSmooth - P_SPIN[0]) / (P_SPIN[1] - P_SPIN[0]), 0, 1);
 
     if (!dragging) {
-      // sculpture: inertia, then a slow idle turn
       const damp = Math.exp(-dt * 3.5);
       avx *= damp; avy *= damp;
       if (Math.abs(avx) + Math.abs(avy) > 1e-5) turnFree(avx, avy);
       if (!reduce && uE < 0.5 && now - lastInput > 1200) turnFree(dt * 0.12 * (hovered ? 0.15 : 1), 0);
-      // carousel: inertia + snap to a card
+      // carousel: inertia, then settle on the nearest card
       vel *= Math.exp(-dt * 4);
-      spin += vel;
-      if (uC > 0.98 && Math.abs(vel) < 0.002 && now - lastInput > 180) {
-        const total = spin + uS * 2 * Math.PI;
-        const snap = Math.round(total / STEP) * STEP;
-        spin += (snap - total) * (reduce ? 1 : 1 - Math.exp(-dt * 7));
+      sOffset += vel;
+      if (uC > 0.98 && Math.abs(vel) < 0.002 && now - lastInput > 180 && visible.length) {
+        const sNow = currentS();
+        let near = visible[0];
+        visible.forEach(pn => { if (Math.abs(pn.s - sNow) < Math.abs(near.s - sNow)) near = pn; });
+        sOffset += (near.s - sNow) * (reduce ? 1 : 1 - Math.exp(-dt * 7));
       }
+      sOffset = clamp(sFirst + scrollS() + sOffset, sFirst, sLast) - sFirst - scrollS();
     }
-    const yaw = spin + uS * 2 * Math.PI;
-    yawQ.setFromAxisAngle(AY, -yaw);
-    rig.quaternion.copy(freeQ).slerp(yawQ, uC);
+    const sNow = currentS();
+    const yaw = sNow / RC;
+    qy.setFromAxisAngle(AY, -yaw);
+    rig.quaternion.copy(freeQ).slerp(qy, uC);
 
     spx += (px - spx) * k; spy += (py - spy) * k;
-    // pointer tilt only on the sculpture: the carousel ring is ~8 units out,
-    // so even a tiny tilt about the centre swings the front card off screen
     tilt.rotation.x = spy * -0.06 * (1 - uC);
     tilt.rotation.y = spx * 0.08 * (1 - uC);
     if (!reduce) tilt.position.y = Math.sin(t * 0.7) * 0.04 * (1 - uC);
 
-    // glass + outlines scatter and fade
     extras.forEach(x => {
       x.obj.position.copy(x.home).addScaledVector(x.dir, uE);
       x.obj.visible = uE < 0.98;
@@ -418,24 +489,32 @@ export function mountArchive(container, photos, opts = {}) {
     glassMat.opacity = 0.16 * (1 - uE);
     shadow.material.opacity = 1 - uE;
 
-    // hover
     const hit = (pointerIn && !dragging) ? pick() : null;
     if (hit !== hovered) {
       hovered = hit;
       el.style.cursor = hit ? 'pointer' : 'grab';
-      if (hit || stage !== 2) onHover(hit ? hit.photo : null, hit ? hit.index : -1, N);
-      else frontIdx = -1;
+      if (hit) report(hit);
+      else if (stage !== 2) onHover(null);
+      else frontPn = null;
     }
 
-    let best = 1e9, bestI = 0;
+    let front = null, best = 1e9;
+    const lk = reduce ? 1 : 1 - Math.exp(-dt * 5);
     panels.forEach(pn => {
-      const e = clamp(uE * 1.3 - pn.delay, 0, 1);
-      vTmp.copy(pn.A).lerp(pn.E, ease(e)).lerp(pn.C, uC);
+      pn.ang += (pn.angT - pn.ang) * lk;          // smooth re-layout when the filter changes
+      pn.vis += (pn.visT - pn.vis) * lk;
+      const e = pn.sculpt ? clamp(uE * 1.3 - pn.delay, 0, 1) : 0;
+      const ee = ease(e);
+      cTmp.set(Math.sin(pn.ang) * RC, 0, Math.cos(pn.ang) * RC);
+      vTmp.copy(pn.A).lerp(pn.E, ee).lerp(cTmp, uC);
       pn.g.position.copy(vTmp);
-      qTmp.copy(pn.qA).slerp(pn.qE, ease(e)).slerp(pn.qC, uC);
+      qC.setFromAxisAngle(AY, pn.ang);
+      qTmp.copy(pn.qA).slerp(pn.qE, ee).slerp(qC, uC);
       pn.g.quaternion.copy(qTmp);
-      pn.g.scale.setScalar(pn.sA + (SC - pn.sA) * uC);
-      pn.curve.value = pn.kC * uC;
+      const sc = (pn.sA + (SC - pn.sA) * uC) * (1 - uC + uC * pn.vis);
+      pn.g.scale.setScalar(Math.max(sc, 0.0001));
+      pn.g.visible = sc > 0.002;
+      pn.curve.value = (SC / RC) * uC;
 
       pn.hover += ((pn === hovered ? 1 : 0) - pn.hover) * (reduce ? 1 : 1 - Math.exp(-dt * 10));
       pn.holder.position.z = pn.hover * 0.12;
@@ -443,22 +522,27 @@ export function mountArchive(container, photos, opts = {}) {
       if (pn.fade !== undefined && pn.fade < 1) pn.fade = Math.min(1, pn.fade + dt * 1.5);
       pn.photoMat.emissiveIntensity = pn.photoMat.map ? (0.26 + pn.hover * 0.12) * (pn.fade ?? 1) : 0;
 
-      const a = ((pn.index * STEP - yaw) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
-      if (Math.abs(a) < best) { best = Math.abs(a); bestI = pn.index; }
+      if (pn.visT && Math.abs(pn.s - sNow) < best) { best = Math.abs(pn.s - sNow); front = pn; }
     });
 
-    // camera: pulls back for the explosion, then moves out to the carousel
+    pageTimer -= dt;
+    if (pageTimer <= 0) { pageTimer = 0.25; pageTextures(uC > 0.3, sNow); }
+
     vTmp.copy(camA).multiplyScalar(1 + uE * (camera.aspect < 1 ? 0.5 : 0.35) * (1 - uC)).lerp(camC, uC);
     camera.position.copy(vTmp);
     camera.lookAt(0, 0, 0);
 
     const s = uC > 0.9 ? 2 : uE > 0.08 ? 1 : 0;
     if (s !== stage) { stage = s; onStage(s); }
-    if (s === 2 && !hovered && bestI !== frontIdx) { frontIdx = bestI; onHover(list[bestI], bestI, N); }
-    if (s !== 2) frontIdx = -1;
+    if (s === 2 && !hovered && front && front !== frontPn) { frontPn = front; report(front); }
+    if (s !== 2) frontPn = null;
 
     renderer.render(scene, camera);
     requestAnimationFrame(frame);
+  }
+  function report(pn) {
+    const i = visible.indexOf(pn);
+    onHover(pn.photo, i, visible.length);
   }
 
   function start() { if (!running) { running = true; last = 0; requestAnimationFrame(frame); } }
@@ -467,13 +551,24 @@ export function mountArchive(container, photos, opts = {}) {
   io.observe(container);
   document.addEventListener('visibilitychange', () => { document.hidden ? stop() : start(); });
   resize();
+  layout(null);
+  panels.forEach(pn => { pn.ang = pn.angT; pn.vis = pn.visT; });
 
   return {
-    list,
+    total: all.length,
+    tags: tags.map(t => ({ tag: t, count: tagCounts[t] })),
+    filter(tag) { layout(tag || null); frontPn = null; return visible.length; },
     setProgress(p) { progress = clamp(p, 0, 1); },
     stage() { return stage; },
-    front() { return frontIdx; },
-    step(d) { vel = 0; spin += d * STEP; lastInput = performance.now() - 1000; },
+    openFront() { if (frontPn) openPanel(frontPn); },
+    step(d) {
+      if (!visible.length) return;
+      const sNow = currentS();
+      let i = 0, best = 1e9;
+      visible.forEach((pn, j) => { if (Math.abs(pn.s - sNow) < best) { best = Math.abs(pn.s - sNow); i = j; } });
+      const target = visible[clamp(i + d, 0, visible.length - 1)].s;
+      vel = 0; sOffset += target - sNow; lastInput = performance.now() - 1000;
+    },
     destroy() { stop(); io.disconnect(); renderer.dispose(); el.remove(); }
   };
 }
