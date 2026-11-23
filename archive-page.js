@@ -1,4 +1,4 @@
-import { mountArchive, webglAvailable } from './archive.js?v=1795405458';
+import { mountArchive, webglAvailable } from './archive.js?v=1795405676';
 
 const stage = document.getElementById('archiveStage');
 const nowEl = document.getElementById('archiveNow');
@@ -93,15 +93,18 @@ if (!webglAvailable()) {
       nowEl.textContent = api.total + ' photographs';
       setTimeout(() => document.body.classList.add('is-ready'), 6000);   // slow network: show it anyway
 
-      function progress() {
-        const r = section.getBoundingClientRect();
-        const total = section.offsetHeight - window.innerHeight;
-        return total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0;
-      }
+      // Scroll length: two screens for the explode + form, then enough to turn
+      // the carousel once through every photo (~7% of a screen per photo).
+      const INTRO = 2, PER_PHOTO = 0.07;
+      section.style.height = ((1 + INTRO + api.count * PER_PHOTO) * 100) + 'vh';
       function onScroll() {
-        const p = progress();
-        api.setProgress(p);
-        rail.style.transform = 'scaleY(' + p.toFixed(4) + ')';
+        const vh = window.innerHeight;
+        const y = -section.getBoundingClientRect().top;
+        const total = Math.max(1, section.offsetHeight - vh);
+        const intro = Math.min(1, Math.max(0, y / (INTRO * vh)));
+        const spin = Math.min(1, Math.max(0, (y - INTRO * vh) / Math.max(1, total - INTRO * vh)));
+        api.setProgress(intro, spin);
+        rail.style.transform = 'scaleY(' + Math.min(1, Math.max(0, y / total)).toFixed(4) + ')';
       }
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', onScroll);

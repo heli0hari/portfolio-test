@@ -43,9 +43,10 @@ const FACES = {
 };
 
 /* scroll phases */
-const P_EXPLODE = [0.04, 0.28];
-const P_FORM = [0.3, 0.5];
-const P_SPIN = [0.52, 1.0];
+/* intro progress (first two screens of scroll): explode, then form the carousel.
+   Everything after that is spin progress: one full turn through every photo. */
+const P_EXPLODE = [0.06, 0.55];
+const P_FORM = [0.58, 1.0];
 
 function clamp(x, a, b) { return x < a ? a : x > b ? b : x; }
 function ease(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
@@ -200,7 +201,6 @@ export function mountArchive(container, photos, opts = {}) {
   const RC = Math.max(9, totalLen / (2 * Math.PI));   // the ring closes exactly: endless loop, no ends
   const CIRC = 2 * Math.PI * RC;
   const dmod = (a, b) => ((((a - b) % CIRC) + CIRC * 1.5) % CIRC) - CIRC / 2;   // shortest arc from b to a
-  const SCROLL_LEN = 40 * (PW * SC + GAP);            // scroll covers ~40 cards; drag/keys go further
 
   /* ---------- panels ---------- */
   const geoCache = new Map();
@@ -370,7 +370,7 @@ export function mountArchive(container, photos, opts = {}) {
   let dragging = false, lastX = 0, lastY = 0, moved = 0, lastInput = 0;
   let avx = 0, avy = 0;                                 // free-rotation velocity
   let vel = 0;                                          // carousel velocity (arc length / frame)
-  let pointerIn = false, hovered = null, progress = 0, pSmooth = 0, frontPn = null, stage = -1;
+  let pointerIn = false, hovered = null, progress = 0, pSmooth = 0, spinP = 0, spinSmooth = 0, frontPn = null, stage = -1;
   const freeQ = eulerQ([12, -20, 0]);
   const el = renderer.domElement;
   el.style.touchAction = 'pan-y';
@@ -382,8 +382,7 @@ export function mountArchive(container, photos, opts = {}) {
     freeQ.premultiply(qy).premultiply(qx);
   }
   function scrollS() {
-    const uS = clamp((pSmooth - P_SPIN[0]) / (P_SPIN[1] - P_SPIN[0]), 0, 1);
-    return uS * Math.min(SCROLL_LEN, CIRC);
+    return spinSmooth * CIRC;
   }
   function currentS() { return sFirst + scrollS() + sOffset; }
   function cardPx() { return vw * (camera.aspect < 1 ? 0.8 : 0.4); }
@@ -454,6 +453,7 @@ export function mountArchive(container, photos, opts = {}) {
     const k = 1 - Math.exp(-dt * 6);
 
     pSmooth += (progress - pSmooth) * (reduce ? 1 : k);
+    spinSmooth += (spinP - spinSmooth) * (reduce ? 1 : k);
     const uE = seg(pSmooth, P_EXPLODE);
     const uC = seg(pSmooth, P_FORM);
 
@@ -558,7 +558,9 @@ export function mountArchive(container, photos, opts = {}) {
 
   return {
     total: all.length,
-    setProgress(p) { progress = clamp(p, 0, 1); },
+    count: all.length,
+    // intro: 0..1 over the explode + form; spin: 0..1 = one full turn of the carousel
+    setProgress(intro, spin) { progress = clamp(intro, 0, 1); spinP = clamp(spin || 0, 0, 1); },
     stage() { return stage; },
     openFront() { if (frontPn) openPanel(frontPn); },
     step(d) {

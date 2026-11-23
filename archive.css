@@ -18,7 +18,7 @@ body {
 
 .archive {
   position: relative;
-  height: 600vh;               /* scroll length: totem -> explode -> carousel -> one full turn */
+  height: 600vh;               /* set from script: intro + one full turn through every photo */
 }
 .archive__sticky {
   position: sticky;
