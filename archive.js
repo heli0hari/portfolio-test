@@ -11,6 +11,7 @@ import { RoomEnvironment } from './vendor/three/RoomEnvironment.js';
 const DEG = Math.PI / 180;
 const ACCENT = new THREE.Color('#FF8A3D');
 const PW = 1.5, PH = 1.0;              // every photo panel is 3:2
+const DEPTH = 0.045;                   // a slight body behind each photo
 
 /* ---------- the sculpture: interlocking prisms ----------
    c: centre, r: rotation (deg), s: size [x, y, z]
@@ -75,8 +76,9 @@ function bendable(mat, curve) {
     sh.uniforms.uCurve = curve;
     sh.vertexShader = 'uniform float uCurve;\n' + sh.vertexShader
       .replace('#include <beginnormal_vertex>', `
+        // turn the normal with the bend, so the slab's edges keep their own shading
         float bendA = position.x * uCurve;
-        vec3 objectNormal = vec3(sin(bendA), 0.0, cos(bendA));
+        vec3 objectNormal = vec3(normal.x * cos(bendA) + normal.z * sin(bendA), normal.y, -normal.x * sin(bendA) + normal.z * cos(bendA));
         #ifdef USE_TANGENT
           vec3 objectTangent = vec3(tangent.xyz);
         #endif`)
@@ -208,7 +210,8 @@ export function mountArchive(container, photos, opts = {}) {
   const geoCache = new Map();
   function planes(w) {
     const k = w.toFixed(3);
-    if (!geoCache.has(k)) geoCache.set(k, [new THREE.PlaneGeometry(w, PH, 24, 1), new THREE.PlaneGeometry(w + 0.05, PH + 0.05, 24, 1)]);
+    // the photo on its face, and a thin slab behind it — every print has a little body
+    if (!geoCache.has(k)) geoCache.set(k, [new THREE.PlaneGeometry(w, PH, 24, 1), new THREE.BoxGeometry(w, PH, DEPTH, 24, 1, 1)]);
     return geoCache.get(k);
   }
   const panels = [];
@@ -219,24 +222,22 @@ export function mountArchive(container, photos, opts = {}) {
 
   all.forEach((p, i) => {
     const w = widthOf(p);
-    const [geo, rimGeo] = planes(w);
+    const [geo, slabGeo] = planes(w);
     const curve = { value: 0 };
     // unlit + no tone mapping: the photograph shows exactly as exported
     const photoMat = bendable(new THREE.MeshBasicMaterial({
       color: new THREE.Color().setHSL((p.hue || 0) / 360, p.bw ? 0 : 0.3, 0.035),
       toneMapped: false,
     }), curve);
-    const backMat = bendable(new THREE.MeshStandardMaterial({ color: 0x1f1c1a, metalness: 0.7, roughness: 0.45, side: THREE.BackSide }), curve);
-    const rimMat = bendable(new THREE.MeshPhysicalMaterial({
-      color: 0xd8c8b3, metalness: 0.9, roughness: 0.25, transparent: true, opacity: 0.55,
-      envMapIntensity: 1.4, depthWrite: false, emissive: 0x000000,
+    // matte board edge: lit by the scene, so the sides fall into shade and the panel reads as an object
+    const rimMat = bendable(new THREE.MeshStandardMaterial({
+      color: 0x2b2724, metalness: 0.05, roughness: 0.7, envMapIntensity: 0.6, emissive: 0x000000,
     }), curve);
 
     const holder = new THREE.Group();
-    const rimMesh = new THREE.Mesh(rimGeo, rimMat); rimMesh.position.z = -0.006; rimMesh.renderOrder = 2;
-    const photo = new THREE.Mesh(geo, photoMat); photo.position.z = 0.004;
-    const back = new THREE.Mesh(geo, backMat); back.position.z = -0.002;
-    holder.add(rimMesh, back, photo);
+    const slab = new THREE.Mesh(slabGeo, rimMat); slab.position.z = -DEPTH / 2;
+    const photo = new THREE.Mesh(geo, photoMat); photo.position.z = 0.002;
+    holder.add(slab, photo);
     const g = new THREE.Group();
     g.add(holder);
     rig.add(g);
@@ -259,9 +260,9 @@ export function mountArchive(container, photos, opts = {}) {
       pn.A = d.clone().multiplyScalar(5 + rand() * 4); pn.qA = eulerQ([rand() * 360, rand() * 360, 0]);
       pn.sA = 0; pn.E = pn.A; pn.qE = pn.qA;
     }
-    photo.userData.panel = pn;
+    photo.userData.panel = pn; slab.userData.panel = pn;
     panels.push(pn);
-    pickables.push(photo, back);
+    pickables.push(photo, slab);
   });
 
   /* ---------- filtering + layout ---------- */
@@ -607,7 +608,7 @@ export function mountArchive(container, photos, opts = {}) {
       pn.holder.position.z = pn.hover * (0.12 + 0.8 * uC);
       pn.holder.scale.setScalar(1 + pn.hover * 0.4 * uC);
       pn.dim += (((hovered && hovered !== pn && uC > 0.5) ? 0.55 : 1) - pn.dim) * (reduce ? 1 : 1 - Math.exp(-dt * 8));
-      pn.rimMat.emissive.copy(ACCENT).multiplyScalar(pn.hover * 1.3);
+      pn.rimMat.emissive.copy(ACCENT).multiplyScalar(pn.hover * 0.35);
       if (pn.fade !== undefined && pn.fade < 1) pn.fade = Math.min(1, pn.fade + dt * 1.5);
       // fade in after loading; faces in the sculpture are a touch dimmer so it still reads as an object
       if (pn.photoMat.map) pn.photoMat.color.setScalar((0.35 + 0.65 * (pn.fade ?? 1)) * (0.86 + 0.14 * Math.max(uC, pn.hover)) * pn.dim);
