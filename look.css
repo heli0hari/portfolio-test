@@ -406,4 +406,4 @@ body[data-mode="look"].in-room {
 .archive__head.chroma__head { padding: 0; margin: 0; }
 .archive__head .chroma__intro { margin: 0; font-size: 14px; line-height: 1.5; color: var(--meta); max-width: 34ch; }
 .archive .archive__title { color: var(--ink); }
-.chroma__caption { padding-top: 64px; }
+.chroma__showcase { margin-top: 96px; }   /* breathing room after the 3D archive */
