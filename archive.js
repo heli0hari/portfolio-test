@@ -95,6 +95,45 @@ function bendable(mat, curve) {
   return mat;
 }
 
+/* Grid lens (after the "Canvas Grid Mouse Effect" CodePen): around the pointer the
+   photo breaks into cells that each zoom into their own patch, with a dot on each
+   grid corner. Spread comes from how fast the pointer moves; still = plain photo.
+   Works in the photo's own UV space, so it bends with the wall. */
+const LENS_FRAG = `
+#ifdef USE_MAP
+  vec2 luv = vMapUv;
+  float lensDot = 0.0;
+  if (uLensOn > 0.5 && uLensS > 0.001) {
+    vec2 cells = vec2(uCells * uAspect, uCells);
+    vec2 cell = 1.0 / cells;
+    vec2 org = floor(vLensUv / cell) * cell;
+    vec2 f = (vLensUv - org) / cell;
+    float s = 1.0 - clamp(length((org - uLens) * vec2(uAspect, 1.0)) / uLensS, 0.0, 1.0);
+    if (s > 0.001) luv = org + cell * (s * 0.5 + f * (1.0 - s));
+    vec2 cr = floor(vLensUv / cell + 0.5) * cell;
+    float sc = 1.0 - clamp(length((cr - uLens) * vec2(uAspect, 1.0)) / uLensS, 0.0, 1.0);
+    float r = 0.15 / uCells * sc;
+    float pd = length((vLensUv - cr) * vec2(uAspect, 1.0));
+    lensDot = sc > 0.001 ? 1.0 - smoothstep(r * 0.7, r, pd) : 0.0;
+  }
+  vec4 sampledDiffuseColor = texture2D( map, luv );
+  diffuseColor *= sampledDiffuseColor;
+  diffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0), lensDot);
+#endif
+`;
+function lensable(mat, u) {
+  const prev = mat.onBeforeCompile;
+  mat.onBeforeCompile = (sh, r) => {
+    prev(sh, r);
+    Object.assign(sh.uniforms, u);
+    sh.vertexShader = 'varying vec2 vLensUv;\n' + sh.vertexShader.replace('#include <uv_vertex>', '#include <uv_vertex>\n  vLensUv = uv;');
+    sh.fragmentShader = 'uniform vec2 uLens;\nuniform float uLensS, uAspect, uCells, uLensOn;\nvarying vec2 vLensUv;\n' +
+      sh.fragmentShader.replace('#include <map_fragment>', LENS_FRAG);
+  };
+  mat.customProgramCacheKey = () => 'bend-lens';
+  return mat;
+}
+
 export function mountArchive(container, photos, opts = {}) {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const coarse = window.matchMedia('(pointer: coarse)').matches;
@@ -225,10 +264,11 @@ export function mountArchive(container, photos, opts = {}) {
     const [geo, slabGeo] = planes(w);
     const curve = { value: 0 };
     // unlit + no tone mapping: the photograph shows exactly as exported
-    const photoMat = bendable(new THREE.MeshBasicMaterial({
+    const lensU = { uLens: { value: new THREE.Vector2() }, uLensS: { value: 0 }, uAspect: { value: w / PH }, uCells: { value: 8 }, uLensOn: { value: 0 } };
+    const photoMat = lensable(bendable(new THREE.MeshBasicMaterial({
       color: new THREE.Color().setHSL((p.hue || 0) / 360, p.bw ? 0 : 0.3, 0.035),
       toneMapped: false,
-    }), curve);
+    }), curve), lensU);
     // matte board edge: lit by the scene, so the sides fall into shade and the panel reads as an object
     const rimMat = bendable(new THREE.MeshStandardMaterial({
       color: 0x2b2724, metalness: 0.05, roughness: 0.7, envMapIntensity: 0.6, emissive: 0x000000,
@@ -243,7 +283,7 @@ export function mountArchive(container, photos, opts = {}) {
     rig.add(g);
 
     const pn = {
-      photo: p, index: i, w, g, holder, photoMat, rimMat, curve, hover: 0,
+      photo: p, index: i, w, g, holder, photoMat, rimMat, curve, lensU, hover: 0,
       sculpt: sculptSet.has(p), delay: rand() * 0.3,
       s: 0, ang: 0, angT: 0, y: 0, yT: 0, dim: 1, vis: 1, visT: 1, tex: null, loading: false,
     };
@@ -260,7 +300,7 @@ export function mountArchive(container, photos, opts = {}) {
       pn.A = d.clone().multiplyScalar(5 + rand() * 4); pn.qA = eulerQ([rand() * 360, rand() * 360, 0]);
       pn.sA = 0; pn.E = pn.A; pn.qE = pn.qA;
     }
-    photo.userData.panel = pn; slab.userData.panel = pn;
+    photo.userData.panel = pn; photo.userData.isPhoto = true; slab.userData.panel = pn;
     panels.push(pn);
     pickables.push(photo, slab);
   });
@@ -338,6 +378,7 @@ export function mountArchive(container, photos, opts = {}) {
       pn.photoMat.color.set(0xffffff);
       pn.photoMat.needsUpdate = true;
       pn.fade = pn.lq ? 1 : 0;            // already showing a soft preview: just sharpen
+      pn.lensU.uLensOn.value = 1;
       if (pn.sculpt && opts.onLoad) opts.onLoad(++loadedSculpt, nSculpt);
     };
     loader.load(mini, onTex, undefined, onErr);
@@ -345,6 +386,7 @@ export function mountArchive(container, photos, opts = {}) {
   function unload(pn) {
     if (!pn.tex) return;
     pn.tex.dispose(); pn.tex = null;
+    pn.lensU.uLensOn.value = 0;
     if (pn.lq) { pn.photoMat.map = pn.lq; pn.photoMat.color.set(0xffffff); }
     else { pn.photoMat.map = null; pn.photoMat.color.setHSL((pn.photo.hue || 0) / 360, pn.photo.bw ? 0 : 0.3, 0.035); }
     pn.photoMat.needsUpdate = true;
@@ -521,6 +563,8 @@ export function mountArchive(container, photos, opts = {}) {
     return { left: x0, top: y0, width: x1 - x0, height: y1 - y0 };
   }
   let viewing = null;                     // the card lifted out into the viewer
+  let hitUv = null;
+  const lens = { pn: null, x: 0, y: 0, s: 0 };
   function openPanel(pn) {
     const rect = rectOf(pn);
     viewing = pn;
@@ -532,6 +576,7 @@ export function mountArchive(container, photos, opts = {}) {
     ray.setFromCamera(pointer, camera);
     const hit = ray.intersectObjects(pickables, false)[0];
     const pn = hit && hit.object.userData.panel;
+    hitUv = hit && hit.object.userData.isPhoto && hit.uv ? hit.uv : null;
     return pn && pn.g.visible && pn.g.scale.x > 0.2 ? pn : null;
   }
 
@@ -582,6 +627,20 @@ export function mountArchive(container, photos, opts = {}) {
       hovered = hit;
       el.style.cursor = hit ? 'zoom-in' : 'grab';   // the cursor says what a click does (hidden when the cube cursor is on)
       if (hit) report(hit); else onHover(null);
+    }
+
+    // grid lens on the photo under the pointer
+    if (lens.pn && lens.pn !== hit) { lens.pn.lensU.uLensS.value = 0; lens.pn = null; lens.s = 0; }
+    if (hit && hitUv && hit.tex && !reduce) {
+      const asp = hit.w / PH;
+      if (lens.pn !== hit) { lens.pn = hit; lens.x = hitUv.x; lens.y = hitUv.y; lens.s = 0; }
+      const k = 1 - Math.exp(-dt * 3);
+      lens.x += (hitUv.x - lens.x) * k; lens.y += (hitUv.y - lens.y) * k;
+      const gap = Math.hypot((hitUv.x - lens.x) * asp, hitUv.y - lens.y);
+      lens.s += (Math.min(0.9, gap * 3) - lens.s) * (1 - Math.exp(-dt * 2.5));
+      hit.lensU.uLens.value.set(lens.x, lens.y);
+      hit.lensU.uLensS.value = lens.s;
+      hit.lensU.uLensOn.value = 1;
     }
 
     const lk = reduce ? 1 : 1 - Math.exp(-dt * 5);
