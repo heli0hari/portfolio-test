@@ -11,6 +11,10 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { margin: 0; background: var(--ground); color: var(--ink); }
+/* keep the scrollbar's space when the viewer locks scrolling, so the 3D canvas
+   never resizes (a resize clears and redraws it — that was the flicker) */
+html { scrollbar-gutter: stable; }
+html.viewer-open { overflow: hidden; }
 body {
   font-family: 'Bricolage Grotesque', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;

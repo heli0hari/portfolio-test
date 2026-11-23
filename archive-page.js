@@ -1,4 +1,4 @@
-import { mountArchive, webglAvailable } from './archive.js?v=1795407710';
+import { mountArchive, webglAvailable } from './archive.js?v=1795408404';
 
 const stage = document.getElementById('archiveStage');
 const nowEl = document.getElementById('archiveNow');
@@ -23,14 +23,23 @@ const EASE = 'cubic-bezier(0.65, 0, 0.35, 1)';
 function show() {
   const p = vList[vPos];
   vImg.classList.remove('is-sharp');
-  vImg.src = p.thumb || p.src;                 // instant preview (already cached from the wall)
+  vImg.src = p.thumb || p.src;                 // preview (already cached from the wall)
   vImg.alt = p.alt || ('Photograph, ' + label(p));
-  const full = new Image();                    // then swap in the original
-  full.onload = () => { if (vList[vPos] === p) { vImg.src = p.src; vImg.classList.add('is-sharp'); } };
-  full.src = p.src;
   vCap.textContent = label(p);
   vCount.textContent = pad(vPos + 1) + ' / ' + pad(vList.length);
-  if (api) api.lift(p);                        // the card on the wall is "in" the viewer
+  // load the original off-screen and swap only once it's decoded and nothing is
+  // animating — swapping mid-flight blanks the image for a frame
+  const full = new Image();
+  full.src = p.src;
+  full.decode().then(() => {
+    const swap = () => {
+      if (vList[vPos] !== p || !viewer.classList.contains('is-open')) return;
+      if (animating) return setTimeout(swap, 120);
+      vImg.src = p.src; vImg.classList.add('is-sharp');
+    };
+    swap();
+  }).catch(() => {});
+  return vImg.decode().catch(() => {});
 }
 
 /* Final on-screen box of the image, from the photo's aspect and the CSS limits. */
@@ -42,67 +51,80 @@ function finalBox(p) {
   if (h > maxH) { h = maxH; w = h * a; }
   return { w, h };
 }
+function sizeImg() {
+  const { w, h } = finalBox(vList[vPos]);
+  vImg.style.width = w + 'px'; vImg.style.height = h + 'px';
+}
 
-/* FLIP: the image starts exactly over the card on the wall and grows into place. */
-function flipFrom(rect, reverse, done) {
+/* FLIP between the card's rect on the wall and the image's final box. */
+function flip(rect, reverse) {
   const box = vImg.getBoundingClientRect();
   const sx = rect.width / box.width, sy = rect.height / box.height;
   const dx = rect.left - box.left, dy = rect.top - box.top;
-  const start = `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`;
-  const anim = vImg.animate(
-    reverse ? [{ transform: 'none' }, { transform: start }] : [{ transform: start }, { transform: 'none' }],
+  const at = `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`;
+  return vImg.animate(
+    reverse ? [{ transform: 'none' }, { transform: at }] : [{ transform: at }, { transform: 'none' }],
     { duration: 620, easing: EASE, fill: 'forwards' }
   );
-  anim.onfinish = () => { anim.cancel(); done && done(); };
 }
+const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
-function open(i, list, rect) {
+async function open(i, list, rect) {
   if (animating) return;
+  animating = true;
   vList = list; vPos = i; lastFocus = document.activeElement;
-  show();
-  const { w, h } = finalBox(vList[vPos]);
-  vImg.style.width = w + 'px'; vImg.style.height = h + 'px';
+  vImg.style.visibility = 'hidden';
+  await show();                                 // decoded before it's ever painted
+  sizeImg();
   viewer.classList.add('is-open');
+  if (rect && !reduceMotion) viewer.classList.add('is-flipping');
   viewer.setAttribute('aria-hidden', 'false');
-  document.documentElement.style.overflow = 'hidden';
+  document.documentElement.classList.add('viewer-open');
   if (rect && !reduceMotion) {
-    animating = true;
-    viewer.classList.add('is-flipping');
-    flipFrom(rect, false, () => { animating = false; viewer.classList.remove('is-flipping'); });
+    const anim = flip(rect, false);              // first painted frame is already over the card
+    vImg.style.visibility = '';
+    await nextFrame();
+    if (api) api.lift(vList[vPos]);              // hide the wall card only once the image covers it
+    await anim.finished.catch(() => {});
+    anim.commitStyles && anim.cancel();
+    viewer.classList.remove('is-flipping');
+  } else {
+    vImg.style.visibility = '';
+    if (api) api.lift(vList[vPos]);
   }
+  animating = false;
   document.getElementById('viewerClose').focus({ preventScroll: true });
 }
-function close() {
+async function close() {
   if (animating || !viewer.classList.contains('is-open')) return;
+  animating = true;
   const rect = api && !reduceMotion ? api.rectFor(vList[vPos]) : null;
-  const finish = () => {
-    viewer.classList.remove('is-open', 'is-closing', 'is-flipping');
-    viewer.setAttribute('aria-hidden', 'true');
-    document.documentElement.style.overflow = '';
-    if (api) api.release();
-    animating = false;
-    if (lastFocus) lastFocus.focus({ preventScroll: true });
-  };
   if (rect) {
-    // shrink back into its card on the wall
-    animating = true;
     viewer.classList.add('is-closing', 'is-flipping');
-    flipFrom(rect, true, finish);
+    const anim = flip(rect, true);
+    await anim.finished.catch(() => {});
+    // put the card back on the wall first, let the 3D view draw it, then remove the image
+    if (api) api.release();
+    await nextFrame();
+    viewer.classList.remove('is-open', 'is-closing', 'is-flipping');
+    anim.cancel();
   } else {
     if (api) api.release();
     viewer.classList.remove('is-open');
-    viewer.setAttribute('aria-hidden', 'true');
-    document.documentElement.style.overflow = '';
-    if (lastFocus) lastFocus.focus({ preventScroll: true });
   }
+  viewer.setAttribute('aria-hidden', 'true');
+  document.documentElement.classList.remove('viewer-open');
+  animating = false;
+  if (lastFocus) lastFocus.focus({ preventScroll: true });
 }
 function step(d) {
   if (animating) return;
   vPos = (vPos + d + vList.length) % vList.length;
-  vImg.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: EASE });
-  show();
-  const { w, h } = finalBox(vList[vPos]);
-  vImg.style.width = w + 'px'; vImg.style.height = h + 'px';
+  show().then(() => {
+    sizeImg();
+    vImg.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: EASE });
+  });
+  if (api) api.lift(vList[vPos]);
 }
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
