@@ -399,7 +399,9 @@ export function mountArchive(container, photos, opts = {}) {
     rig.quaternion.copy(freeQ).slerp(yawQ, uC);
 
     spx += (px - spx) * k; spy += (py - spy) * k;
-    tilt.rotation.x = spy * -0.06;
+    // pointer tilt only on the sculpture: the carousel ring is ~8 units out,
+    // so even a tiny tilt about the centre swings the front card off screen
+    tilt.rotation.x = spy * -0.06 * (1 - uC);
     tilt.rotation.y = spx * 0.08 * (1 - uC);
     if (!reduce) tilt.position.y = Math.sin(t * 0.7) * 0.04 * (1 - uC);
 
