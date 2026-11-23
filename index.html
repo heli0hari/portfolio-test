@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="look.css?v=5">
   <link rel="stylesheet" href="read.css?v=5">
   <link rel="stylesheet" href="journal.css?v=6">
-<link rel="stylesheet" href="voice.css?v=24">
+<link rel="stylesheet" href="voice.css?v=25">
   <script type="importmap">
     { "imports": { "three": "./vendor/three/three.module.min.js" } }
   </script>
@@ -360,8 +360,18 @@
       <span class="lk__no" aria-hidden="true">03</span>
       <h2 class="grade__title" id="gradeTitle">Color Grading</h2>
     </header>
-    <div class="cs-frame">
-          <iframe src="https://player.vimeo.com/video/1211043548?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="In the time between things"></iframe>
+    <div class="cs-frame film" id="gradeFilm">
+          <iframe src="https://player.vimeo.com/video/1211043548?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;controls=0&amp;dnt=1&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" referrerpolicy="strict-origin-when-cross-origin" title="In the time between things" tabindex="-1"></iframe>
+          <button type="button" class="film__hit" aria-label="Play">
+            <span class="film__play">Play</span>
+          </button>
+          <div class="film__bar">
+            <button type="button" class="film__btn film__toggle">Play</button>
+            <div class="film__track" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i class="film__fill"></i></div>
+            <span class="film__time">00:00</span>
+            <button type="button" class="film__btn film__mute">Sound off</button>
+            <button type="button" class="film__btn film__fs">Full screen</button>
+          </div>
         </div>
     <div class="grade__foot"><button type="button" class="bar__top" data-totop>Back to top</button></div>
   </div>
@@ -472,5 +482,6 @@
   <script src="read.js?v=5"></script>
   <script src="cursor.js?v=7" defer></script>
   <script src="photo-grid.js?v=3" defer></script>
+  <script src="film.js?v=1" defer></script>
 </body>
 </html>

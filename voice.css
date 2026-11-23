@@ -290,3 +290,40 @@ body .switch__lane.is-dragging .switch__ico--look { transition: none; opacity: c
 html.has-custom-cursor iframe { cursor: auto !important; }
 
 .switch__track { overscroll-behavior-x: contain; }
+
+/* ---------- Color Grading film: the site's own controls over a chromeless Vimeo embed ---------- */
+.film { position: relative; }
+.film iframe { pointer-events: none; }              /* every click goes through the site's layer */
+.film__hit {
+  all: unset; position: absolute; inset: 0; cursor: pointer;
+  display: grid; place-items: center;
+  background: rgba(0, 0, 0, 0.28); transition: background 500ms var(--ease);
+}
+.film.is-playing .film__hit { background: rgba(0, 0, 0, 0); }
+.film__play {
+  width: clamp(64px, 6vw, 88px); aspect-ratio: 1; border-radius: 50%;
+  display: grid; place-items: center;
+  background: #EDE9E2; color: #131110; font-size: 14px; letter-spacing: -0.01em;
+  transition: transform 500ms var(--ease), opacity 400ms var(--ease);
+}
+.film__hit:hover .film__play { transform: scale(1.08); }
+.film.is-playing .film__play { opacity: 0; transform: scale(0.6); }
+.film__bar {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: center; gap: clamp(12px, 1.6vw, 22px);
+  padding: 22px clamp(14px, 2vw, 24px) 14px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
+  color: #EDE9E2; font-size: 13px; font-variant-numeric: tabular-nums;
+  opacity: 0; transition: opacity 400ms var(--ease);
+}
+.film.has-started .film__bar { opacity: 1; }
+.film.is-idle .film__bar { opacity: 0; }
+.film__btn { all: unset; cursor: pointer; opacity: 0.8; white-space: nowrap; transition: opacity 200ms var(--ease); }
+.film__btn:hover, .film__btn:focus-visible { opacity: 1; }
+.film__btn:focus-visible, .film__track:focus-visible { outline: 1px solid #EDE9E2; outline-offset: 4px; }
+.film__track { position: relative; flex: 1; height: 18px; cursor: pointer; }
+.film__track::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: rgba(237, 233, 226, 0.3); }
+.film__fill { position: absolute; left: 0; right: 0; top: calc(50% - 1px); height: 2px; background: #EDE9E2; transform-origin: left; transform: scaleX(0); }
+.film__time { opacity: 0.8; white-space: nowrap; }
+.film.is-full { aspect-ratio: auto; width: 100vw; height: 100vh; background: #000; }
+@media (max-width: 640px) { .film__mute { display: none; } .film__bar { font-size: 12px; } }
