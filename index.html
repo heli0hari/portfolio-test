@@ -31,7 +31,7 @@
   <link rel="manifest" href="/site.webmanifest">
   <meta name="theme-color" content="#131110">
 
-  <link rel="stylesheet" href="styles.css?v=2">
+  <link rel="stylesheet" href="styles.css?v=3">
   <link rel="stylesheet" href="look.css?v=5">
   <link rel="stylesheet" href="read.css?v=5">
   <link rel="stylesheet" href="journal.css?v=5">
@@ -45,13 +45,13 @@
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   </script>
 </head>
-<body data-mode="look">
+<body data-mode="read">
 <script>
   /* Set the mode immediately, before the page renders, so a shared #look link
-     never flashes the Read view first. */
+     never flashes the Read view first. Read is page 1 (default). */
   (function () {
     var h = (location.hash || '').replace('#', '').toLowerCase();
-    if (h === 'read' || h === 'index' || h.indexOf('project/') === 0) document.body.setAttribute('data-mode', 'read');
+    if (h === 'look') document.body.setAttribute('data-mode', 'look');
   })();
 </script>
 
@@ -115,11 +115,11 @@
         <div class="switch" role="tablist" aria-label="Choose a way through the work">
           <div class="switch__track">
             <div class="switch__slider" aria-hidden="true"></div>
-            <button class="switch__btn" role="tab" data-mode-btn="look" aria-selected="true">
-              Look<sup class="switch__sup">01</sup>
+            <button class="switch__btn" role="tab" data-mode-btn="read" aria-selected="true">
+              Read<sup class="switch__sup">01</sup>
             </button>
-            <button class="switch__btn" role="tab" data-mode-btn="read" aria-selected="false">
-              Read<sup class="switch__sup">02</sup>
+            <button class="switch__btn" role="tab" data-mode-btn="look" aria-selected="false">
+              Look<sup class="switch__sup">02</sup>
             </button>
           </div>
           <span class="switch__hint">— two ways through the work</span>
@@ -512,7 +512,7 @@
 
   <script src="journal-config.js?v=4"></script>
   <script src="journal.js?v=5"></script>
-  <script src="script.js?v=3"></script>
+  <script src="script.js?v=4"></script>
   <script src="reel.js?v=4"></script>
   <script type="module" src="archive-page.js?v=4"></script>
   <button class="totop" id="toTop" type="button" aria-label="Back to top" hidden><span aria-hidden="true">&uarr;</span> Top</button>

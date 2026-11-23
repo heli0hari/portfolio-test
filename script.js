@@ -42,8 +42,8 @@
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
   /* ---------- Shareable mode URLs ----------
-     Look is the default landing view (harigovind.ie) — page 1.
-     Read has its own shareable link (harigovind.ie/#read) — page 2.
+     Read is the default landing view (harigovind.ie) — page 1.
+     Look has its own shareable link (harigovind.ie/#look) — page 2.
      Toggling REPLACES the URL rather than pushing history, so the back button
      leaves the site instead of stepping back through view toggles. */
   var VALID_MODES = ['look', 'read'];
@@ -58,14 +58,14 @@
     return null;
   }
 
-  /* Look is page 1 (the default, no hash); Read is page 2 (#read).
+  /* Read is page 1 (the default, no hash); Look is page 2 (#look).
      Project links and in-page Read anchors (#index) belong to Read;
      any other in-page anchor keeps whichever mode is showing. */
   function modeFromURL() {
     var h = (location.hash || '').replace('#', '').toLowerCase();
-    if (!h || h === 'look') return 'look';
-    if (h === 'read' || h === 'index' || h.indexOf('project/') === 0 || h.indexOf('read/') === 0) return 'read';
-    return body.getAttribute('data-mode') || 'look';
+    if (h === 'look') return 'look';
+    if (!h || h === 'read' || h === 'index' || h.indexOf('project/') === 0 || h.indexOf('read/') === 0) return 'read';
+    return body.getAttribute('data-mode') || 'read';
   }
 
   function syncURL(mode, projectId) {
@@ -74,8 +74,8 @@
 
     if (projectId) {
       hash = 'project/' + projectId;
-    } else if (mode === 'read') {
-      hash = 'read';
+    } else if (mode === 'look') {
+      hash = 'look';
     }
 
     var target = base + (hash ? '#' + hash : '');
