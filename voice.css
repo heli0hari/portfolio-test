@@ -288,3 +288,5 @@ body .switch__lane.is-dragging .switch__ico--read { transition: none; opacity: c
 body .switch__lane.is-dragging .switch__ico--look { transition: none; opacity: calc(var(--p, 0) * 2 - 1); }
 /* inside embedded players the system pointer comes back (the companions can't follow there) */
 html.has-custom-cursor iframe { cursor: auto !important; }
+
+.switch__track { overscroll-behavior-x: contain; }

@@ -73,6 +73,18 @@
   // a drag that ends over a word must not also count as a click on it
   track.addEventListener('click', function (e) { if (suppressClick) { e.stopPropagation(); e.preventDefault(); } }, true);
   lane.addEventListener('click', function () { if (!suppressClick) toggle(); });
+  // two-finger swipe on a trackpad (sideways wheel): fingers right → Look, left → Read
+  var wheelAcc = 0, wheelLock = 0;
+  track.addEventListener('wheel', function (e) {
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;     // vertical: let the page scroll
+    e.preventDefault();                                          // and don't trigger browser back/forward
+    if (Date.now() < wheelLock) return;
+    wheelAcc += e.deltaX;
+    if (Math.abs(wheelAcc) > 30) {
+      goTo(wheelAcc < 0 ? 'look' : 'read');
+      wheelAcc = 0; wheelLock = Date.now() + 600;
+    }
+  }, { passive: false });
 })();
 
 /* Contact — copy the address, and Escape closes the sheet. */
