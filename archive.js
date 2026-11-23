@@ -223,7 +223,7 @@ export function mountArchive(container, photos, opts = {}) {
     const curve = { value: 0 };
     // unlit + no tone mapping: the photograph shows exactly as exported
     const photoMat = bendable(new THREE.MeshBasicMaterial({
-      color: new THREE.Color().setHSL((p.hue || 0) / 360, p.bw ? 0 : 0.15, 0.06),
+      color: new THREE.Color().setHSL((p.hue || 0) / 360, p.bw ? 0 : 0.3, 0.035),
       toneMapped: false,
     }), curve);
     const backMat = bendable(new THREE.MeshStandardMaterial({ color: 0x1f1c1a, metalness: 0.7, roughness: 0.45, side: THREE.BackSide }), curve);
@@ -319,7 +319,16 @@ export function mountArchive(container, photos, opts = {}) {
 
   function load(pn) {
     pn.loading = true; active++;
-    loader.load(pn.photo.thumb || pn.photo.src, tex => {
+    // small 480px copies for the 3D faces (cards are never bigger than that on screen);
+    // fall back to the regular thumbnail if a mini is missing
+    const thumb = pn.photo.thumb || pn.photo.src;
+    const mini = thumb.replace('/thumbs/', '/mini/');
+    const onErr = () => {
+      if (pn.triedThumb || mini === thumb) { active--; pn.loading = false; return; }
+      pn.triedThumb = true;
+      loader.load(thumb, onTex, undefined, () => { active--; pn.loading = false; });
+    };
+    const onTex = tex => {
       active--; pn.loading = false;
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.anisotropy = aniso;
@@ -329,13 +338,14 @@ export function mountArchive(container, photos, opts = {}) {
       pn.photoMat.needsUpdate = true;
       pn.fade = 0;
       if (pn.sculpt && opts.onLoad) opts.onLoad(++loadedSculpt, nSculpt);
-    }, undefined, () => { active--; pn.loading = false; });
+    };
+    loader.load(mini, onTex, undefined, onErr);
   }
   function unload(pn) {
     if (!pn.tex) return;
     pn.tex.dispose(); pn.tex = null;
     pn.photoMat.map = null;
-    pn.photoMat.color.setHSL((pn.photo.hue || 0) / 360, pn.photo.bw ? 0 : 0.15, 0.06);
+    pn.photoMat.color.setHSL((pn.photo.hue || 0) / 360, pn.photo.bw ? 0 : 0.3, 0.035);
     pn.photoMat.needsUpdate = true;
   }
   let pageTimer = 0;

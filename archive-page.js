@@ -1,4 +1,4 @@
-import { mountArchive, webglAvailable } from './archive.js?v=1795408404';
+import { mountArchive, webglAvailable } from './archive.js?v=1795412069';
 
 const stage = document.getElementById('archiveStage');
 const nowEl = document.getElementById('archiveNow');
@@ -176,7 +176,7 @@ if (!webglAvailable()) {
         },
       });
       nowEl.textContent = api.total + ' photographs';
-      setTimeout(() => document.body.classList.add('is-ready'), 6000);   // slow network: show it anyway
+      requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('is-mounted')));
 
       // Scroll length: two screens for the explode + form, then enough to turn
       // the carousel once through every photo (~7% of a screen per photo).
