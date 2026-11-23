@@ -149,13 +149,12 @@
     var initial = modeFromURL();
     var current = body.getAttribute('data-mode');
 
-    if (initial !== current) {
-      // set state without the switch animation on first paint
-      body.setAttribute('data-mode', initial);
-      buttons.forEach(function (btn) {
-        btn.setAttribute('aria-selected', String(btn.dataset.modeBtn === initial));
-      });
-    }
+    // set state without the switch animation on first paint
+    // (the inline head script may already have set data-mode, so always sync the buttons)
+    if (initial !== current) body.setAttribute('data-mode', initial);
+    buttons.forEach(function (btn) {
+      btn.setAttribute('aria-selected', String(btn.dataset.modeBtn === initial));
+    });
     syncURL(initial, initial === 'read' ? projectIdFromHash() : null);
 
     // start at the top regardless of what the browser remembered
