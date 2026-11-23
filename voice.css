@@ -85,11 +85,11 @@
    the Read glyph rolls under and the Look glyph comes up. A lagging tail, merged
    through an SVG goo filter, makes the move read as liquid rather than a slide. */
 .switch__track {
-  --ball: 30px;
+  --ball: clamp(30px, 2.5vw, 50px);              /* grows with the screen; laptop ≈ 36–48px */
   --roll: calc(var(--ball) * 1.5708);            /* pi * r */
   --flow: cubic-bezier(0.7, 0, 0.2, 1);
   display: grid; grid-template-columns: auto auto; grid-template-rows: auto auto;
-  column-gap: 16px; row-gap: 0; align-items: center; justify-content: start;
+  column-gap: clamp(16px, 1.3vw, 24px); row-gap: 0; align-items: center; justify-content: start;
   background: none; border-radius: 0; padding: 0;
 }
 .switch__slider { display: none; }
@@ -98,7 +98,7 @@
 .switch__btn[data-mode-btn="look"] { grid-column: 2; grid-row: 2; }
 .switch__btn {
   justify-self: start; padding: 0; line-height: 1.1;
-  font-size: clamp(20px, 1.9vw, 26px); letter-spacing: -0.03em;
+  font-size: clamp(20px, 2.2vw, 40px); letter-spacing: -0.035em;
   color: var(--meta); transition: color 500ms var(--ease);
 }
 .switch__btn:hover, .switch__btn[aria-selected="true"] { color: var(--ink); }
@@ -107,13 +107,14 @@
 .switch__lane {
   position: relative; display: block; box-sizing: content-box;
   width: calc(var(--ball) + var(--roll)); height: var(--ball);
-  padding: 4px; border-radius: 999px;
+  --inset: clamp(4px, 0.3vw, 6px);
+  padding: var(--inset); border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--ink) 28%, transparent);
   cursor: pointer; transition: border-color 200ms var(--ease);
 }
 .switch__lane:hover { border-color: color-mix(in srgb, var(--ink) 55%, transparent); }
 .switch__defs { position: absolute; width: 0; height: 0; }
-.switch__goo { position: absolute; inset: 4px; filter: url(#switchGoo); }
+.switch__goo { position: absolute; inset: var(--inset); filter: url(#switchGoo); }
 .switch__drop, .switch__tail {
   position: absolute; left: 0; top: 0; width: var(--ball); height: var(--ball);
   border-radius: 50%; background: var(--ink);
@@ -123,7 +124,7 @@
 body[data-mode="look"] .switch__drop { transform: translateX(var(--roll)); }
 body[data-mode="look"] .switch__tail { transform: translateX(var(--roll)) scale(0.7); }
 .switch__face {
-  position: absolute; left: 4px; top: 4px; width: var(--ball); height: var(--ball);
+  position: absolute; left: var(--inset); top: var(--inset); width: var(--ball); height: var(--ball);
   color: var(--ground);
   transition: transform 760ms var(--flow), color var(--dur) var(--ease);
 }
