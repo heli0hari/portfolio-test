@@ -64,6 +64,8 @@
     var theme = cfg.theme || 'system';
     var ids = order(all);
     var pos = ids.indexOf(id);
+    var countEl = document.getElementById('jnCount');
+    if (countEl) countEl.textContent = pad(pos + 1) + ' / ' + pad(ids.length);
     var blocks = data.content || [];
     var skip = {};
     (cfg.skip || []).forEach(function (i) { skip[i] = 1; });

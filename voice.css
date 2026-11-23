@@ -190,3 +190,41 @@ body[data-mode="read"] .switch__ico--read { opacity: 1; transition: opacity 300m
 .colophon__links a { font-size: 16px; color: var(--ink); border-bottom: 1px solid var(--hair); width: fit-content; transition: border-color 200ms var(--ease); }
 .colophon__links a:hover, .colophon__links a:focus-visible { border-color: var(--ink); outline: none; }
 @media (max-width: 760px) { .colophon__links { justify-content: flex-start; } }
+
+/* ---------- index: rows without the table (no header, no rules, no tags) ---------- */
+.ix__cols { display: none; }
+.ix__item { border-bottom: 0; }
+.ix__row { padding: clamp(16px, 2vw, 26px) 0; grid-template-areas: "no name cat year" ". desc . ."; }
+.ix__tags { display: none; }
+@media (hover: none), (max-width: 820px) {
+  .ix__row { grid-template-areas: "no cat year thumb" "name name name thumb" "desc desc desc desc"; }
+}
+.ix__badge { font-size: 12px; border-radius: 999px; padding: 2px 9px; margin-top: 0; align-self: center; }
+
+/* ---------- Experiments in Look: just the names ---------- */
+.ew__list { display: flex; flex-wrap: wrap; gap: 8px clamp(24px, 4vw, 56px); border-top: 0; }
+.ew__list li + li { border: 0; }
+.ew__item { display: inline-block; padding: 0; }
+.ew__name { font-size: clamp(22px, 2.4vw, 34px); font-weight: 500; letter-spacing: -0.03em; color: var(--ink); border-bottom: 1px solid var(--hair); transition: border-color 200ms var(--ease); }
+.ew__item:hover .ew__name, .ew__item:focus-visible .ew__name { border-color: var(--ink); }
+.ew__item:focus-visible { box-shadow: none; outline: 2px solid var(--accent); outline-offset: 4px; }
+
+/* ---------- project page: no bar — "Index" and a page count in the corners ---------- */
+.jn {
+  background: none; -webkit-backdrop-filter: none; backdrop-filter: none;
+  border-bottom: 0 !important; pointer-events: none;
+  mix-blend-mode: difference;
+}
+.jn > * { pointer-events: auto; }
+.jn__where, .jn__pn, .jn__progress { display: none; }
+.jn .jn__back { grid-column: 1; color: #fff; font-size: 14px; letter-spacing: 0; }
+.jn__count { grid-column: 3; font-size: 13px; color: #fff; opacity: 0.6; font-variant-numeric: tabular-nums; }
+
+/* ---------- quotes: a real voice, set large and given room ---------- */
+.jq--voice { padding-left: 0; border-left: 0; margin-top: clamp(56px, 7vw, 104px); margin-bottom: 14px; }
+.jq--voice p { font-size: clamp(28px, 3.4vw, 50px); line-height: 1.08; letter-spacing: -0.035em; max-width: 22ch; }
+.jq--voice p::before { content: "\201C"; color: var(--meta); margin-right: 0.04em; }
+.jq--voice p::after { content: "\201D"; color: var(--meta); }
+.jq p::before, .jq p::after { color: var(--meta); }
+.cs-quote { border-left: 0; padding: 0; margin: 40px 0 14px; }
+.cs-quote p { font-style: normal; font-size: clamp(24px, 2.8vw, 40px); line-height: 1.12; letter-spacing: -0.03em; max-width: 24ch; }

@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="look.css?v=5">
   <link rel="stylesheet" href="read.css?v=5">
   <link rel="stylesheet" href="journal.css?v=6">
-<link rel="stylesheet" href="voice.css?v=8">
+<link rel="stylesheet" href="voice.css?v=10">
   <script type="importmap">
     { "imports": { "three": "./vendor/three/three.module.min.js" } }
   </script>
@@ -179,11 +179,11 @@
         <li class="ix__item">
           <a class="ix__row" href="#project/infrared-camera" data-project="infrared-camera" data-preview="images/index/infrared-camera.jpg" data-gallery="images/index/infrared-camera.jpg,images/index/infrared-camera/01.jpg,images/index/infrared-camera/02.jpg,images/index/infrared-camera/03.jpg,images/index/infrared-camera/04.jpg,images/index/infrared-camera/05.jpg,images/index/infrared-camera/06.jpg,images/index/infrared-camera/07.jpg">
             <span class="ix__no">03</span>
-            <span class="ix__name"><span class="ix__name-t">Unseen - Infrared Camera</span></span>
+            <span class="ix__name"><span class="ix__name-t">Unseen - Infrared Camera</span><span class="ix__badge">In progress</span></span>
             <span class="ix__cat">Hardware &amp; Interaction Design</span>
             <span class="ix__year">2026</span>
             <span class="ix__desc">A hand-built Raspberry Pi camera that shoots near-infrared, false-colour photos.</span>
-            <span class="ix__tags"><span class="ix__badge">In progress</span><span>Hardware</span><span>Interaction</span></span>
+            <span class="ix__tags"><span>Hardware</span><span>Interaction</span></span>
             <img class="ix__thumb" src="images/index/infrared-camera.jpg" alt="" loading="lazy" decoding="async">
           </a>
         </li>
@@ -275,23 +275,17 @@
       <ul class="ew__list">
         <li>
           <a class="ew__item" href="#look" data-look-target=".chroma">
-            <span class="ew__no">A</span>
             <span class="ew__name">Chroma</span>
-            <span class="ew__desc">A growing collection of photographs documenting people, colour, architecture and everyday moments.</span>
           </a>
         </li>
         <li>
           <a class="ew__item" href="#look" data-look-target=".chroma__showcase">
-            <span class="ew__no">B</span>
             <span class="ew__name">Color Grading</span>
-            <span class="ew__desc">In the time between things</span>
           </a>
         </li>
         <li>
           <a class="ew__item" href="#look" data-look-target=".forge-room">
-            <span class="ew__no">C</span>
             <span class="ew__name">Motion &amp; 3D</span>
-            <span class="ew__desc">Real-time renders, animation studies and experimental motion work.</span>
           </a>
         </li>
       </ul>
@@ -440,6 +434,7 @@
           <button type="button" id="jnNext" aria-label="Next project">&rarr;</button>
         </div>
         <div class="jn__progress" aria-hidden="true"><i id="jnProgress"></i></div>
+        <span class="jn__count" id="jnCount"></span>
       </nav>
       <aside class="jtoc" aria-label="Chapters"><ol id="jToc"></ol></aside>
       <article class="jr" id="projectModalContent"></article>
@@ -476,7 +471,7 @@
 
 
   <script src="journal-config.js?v=4"></script>
-  <script src="journal.js?v=8"></script>
+  <script src="journal.js?v=9"></script>
   <script src="script.js?v=4"></script>
   <script src="reel.js?v=4"></script>
   <script type="module" src="archive-page.js?v=6"></script>
