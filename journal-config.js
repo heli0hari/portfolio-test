@@ -10,18 +10,19 @@
             A chapter starts at that block. If the block is a heading it
             becomes the chapter title. Labels name what the section is;
             only sections the content actually supports are used.
-   facts    extra cover facts taken from the content (e.g. WealthX's table)
+   facts    cover facts: Role, Context, Team, Duration, Tools (as given by Harigovind)
    skip     block indices already shown on the cover
    coverImage  optional replacement for the cover image ({ src, alt })
    ========================================================= */
 window.JOURNAL = {
   'wealthx': {
+    facts: { Role: 'Product & Brand Design', Context: 'Personal project', Team: 'Solo', Duration: '3 days', Tools: 'Figma, Photoshop, Illustrator', Platform: 'iOS · Web' },
     theme: 'visual', cover: 'bleed',
-    facts: { Role: 'Product & Brand Design', Platform: 'iOS · Web' },   // from the project's own table (block 1)
     skip: [1],
     chapters: [{ at: 2, label: 'Outcome' }]
   },
   'infrared-camera': {
+    facts: { Role: 'Designer & Maker', Context: 'Personal project', Team: 'Solo', Duration: '1 week so far · paused', Tools: 'Figma, Blender, Bambu Studio, Claude, ChatGPT' },
     theme: 'system', cover: 'inset',
     chapters: [
       { at: 1, label: 'Overview' },
@@ -33,6 +34,7 @@ window.JOURNAL = {
     ]
   },
   'city-beneaththesurface': {
+    facts: { Role: 'Visual & Systems Designer', Context: "Coursework · Master's degree", Team: 'Solo', Duration: '3 months', Tools: 'Figma, Photoshop, Illustrator, p5.js, Blender' },
     theme: 'data', cover: 'split',
     // the title card repeats the page title in its own type; the street photo reads better beside it
     coverImage: { src: 'images/City/City_Main.jpg', alt: 'A waste collector working beside a Dublin bus' },
@@ -47,10 +49,12 @@ window.JOURNAL = {
     ]
   },
   'tolstoy-farm': {
+    facts: { Role: 'Product & Brand Design', Context: 'Client project', Duration: '4 days', Tools: 'Figma, Photoshop, Illustrator' },
     theme: 'visual', cover: 'bleed',
     chapters: [{ at: 1, label: 'Identity' }]
   },
   'hiro-assistant': {
+    facts: { Role: 'UX Designer', Context: 'Personal project', Duration: '1 week', Tools: 'Figma, ChatGPT (research), Photoshop' },
     theme: 'human', cover: 'split',
     chapters: [
       { at: 1, label: 'Overview' },
@@ -63,6 +67,7 @@ window.JOURNAL = {
     ]
   },
   'city-in-hand': {
+    facts: { Role: '3D Artist', Context: 'Art installation', Duration: '3 days', Tools: 'RenderDoc, Blender, Bambu Studio' },
     theme: 'material', cover: 'bleed',
     chapters: [
       { at: 1, label: 'Overview' },
@@ -73,6 +78,7 @@ window.JOURNAL = {
     ]
   },
   'dub-transit': {
+    facts: { Role: 'UI/UX Designer', Team: 'Solo', Duration: '1 week', Tools: 'Figma, Photoshop, Google AI Studio' },
     theme: 'system', cover: 'inset',
     chapters: [
       { at: 1, label: 'Overview' },
@@ -85,6 +91,7 @@ window.JOURNAL = {
     ]
   },
   'theyyam-threads': {
+    facts: { Role: 'Visual Designer', Team: 'Team of three', Duration: '1 week', Tools: 'Illustrator, Figma, Procreate' },
     theme: 'visual', cover: 'bleed',
     chapters: [
       { at: 1, label: 'Overview' },
@@ -94,6 +101,7 @@ window.JOURNAL = {
     ]
   },
   'artbox': {
+    facts: { Role: 'Visual Designer', Context: "Collaborative design project · Bachelor's coursework", Team: 'Team of four', Duration: '5 weeks', Tools: 'Figma, Photoshop, Blender' },
     theme: 'visual', cover: 'bleed',
     chapters: [
       { at: 1, label: 'Context' },
@@ -102,6 +110,7 @@ window.JOURNAL = {
     ]
   },
   'aujus': {
+    facts: { Role: 'UX Designer', Context: "System design project · Bachelor's coursework", Team: 'Team of four', Duration: '5 weeks', Tools: 'Figma, Photoshop, Procreate' },
     theme: 'system', cover: 'inset',
     chapters: [
       { at: 1, label: 'Research' },

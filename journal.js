@@ -89,8 +89,7 @@
 
     var facts = el('dl', 'jc__facts');
     function fact(k, v) { if (!v) return; var d = el('div'); d.appendChild(el('dt', null)).textContent = k; d.appendChild(el('dd', null)).textContent = v; facts.appendChild(d); }
-    fact('Year', data.year);
-    fact('Discipline', data.category);
+    // year and discipline already sit in the kicker above the title
     var f = cfg.facts || {};
     Object.keys(f).forEach(function (k) { fact(k, f[k]); });
     var tags = (data.tags || []).filter(function (t) { return t !== 'In progress'; });
