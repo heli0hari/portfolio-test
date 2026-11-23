@@ -151,25 +151,34 @@ body {
 .viewer {
   position: fixed; inset: 0; z-index: 50;
   display: grid; place-items: center;
-  background: rgba(13, 12, 11, 0.94);
-  opacity: 0; visibility: hidden;
-  transition: opacity 400ms var(--ease), visibility 0s linear 400ms;
+  visibility: hidden;
+  pointer-events: none;
 }
-.viewer.is-open { opacity: 1; visibility: visible; transition: opacity 400ms var(--ease); }
-.viewer__fig { margin: 0; display: grid; justify-items: center; gap: 16px; }
+/* the backdrop and the controls fade; the image itself flies in from its card (JS) */
+.viewer::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: rgba(13, 12, 11, 0.95);
+  opacity: 0;
+  transition: opacity 520ms var(--ease);
+}
+.viewer.is-open { visibility: visible; pointer-events: auto; }
+.viewer.is-open::before { opacity: 1; }
+.viewer.is-closing::before { opacity: 0; }
+.viewer__fig { position: relative; margin: 0; display: grid; justify-items: center; gap: 16px; }
 .viewer__img {
-  max-width: min(88vw, 1600px);
-  max-height: 80vh;
-  max-height: 80svh;
-  object-fit: contain;
   display: block;
+  object-fit: cover;               /* sized to the photo's own aspect from script */
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
-  transform: scale(0.97);
-  transition: transform 500ms var(--ease), filter 500ms var(--ease);
-  filter: blur(2px);
+  transform-origin: 0 0;
+  filter: blur(1.5px);
+  transition: filter 500ms var(--ease);
+  will-change: transform;
 }
-.viewer.is-open .viewer__img { transform: scale(1); }
 .viewer__img.is-sharp { filter: none; }
+.viewer__cap, .viewer__count, .viewer__close, .viewer__btn { transition: opacity 400ms var(--ease) 250ms; }
+.viewer.is-flipping .viewer__cap, .viewer.is-flipping .viewer__count,
+.viewer.is-flipping .viewer__close, .viewer.is-flipping .viewer__btn { opacity: 0; transition-delay: 0ms; }
 .viewer__cap, .viewer__count {
   font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--meta); font-variant-numeric: tabular-nums;
@@ -190,8 +199,20 @@ body {
 .viewer__close:focus-visible, .viewer__btn:focus-visible { border-color: var(--accent); color: var(--accent); }
 @media (max-width: 700px) {
   .viewer__btn { top: auto; bottom: 22px; translate: none; }
-  .viewer__img { max-width: 94vw; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .viewer, .viewer__img { transition: none; }
+  .viewer::before, .viewer__img { transition: none; }
 }
+/* soft fade at the bottom so the caption never sits on top of a photo */
+.archive__sticky::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: calc(var(--pad) + 70px);
+  background: linear-gradient(to bottom, transparent, var(--ground) 80%);
+  z-index: 1;
+  pointer-events: none;
+}
+.viewer__close, .viewer__btn {
+  transition: opacity 400ms var(--ease) 250ms, border-color 250ms var(--ease), color 250ms var(--ease);
+}
+.viewer.is-flipping .viewer__close, .viewer.is-flipping .viewer__btn { transition-delay: 0ms; }

@@ -200,7 +200,8 @@ export function mountArchive(container, photos, opts = {}) {
   const SC = 1.0;
   const GAP = 0.12, VGAP = 0.16;
   const widthOf = p => PH * clamp(p.w / p.h, 0.55, 2.0);
-  let ROWS = 4, RC = 9, CIRC = 2 * Math.PI * 9;
+  let ROWS = 4, RC = 9, CIRC = 2 * Math.PI * 9, drum = false;
+  const COL_W = 1.0;
   const dmod = (a, b) => ((((a - b) % CIRC) + CIRC * 1.5) % CIRC) - CIRC / 2;   // shortest arc from b to a
 
   /* ---------- panels ---------- */
@@ -270,28 +271,37 @@ export function mountArchive(container, photos, opts = {}) {
   all.forEach(p => (p.tags || []).forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; }));
   const tags = Object.keys(tagCounts).sort();
 
+  /* Landscape screens: a wall around a vertical axis, rows run left-right.
+     Portrait screens (drum): the wall rolls around a horizontal axis, columns run
+     top-bottom, so page scroll rolls it and the curve is visible on a phone. */
   function layout(tag) {
     visible = tag ? panels.filter(pn => (pn.photo.tags || []).includes(tag)) : panels.slice();
-    // greedy: next photo (hue order) goes to the shortest row, so colour flows left to right
+    // each photo's size in the gallery and its length along the circumference
+    visible.forEach(pn => {
+      pn.scC = drum ? COL_W / pn.w : SC;                 // drum: every photo is one column wide
+      pn.len = drum ? PH * pn.scC : pn.w * SC;
+    });
+    // greedy: next photo (hue order) goes to the shortest lane, so colour flows along the wall
     const rows = Array.from({ length: ROWS }, () => []);
     const len = new Array(ROWS).fill(0);
     visible.forEach(pn => {
       let r = 0;
       for (let i = 1; i < ROWS; i++) if (len[i] < len[r] - 1e-6) r = i;
-      rows[r].push(pn); len[r] += pn.w * SC + GAP;
+      rows[r].push(pn); len[r] += pn.len + GAP;
     });
     CIRC = Math.max(...len, 2 * Math.PI * 6);
     RC = CIRC / (2 * Math.PI);
     rows.forEach((row, r) => {
       // stretch the gaps so every row spans exactly the circumference
-      const content = row.reduce((a, pn) => a + pn.w * SC, 0);
+      const content = row.reduce((a, pn) => a + pn.len, 0);
       const gap = row.length ? (CIRC - content) / row.length : GAP;
-      let s = (r % 2) * gap * 0.5;            // small stagger between rows
+      let s = (r % 2) * gap * 0.5;            // small stagger between lanes
       row.forEach(pn => {
-        pn.s = s + pn.w * SC / 2;
+        pn.s = s + pn.len / 2;
         pn.angT = pn.s / RC;
-        pn.yT = ((ROWS - 1) / 2 - r) * (PH * SC + VGAP);
-        s += pn.w * SC + gap;
+        pn.yT = drum ? (r - (ROWS - 1) / 2) * (COL_W + GAP)       // drum: lane offset is horizontal
+                     : ((ROWS - 1) / 2 - r) * (PH * SC + VGAP);
+        s += pn.len + gap;
       });
     });
     panels.forEach(pn => { pn.visT = visible.includes(pn) ? 1 : 0; });
@@ -357,7 +367,7 @@ export function mountArchive(container, photos, opts = {}) {
 
 
   /* ---------- camera framing ---------- */
-  let vw = 1, vh = 1, viewW = 10;
+  let vw = 1, vh = 1, viewW = 10, viewPx = 1000;
   const camA = new THREE.Vector3(), camC = new THREE.Vector3();
   const R_SCULPT = 2.75;
   function resize() {
@@ -370,14 +380,25 @@ export function mountArchive(container, photos, opts = {}) {
     const dA = Math.max(R_SCULPT / tan, R_SCULPT / tan / camera.aspect);
     camA.set(0, 0.2, dA * (vw < 700 ? 0.92 : 1.0));
     // gallery: fewer rows on narrow screens; fit the wall between the title and caption bar
-    const rows = camera.aspect < 0.8 ? 3 : 4;
-    if (rows !== ROWS) { ROWS = rows; if (panels.length) layout(null); }
+    const isDrum = camera.aspect < 0.8;
+    const rows = isDrum ? 3 : 4;
+    if (rows !== ROWS || isDrum !== drum) { ROWS = rows; drum = isDrum; if (panels.length) layout(null); }
     const pad = Math.min(72, Math.max(22, vw * 0.05));
-    const availH = Math.max(0.4, Math.min(0.78, (vh - 2 * (pad + 40)) / vh));
-    const wallH = ROWS * PH * SC + (ROWS - 1) * VGAP;
-    const dH = (wallH / availH) / 2 / tan;
-    camC.set(0, 0, RC + dH);
-    viewW = 2 * dH * tan * camera.aspect;    // world width visible at the wall
+    if (drum) {
+      // fit the columns to the width; the visible height shows the drum's curve
+      const wallW = ROWS * COL_W + (ROWS - 1) * GAP;
+      const dW = (wallW / 0.9) / 2 / tan / camera.aspect;
+      camC.set(0, 0, RC + dW);
+      viewW = 2 * dW * tan;                  // world height visible at the wall (scroll axis)
+      viewPx = vh;
+    } else {
+      const availH = Math.max(0.4, Math.min(0.78, (vh - 2 * (pad + 40)) / vh));
+      const wallH = ROWS * PH * SC + (ROWS - 1) * VGAP;
+      const dH = (wallH / availH) / 2 / tan;
+      camC.set(0, 0, RC + dH);
+      viewW = 2 * dH * tan * camera.aspect;  // world width visible at the wall
+      viewPx = vw;
+    }
   }
   new ResizeObserver(resize).observe(container);
 
@@ -428,7 +449,7 @@ export function mountArchive(container, photos, opts = {}) {
       avx = dx * k; avy = (e.pointerType === 'mouse' ? dy : 0) * k;
       turnFree(avx, avy);
     } else {
-      const k = viewW / vw;                  // the wall follows the finger 1:1
+      const k = viewW / viewPx;              // the wall follows the finger 1:1
       sOffset -= dx * k;
       vel = -dx * k;
     }
@@ -447,10 +468,30 @@ export function mountArchive(container, photos, opts = {}) {
   el.addEventListener('pointercancel', () => { dragging = false; });
 
   function visibleList() { return visible.map(pn => pn.photo); }
+  /* screen rectangle of a panel's photograph (for the viewer's grow-from-card transition) */
+  const corner = new THREE.Vector3();
+  function rectOf(pn) {
+    if (!pn || !pn.g.visible) return null;
+    const mesh = pn.holder.children[2];
+    mesh.updateWorldMatrix(true, false);
+    const cr = el.getBoundingClientRect();
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for (const [cx, cy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
+      corner.set(cx * pn.w / 2, cy * PH / 2, 0).applyMatrix4(mesh.matrixWorld).project(camera);
+      if (corner.z > 1) return null;                          // behind the camera
+      const x = cr.left + (corner.x + 1) / 2 * cr.width, y = cr.top + (1 - corner.y) / 2 * cr.height;
+      x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+    }
+    if (x1 < 0 || y1 < 0 || x0 > innerWidth || y0 > innerHeight) return null;  // off screen
+    return { left: x0, top: y0, width: x1 - x0, height: y1 - y0 };
+  }
+  let viewing = null;                     // the card lifted out into the viewer
   function openPanel(pn) {
+    const rect = rectOf(pn);
+    viewing = pn;
     const i = visible.indexOf(pn);
-    if (i >= 0) onOpen(i, visibleList());
-    else onOpen(0, [pn.photo]);
+    if (i >= 0) onOpen(i, visibleList(), rect);
+    else onOpen(0, [pn.photo], rect);
   }
   function pick() {
     ray.setFromCamera(pointer, camera);
@@ -485,7 +526,7 @@ export function mountArchive(container, photos, opts = {}) {
     }
     const sNow = currentS();
     const yaw = sNow / RC;
-    qy.setFromAxisAngle(AY, -yaw);
+    if (drum) qy.setFromAxisAngle(AX, -yaw); else qy.setFromAxisAngle(AY, -yaw);
     rig.quaternion.copy(freeQ).slerp(qy, uC);
 
     spx += (px - spx) * k; spy += (py - spy) * k;
@@ -515,16 +556,17 @@ export function mountArchive(container, photos, opts = {}) {
       pn.vis += (pn.visT - pn.vis) * lk;
       const e = pn.sculpt ? clamp(uE * 1.3 - pn.delay, 0, 1) : 0;
       const ee = ease(e);
-      cTmp.set(Math.sin(pn.ang) * RC, pn.y, Math.cos(pn.ang) * RC);
+      if (drum) cTmp.set(pn.y, -Math.sin(pn.ang) * RC, Math.cos(pn.ang) * RC);
+      else cTmp.set(Math.sin(pn.ang) * RC, pn.y, Math.cos(pn.ang) * RC);
       vTmp.copy(pn.A).lerp(pn.E, ee).lerp(cTmp, uC);
       pn.g.position.copy(vTmp);
-      qC.setFromAxisAngle(AY, pn.ang);
+      qC.setFromAxisAngle(drum ? AX : AY, pn.ang);
       qTmp.copy(pn.qA).slerp(pn.qE, ee).slerp(qC, uC);
       pn.g.quaternion.copy(qTmp);
-      const sc = (pn.sA + (SC - pn.sA) * uC) * (1 - uC + uC * pn.vis);
+      const sc = (pn.sA + ((pn.scC || SC) - pn.sA) * uC) * (1 - uC + uC * pn.vis);
       pn.g.scale.setScalar(Math.max(sc, 0.0001));
-      pn.g.visible = sc > 0.002;
-      pn.curve.value = (SC / RC) * uC;
+      pn.g.visible = sc > 0.002 && pn !== viewing;
+      pn.curve.value = drum ? 0 : (SC / RC) * uC;   // the shader bends horizontally only
 
       pn.hover += ((pn === hovered ? 1 : 0) - pn.hover) * (reduce ? 1 : 1 - Math.exp(-dt * 10));
       // hover: the photo lifts toward you and grows; the rest of the wall dims slightly
@@ -574,6 +616,17 @@ export function mountArchive(container, photos, opts = {}) {
     step(d) { vel = d * viewW * 0.5 * (1 - Math.exp(-4 / 60)); lastInput = performance.now(); },
     // scroll length for one full loop of the wall, in screens
     spinScreens() { return clamp((CIRC / viewW) * 0.9, 2, 7); },   // capped: on phones scroll moves faster than 1:1
+    // viewer handshake: where is this photo's card now, and swap which card is lifted out
+    rectFor(photo) {
+      const pn = panels.find(x => x.photo === photo);
+      if (!pn) return null;
+      const was = viewing; viewing = null; pn.g.visible = true;
+      const r = rectOf(pn);
+      viewing = was;
+      return r;
+    },
+    lift(photo) { viewing = panels.find(x => x.photo === photo) || null; },
+    release() { viewing = null; },
     destroy() { stop(); io.disconnect(); renderer.dispose(); el.remove(); }
   };
 }
