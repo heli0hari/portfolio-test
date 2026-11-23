@@ -83,8 +83,9 @@ function bendable(mat, curve) {
         vec3 transformed = vec3(position);
         if (abs(uCurve) > 1e-4) {
           float r = 1.0 / uCurve;
-          transformed.x = sin(bendA) * (r + position.z);
-          transformed.z = cos(bendA) * (r + position.z) - r;
+          float bendB = position.x * uCurve;
+          transformed.x = sin(bendB) * (r + position.z);
+          transformed.z = cos(bendB) * (r + position.z) - r;
         }`);
   };
   mat.customProgramCacheKey = () => 'bend';
@@ -216,9 +217,10 @@ export function mountArchive(container, photos, opts = {}) {
     const w = widthOf(p);
     const [geo, rimGeo] = planes(w);
     const curve = { value: 0 };
-    const photoMat = bendable(new THREE.MeshStandardMaterial({
+    // unlit + no tone mapping: the photograph shows exactly as exported
+    const photoMat = bendable(new THREE.MeshBasicMaterial({
       color: new THREE.Color().setHSL((p.hue || 0) / 360, p.bw ? 0 : 0.2, 0.18),
-      roughness: 0.5, metalness: 0, envMapIntensity: 0.35, emissive: 0xffffff, emissiveIntensity: 0,
+      toneMapped: false,
     }), curve);
     const backMat = bendable(new THREE.MeshStandardMaterial({ color: 0x1f1c1a, metalness: 0.7, roughness: 0.45, side: THREE.BackSide }), curve);
     const rimMat = bendable(new THREE.MeshPhysicalMaterial({
@@ -294,7 +296,7 @@ export function mountArchive(container, photos, opts = {}) {
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.anisotropy = aniso;
       pn.tex = tex;
-      pn.photoMat.map = tex; pn.photoMat.emissiveMap = tex;
+      pn.photoMat.map = tex;
       pn.photoMat.color.set(0xffffff);
       pn.photoMat.needsUpdate = true;
       pn.fade = 0;
@@ -304,7 +306,7 @@ export function mountArchive(container, photos, opts = {}) {
   function unload(pn) {
     if (!pn.tex) return;
     pn.tex.dispose(); pn.tex = null;
-    pn.photoMat.map = null; pn.photoMat.emissiveMap = null;
+    pn.photoMat.map = null;
     pn.photoMat.color.setHSL((pn.photo.hue || 0) / 360, pn.photo.bw ? 0 : 0.2, 0.18);
     pn.photoMat.needsUpdate = true;
   }
@@ -520,7 +522,8 @@ export function mountArchive(container, photos, opts = {}) {
       pn.holder.position.z = pn.hover * 0.12;
       pn.rimMat.emissive.copy(ACCENT).multiplyScalar(pn.hover * 1.3);
       if (pn.fade !== undefined && pn.fade < 1) pn.fade = Math.min(1, pn.fade + dt * 1.5);
-      pn.photoMat.emissiveIntensity = pn.photoMat.map ? (0.26 + pn.hover * 0.12) * (pn.fade ?? 1) : 0;
+      // fade in after loading; faces in the sculpture are a touch dimmer so it still reads as an object
+      if (pn.photoMat.map) pn.photoMat.color.setScalar((0.35 + 0.65 * (pn.fade ?? 1)) * (0.86 + 0.14 * Math.max(uC, pn.hover)));
 
       if (pn.visT && Math.abs(pn.s - sNow) < best) { best = Math.abs(pn.s - sNow); front = pn; }
     });
