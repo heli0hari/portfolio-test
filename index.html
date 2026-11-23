@@ -31,7 +31,7 @@
   <link rel="manifest" href="/site.webmanifest">
   <meta name="theme-color" content="#131110">
 
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=2">
   <link rel="stylesheet" href="look.css?v=2">
   <link rel="stylesheet" href="read.css?v=4">
   <link rel="stylesheet" href="journal.css?v=2">
@@ -45,13 +45,13 @@
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   </script>
 </head>
-<body data-mode="read">
+<body data-mode="look">
 <script>
   /* Set the mode immediately, before the page renders, so a shared #look link
      never flashes the Read view first. */
   (function () {
     var h = (location.hash || '').replace('#', '').toLowerCase();
-    if (h === 'look') document.body.setAttribute('data-mode', 'look');
+    if (h === 'read' || h === 'index' || h.indexOf('project/') === 0) document.body.setAttribute('data-mode', 'read');
   })();
 </script>
 
@@ -121,11 +121,11 @@
         <div class="switch" role="tablist" aria-label="Choose a way through the work">
           <div class="switch__track">
             <div class="switch__slider" aria-hidden="true"></div>
-            <button class="switch__btn" role="tab" data-mode-btn="read" aria-selected="true">
-              Read<sup class="switch__sup">01</sup>
+            <button class="switch__btn" role="tab" data-mode-btn="look" aria-selected="true">
+              Look<sup class="switch__sup">01</sup>
             </button>
-            <button class="switch__btn" role="tab" data-mode-btn="look" aria-selected="false">
-              Look<sup class="switch__sup">02</sup>
+            <button class="switch__btn" role="tab" data-mode-btn="read" aria-selected="false">
+              Read<sup class="switch__sup">02</sup>
             </button>
           </div>
           <span class="switch__hint">— two ways through the work</span>
@@ -176,8 +176,19 @@
           </a>
         </li>
         <li class="ix__item">
-          <a class="ix__row" href="#project/tolstoy-farm" data-project="tolstoy-farm" data-preview="images/index/tolstoy-farm.jpg" data-gallery="images/index/tolstoy-farm.jpg,images/index/tolstoy-farm/01.jpg,images/index/tolstoy-farm/02.jpg,images/index/tolstoy-farm/03.jpg,images/index/tolstoy-farm/04.jpg,images/index/tolstoy-farm/05.jpg,images/index/tolstoy-farm/06.jpg,images/index/tolstoy-farm/07.jpg">
+          <a class="ix__row" href="#project/aujus" data-project="aujus" data-preview="images/index/aujus.jpg" data-gallery="images/index/aujus.jpg,images/index/aujus/01.jpg,images/index/aujus/02.jpg,images/index/aujus/03.jpg,images/index/aujus/04.jpg,images/index/aujus/05.jpg,images/index/aujus/06.jpg,images/index/aujus/07.jpg">
             <span class="ix__no">03</span>
+            <span class="ix__name"><span class="ix__name-t">Aujus</span></span>
+            <span class="ix__cat">System Design</span>
+            <span class="ix__year">2022</span>
+            <span class="ix__desc">A wayfinding and service system with a unified visual identity.</span>
+            <span class="ix__tags"><span>Systems</span><span>Wayfinding</span></span>
+            <img class="ix__thumb" src="images/index/aujus.jpg" alt="" loading="lazy" decoding="async">
+          </a>
+        </li>
+        <li class="ix__item">
+          <a class="ix__row" href="#project/tolstoy-farm" data-project="tolstoy-farm" data-preview="images/index/tolstoy-farm.jpg" data-gallery="images/index/tolstoy-farm.jpg,images/index/tolstoy-farm/01.jpg,images/index/tolstoy-farm/02.jpg,images/index/tolstoy-farm/03.jpg,images/index/tolstoy-farm/04.jpg,images/index/tolstoy-farm/05.jpg,images/index/tolstoy-farm/06.jpg,images/index/tolstoy-farm/07.jpg">
+            <span class="ix__no">04</span>
             <span class="ix__name"><span class="ix__name-t">Tolstoy Farm</span></span>
             <span class="ix__cat">Brand Identity &amp; Packaging</span>
             <span class="ix__year">2026</span>
@@ -188,7 +199,7 @@
         </li>
         <li class="ix__item">
           <a class="ix__row" href="#project/dub-transit" data-project="dub-transit" data-preview="images/index/dub-transit.jpg" data-gallery="images/index/dub-transit.jpg,images/index/dub-transit/01.jpg,images/index/dub-transit/02.jpg,images/index/dub-transit/03.jpg,images/index/dub-transit/04.jpg,images/index/dub-transit/05.jpg,images/index/dub-transit/06.jpg,images/index/dub-transit/07.jpg">
-            <span class="ix__no">04</span>
+            <span class="ix__no">05</span>
             <span class="ix__name"><span class="ix__name-t">DUB Transit</span></span>
             <span class="ix__cat">User Experience Design</span>
             <span class="ix__year">2025</span>
@@ -199,7 +210,7 @@
         </li>
         <li class="ix__item">
           <a class="ix__row" href="#project/infrared-camera" data-project="infrared-camera" data-preview="images/index/infrared-camera.jpg" data-gallery="images/index/infrared-camera.jpg,images/index/infrared-camera/01.jpg,images/index/infrared-camera/02.jpg,images/index/infrared-camera/03.jpg,images/index/infrared-camera/04.jpg,images/index/infrared-camera/05.jpg,images/index/infrared-camera/06.jpg,images/index/infrared-camera/07.jpg">
-            <span class="ix__no">05</span>
+            <span class="ix__no">06</span>
             <span class="ix__name"><span class="ix__name-t">Unseen - Infrared Camera</span></span>
             <span class="ix__cat">Hardware &amp; Interaction Design</span>
             <span class="ix__year">2026</span>
@@ -210,7 +221,7 @@
         </li>
         <li class="ix__item">
           <a class="ix__row" href="#project/hiro-assistant" data-project="hiro-assistant" data-preview="images/index/hiro-assistant.jpg" data-gallery="images/index/hiro-assistant.jpg,images/index/hiro-assistant/01.jpg,images/index/hiro-assistant/02.jpg,images/index/hiro-assistant/03.jpg,images/index/hiro-assistant/04.jpg,images/index/hiro-assistant/05.jpg,images/index/hiro-assistant/06.jpg,images/index/hiro-assistant/07.jpg">
-            <span class="ix__no">06</span>
+            <span class="ix__no">07</span>
             <span class="ix__name"><span class="ix__name-t">Hiro - Task Starting Assistant</span></span>
             <span class="ix__cat">UX/UI Case Study</span>
             <span class="ix__year">2026</span>
@@ -221,7 +232,7 @@
         </li>
         <li class="ix__item">
           <a class="ix__row" href="#project/city-in-hand" data-project="city-in-hand" data-preview="images/index/city-in-hand.jpg" data-gallery="images/index/city-in-hand.jpg,images/index/city-in-hand/01.jpg,images/index/city-in-hand/02.jpg,images/index/city-in-hand/03.jpg,images/index/city-in-hand/04.jpg,images/index/city-in-hand/05.jpg,images/index/city-in-hand/06.jpg">
-            <span class="ix__no">07</span>
+            <span class="ix__no">08</span>
             <span class="ix__name"><span class="ix__name-t">City in Hand - 3D-Printed Dublin</span></span>
             <span class="ix__cat">3D Pipeline &amp; Making</span>
             <span class="ix__year">2026</span>
@@ -232,7 +243,7 @@
         </li>
         <li class="ix__item">
           <a class="ix__row" href="#project/theyyam-threads" data-project="theyyam-threads" data-preview="images/index/theyyam-threads.jpg" data-gallery="images/index/theyyam-threads.jpg,images/index/theyyam-threads/01.jpg,images/index/theyyam-threads/02.jpg,images/index/theyyam-threads/03.jpg,images/index/theyyam-threads/04.jpg,images/index/theyyam-threads/05.jpg,images/index/theyyam-threads/06.jpg,images/index/theyyam-threads/07.jpg">
-            <span class="ix__no">08</span>
+            <span class="ix__no">09</span>
             <span class="ix__name"><span class="ix__name-t">Theyyam Threads</span></span>
             <span class="ix__cat">Visual Design</span>
             <span class="ix__year">2023</span>
@@ -243,24 +254,13 @@
         </li>
         <li class="ix__item">
           <a class="ix__row" href="#project/artbox" data-project="artbox" data-preview="images/index/artbox.jpg" data-gallery="images/index/artbox.jpg,images/index/artbox/01.jpg,images/index/artbox/02.jpg,images/index/artbox/03.jpg,images/index/artbox/04.jpg,images/index/artbox/05.jpg,images/index/artbox/06.jpg,images/index/artbox/07.jpg">
-            <span class="ix__no">09</span>
+            <span class="ix__no">10</span>
             <span class="ix__name"><span class="ix__name-t">ArtBox</span></span>
             <span class="ix__cat">Product Design</span>
             <span class="ix__year">2022</span>
             <span class="ix__desc">Identity, packaging and unboxing as one designed journey.</span>
             <span class="ix__tags"><span>Brand</span><span>Packaging</span></span>
             <img class="ix__thumb" src="images/index/artbox.jpg" alt="" loading="lazy" decoding="async">
-          </a>
-        </li>
-        <li class="ix__item">
-          <a class="ix__row" href="#project/aujus" data-project="aujus" data-preview="images/index/aujus.jpg" data-gallery="images/index/aujus.jpg,images/index/aujus/01.jpg,images/index/aujus/02.jpg,images/index/aujus/03.jpg,images/index/aujus/04.jpg,images/index/aujus/05.jpg,images/index/aujus/06.jpg,images/index/aujus/07.jpg">
-            <span class="ix__no">10</span>
-            <span class="ix__name"><span class="ix__name-t">Aujus</span></span>
-            <span class="ix__cat">System Design</span>
-            <span class="ix__year">2022</span>
-            <span class="ix__desc">A wayfinding and service system with a unified visual identity.</span>
-            <span class="ix__tags"><span>Systems</span><span>Wayfinding</span></span>
-            <img class="ix__thumb" src="images/index/aujus.jpg" alt="" loading="lazy" decoding="async">
           </a>
         </li>
       </ol>
@@ -274,16 +274,8 @@
       </header>
       <ul class="ew__list">
         <li>
-          <a class="ew__item" href="#look" data-look-target=".forge-room">
-            <span class="ew__no">A</span>
-            <span class="ew__name">Motion &amp; 3D</span>
-            <span class="ew__desc">Real-time renders, animation studies and experimental motion work.</span>
-            <span class="ew__go" aria-hidden="true">&rarr;</span>
-          </a>
-        </li>
-        <li>
           <a class="ew__item" href="#look" data-look-target=".chroma">
-            <span class="ew__no">B</span>
+            <span class="ew__no">A</span>
             <span class="ew__name">Chroma</span>
             <span class="ew__desc">A growing collection of photographs documenting people, colour, architecture and everyday moments.</span>
             <span class="ew__go" aria-hidden="true">&rarr;</span>
@@ -291,9 +283,17 @@
         </li>
         <li>
           <a class="ew__item" href="#look" data-look-target=".chroma__showcase">
-            <span class="ew__no">C</span>
+            <span class="ew__no">B</span>
             <span class="ew__name">Color Grading</span>
             <span class="ew__desc">In the time between things</span>
+            <span class="ew__go" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+        <li>
+          <a class="ew__item" href="#look" data-look-target=".forge-room">
+            <span class="ew__no">C</span>
+            <span class="ew__name">Motion &amp; 3D</span>
+            <span class="ew__desc">Real-time renders, animation studies and experimental motion work.</span>
             <span class="ew__go" aria-hidden="true">&rarr;</span>
           </a>
         </li>
@@ -329,29 +329,6 @@
         <span>Set in Bricolage Grotesque</span>
       </div>
     </footer>
-
-<!-- ============ LOOK MOMENT — FORGE (curved reel) ============ -->
-<section class="forge-room look-room" data-panel="look" aria-label="Look — Forge 3D work">
-  <div class="reel" id="reel">
-    <div class="reel__sticky">
-      <header class="reel__head">
-        <div class="eyebrow">Look</div>
-        <h2 class="reel__title">Motion &amp; 3D</h2>
-        <p class="reel__intro">Real-time renders, animation studies and experimental motion work.</p>
-      </header>
-
-      <div class="reel__stage" id="reelStage">
-        <div class="reel__track" id="reelTrack" role="list"></div>
-      </div>
-
-      <div class="reel__bar">
-        <div class="reel__now" id="reelNow" aria-live="polite">&nbsp;</div>
-        <div class="reel__hint">Scroll to advance &middot; Click to view</div>
-      </div>
-      <div class="reel__progress" aria-hidden="true"><i id="reelProgress"></i></div>
-    </div>
-  </div>
-</section>
 
 <!-- ============ LOOK MOMENT — CHROMA ============ -->
 <section class="chroma" data-panel="look" aria-label="Look — Chroma photography">
@@ -389,6 +366,29 @@
         </div>
     </div>
 
+</section>
+
+<!-- ============ LOOK MOMENT — FORGE (curved reel) ============ -->
+<section class="forge-room look-room" data-panel="look" aria-label="Look — Forge 3D work">
+  <div class="reel" id="reel">
+    <div class="reel__sticky">
+      <header class="reel__head">
+        <div class="eyebrow">Look</div>
+        <h2 class="reel__title">Motion &amp; 3D</h2>
+        <p class="reel__intro">Real-time renders, animation studies and experimental motion work.</p>
+      </header>
+
+      <div class="reel__stage" id="reelStage">
+        <div class="reel__track" id="reelTrack" role="list"></div>
+      </div>
+
+      <div class="reel__bar">
+        <div class="reel__now" id="reelNow" aria-live="polite">&nbsp;</div>
+        <div class="reel__hint">Scroll to advance &middot; Click to view</div>
+      </div>
+      <div class="reel__progress" aria-hidden="true"><i id="reelProgress"></i></div>
+    </div>
+  </div>
 </section>
 
   </div>
@@ -511,7 +511,7 @@
 
   <script src="journal-config.js?v=2"></script>
   <script src="journal.js?v=2"></script>
-  <script src="script.js"></script>
+  <script src="script.js?v=2"></script>
   <script src="reel.js?v=4"></script>
   <script type="module" src="archive-page.js?v=4"></script>
   <script src="look.js?v=1"></script>
