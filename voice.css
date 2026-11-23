@@ -64,24 +64,21 @@
 /* ---------- 3. affordances instead of hints ---------- */
 .cell { cursor: zoom-in; }
 .cell--slate { cursor: default; }
-.archive__bar { justify-content: flex-start; }
 
-/* ---------- 4a. back to top: a scroll rail on the right edge ---------- */
-.totop {
-  right: clamp(14px, 2vw, 28px); bottom: auto; top: 50%;
-  translate: 8px -50%;
-  flex-direction: column; gap: 12px; align-items: center;
-  padding: 6px 4px; border: 0; border-radius: 0;
-  background: none; -webkit-backdrop-filter: none; backdrop-filter: none;
-  color: var(--meta);
-  mix-blend-mode: difference;
+/* ---------- 4a. back to top: text at the end of each room's caption bar ---------- */
+.archive__bar, .reel__bar { justify-content: space-between; }
+.bar__top {
+  all: unset; pointer-events: auto; cursor: pointer; flex: none;
+  font-size: 13px; color: var(--meta);
+  border-bottom: 1px solid transparent;
+  transition: color 200ms var(--ease), border-color 200ms var(--ease);
 }
-.totop.is-shown { translate: 0 -50%; }
-.totop:hover { border-color: transparent; color: var(--ink); }
-.totop__rail { position: relative; width: 1px; height: clamp(80px, 16vh, 160px); background: rgba(237, 233, 226, 0.22); overflow: hidden; }
-.totop__rail i { position: absolute; inset: 0; background: var(--ink); transform-origin: top; transform: scaleY(0); }
-.totop__t { font-size: 12px; }
-@media (max-width: 720px) { .totop { right: 8px; bottom: auto; padding: 6px 2px; } }
+.bar__top:hover { color: var(--ink); border-color: var(--ink); }
+.bar__top:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.grade__foot { display: flex; justify-content: flex-end; margin-top: 18px; }
+@media (max-width: 700px) {
+  .archive__bar, .reel__bar { flex-direction: row; align-items: baseline; }
+}
 
 /* ---------- 4b. Read / Look: words, not a pill ---------- */
 .switch__track { background: none; border-radius: 0; padding: 0 0 8px; gap: 28px; }
@@ -113,3 +110,7 @@
   font-size: clamp(64px, 7vw, 112px); line-height: 0.8; letter-spacing: -0.06em;
   color: transparent; -webkit-text-stroke: 1px rgba(237, 233, 226, 0.6); margin-bottom: 18px;
 }
+
+/* the Look rooms share the site's slate accent (the orange was left over from the standalone reel) */
+.reel, .archive, .viewer { --accent: #A8B5C4; }
+.cell__cap b { color: var(--meta); }
