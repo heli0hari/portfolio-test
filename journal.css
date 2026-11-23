@@ -118,22 +118,23 @@
 }
 .jc__facts dt { font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--meta); margin-bottom: 6px; }
 .jc__facts dd { margin: 0; font-size: 14px; line-height: 1.45; max-width: 32ch; }
-.jc__media { margin: clamp(40px, 6vw, 80px) 0 0; background: var(--plate); overflow: hidden; }
-.jc__media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.jc__media { margin: clamp(40px, 6vw, 80px) 0 0; overflow: hidden; }
+/* cover images are never cropped — many carry their own title type */
+.jc__media img { display: block; width: auto; max-width: 100%; height: auto; max-height: 86vh; margin: 0 auto; }
 
 /* inset: framed image with breathing room */
-.jc--inset .jc__media { max-height: 78vh; }
 .jc--inset .jc__media img { max-height: 78vh; }
 /* split: title column beside the image */
 @media (min-width: 900px) {
   .jc--split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end; }
   .jc--split .jc__kicker, .jc--split .jc__title, .jc--split .jc__lede, .jc--split .jc__facts { grid-column: 1; }
-  .jc--split .jc__media { grid-column: 2; grid-row: 1 / span 4; margin: 0; align-self: stretch; min-height: 62vh; }
+  .jc--split .jc__media { grid-column: 2; grid-row: 1 / span 4; margin: 0; align-self: center; }
+  .jc--split .jc__media img { max-height: 80vh; }
   .jc--split .jc__title { font-size: clamp(44px, 6.2vw, 112px); }
 }
 /* bleed: image runs edge to edge under the title */
-.jc--bleed .jc__media { margin-left: calc(var(--pad) * -1); margin-right: calc(var(--pad) * -1); max-height: 86vh; }
-.jc--bleed .jc__media img { max-height: 86vh; }
+.jc--bleed .jc__media { margin-left: calc(var(--pad) * -1); margin-right: calc(var(--pad) * -1); }
+.jc--bleed .jc__media img { width: 100%; max-height: none; }
 
 /* ---------- chapters ---------- */
 .jch { padding: clamp(64px, 9vw, 140px) 0 0; border-top: 1px solid var(--hair); }
@@ -310,7 +311,6 @@
 .journal[data-theme="visual"] .jch { border-top: 0; padding-top: clamp(48px, 7vw, 104px); }
 .journal[data-theme="visual"] .jch__title { font-size: clamp(26px, 3.2vw, 48px); }
 .journal[data-theme="visual"] .jseq--grid { margin-left: 0; }
-.journal[data-theme="visual"] .jc--bleed .jc__media { max-height: 92vh; }
 
 /* ---------- small screens ---------- */
 @media (max-width: 760px) {

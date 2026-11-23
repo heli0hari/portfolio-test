@@ -12,6 +12,7 @@
             only sections the content actually supports are used.
    facts    extra cover facts taken from the content (e.g. WealthX's table)
    skip     block indices already shown on the cover
+   coverImage  optional replacement for the cover image ({ src, alt })
    ========================================================= */
 window.JOURNAL = {
   'wealthx': {
@@ -33,6 +34,8 @@ window.JOURNAL = {
   },
   'city-beneaththesurface': {
     theme: 'data', cover: 'split',
+    // the title card repeats the page title in its own type; the street photo reads better beside it
+    coverImage: { src: 'images/City/City_Main.jpg', alt: 'A waste collector working beside a Dublin bus' },
     chapters: [
       { at: 1, label: 'Overview' },
       { at: 4, label: 'Context' },

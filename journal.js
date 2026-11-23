@@ -75,6 +75,7 @@
 
     /* ---------- cover ---------- */
     var heroBlock = blocks[0] && blocks[0].type === 'image' ? blocks[0].value : (data.image ? { src: data.image, alt: data.title } : null);
+    if (cfg.coverImage) heroBlock = cfg.coverImage;     // a cleaner image than the project's title card
     if (blocks[0] && blocks[0].type === 'image') skip[0] = 1;
     var cover = el('header', 'jc jc--' + (cfg.cover || 'inset'));
     var kicker = el('div', 'jc__kicker');
