@@ -1,9 +1,11 @@
 /* =========================================================
-   Cube cursor — a small wireframe cube that follows the pointer,
-   turning with its motion and leaving fading echoes behind it.
-   One fixed canvas, pointer-events: none, so it never gets in the
-   way of a click. The system cursor stays as it is. Off on touch
-   screens and when reduced motion is requested.
+   Pointer companions — desktop only, never in the way of a click.
+   Look page: a small wireframe cube that turns with your motion and
+   leaves fading echoes. Read page (and its project pages): a thin
+   full-screen crosshair whose lines ripple when you reach something
+   clickable (after the Codrops crosshair distortion idea).
+   The system cursor stays as it is. Off on touch screens and when
+   reduced motion is requested.
    ========================================================= */
 (function () {
   if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
@@ -31,11 +33,14 @@
   var rx = 0.6, ry = 0.8, rz = 0, s = 9, sT = 9, alpha = 0, alphaT = 0;
   var trail = [], tick = 0, last = 0, idle = 0;
   var OFFSET = 22;                              // sits just off the pointer tip
+  function isLook() { return document.body.getAttribute('data-mode') === 'look' && !document.body.classList.contains('modal-open'); }
+  new MutationObserver(function () { alphaT = isLook() && mx > 0 ? 1 : 0; if (!running) { running = true; requestAnimationFrame(frame); } })
+    .observe(document.body, { attributes: true, attributeFilter: ['data-mode', 'class'] });
 
   addEventListener('pointermove', function (e) {
     mx = e.clientX + OFFSET; my = e.clientY + OFFSET;
     if (alpha === 0) { x = mx; y = my; }
-    alphaT = 1; idle = 0;
+    alphaT = isLook() ? 1 : 0; idle = 0;
     var t = e.target;
     sT = t && t.closest && t.closest('a, button, [role="tab"], .ix__row, .cell, canvas') ? 14 : 9;
     if (!running) { running = true; requestAnimationFrame(frame); }
@@ -91,5 +96,48 @@
     idle += dt;
     if (alpha < 0.01 && alphaT === 0 && !trail.length) { ctx.clearRect(0, 0, W, H); running = false; last = 0; return; }
     requestAnimationFrame(frame);
+  }
+
+  /* ---------------- crosshair (Read) ---------------- */
+  var NS = 'http://www.w3.org/2000/svg';
+  var wrap = document.createElement('div');
+  wrap.className = 'xhair'; wrap.setAttribute('aria-hidden', 'true');
+  wrap.innerHTML =
+    '<svg class="xhair__defs" width="0" height="0"><filter id="xhairWarp" filterUnits="userSpaceOnUse" x="-60" y="-60" width="1120" height="1120">' +
+      '<feTurbulence type="fractalNoise" baseFrequency="0.01 0.02" numOctaves="1" seed="3" result="n"/>' +
+      '<feDisplacementMap in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter></svg>' +
+    '<svg class="xhair__h" viewBox="0 0 1000 40" preserveAspectRatio="none"><line x1="0" y1="20" x2="1000" y2="20"/></svg>' +
+    '<svg class="xhair__v" viewBox="0 0 40 1000" preserveAspectRatio="none"><line x1="20" y1="0" x2="20" y2="1000"/></svg>';
+  document.body.appendChild(wrap);
+  var hEl = wrap.querySelector('.xhair__h'), vEl = wrap.querySelector('.xhair__v');
+  var turb = wrap.querySelector('feTurbulence'), disp = wrap.querySelector('feDisplacementMap');
+  var cx = -100, cy = -100, tx = -100, ty = -100, warp = 0, warpT = 0, xOn = 0, xLast = 0, xRun = false;
+  function xActive() { return document.body.getAttribute('data-mode') === 'read'; }
+  addEventListener('pointermove', function (e) {
+    tx = e.clientX; ty = e.clientY;
+    if (cx < 0) { cx = tx; cy = ty; }
+    var t = e.target;
+    var hot = !!(t && t.closest && t.closest('a, button, [role="tab"], .ix__row, .jtoc__btn, label, input, textarea'));
+    if (hot && warpT === 0) warp = 0;              // restart the ripple on each new target
+    warpT = hot ? 1 : 0;
+    if (!xRun) { xRun = true; requestAnimationFrame(xFrame); }
+  }, { passive: true });
+  document.addEventListener('pointerleave', function () { tx = -100; });
+  function xFrame(now) {
+    var dt = Math.min(0.05, (now - (xLast || now)) / 1000); xLast = now;
+    var on = xActive() && tx >= 0 ? 1 : 0;
+    xOn += (on - xOn) * (1 - Math.exp(-dt * 10));
+    var k = 1 - Math.exp(-dt * 18);
+    cx += (tx - cx) * k; cy += (ty - cy) * k;
+    hEl.style.transform = 'translate3d(0,' + (cy - 20) + 'px,0)';
+    vEl.style.transform = 'translate3d(' + (cx - 20) + 'px,0,0)';
+    wrap.style.opacity = xOn.toFixed(3);
+    // ripple: rises fast, then eases out while hovering, and dies away when leaving
+    warp += ((warpT ? 1 : 0) - warp) * (1 - Math.exp(-dt * (warpT ? 9 : 5)));
+    var ripple = warpT ? Math.sin(Math.min(warp, 1) * Math.PI) : warp;   // a swell, then settles back to straight
+    disp.setAttribute('scale', (ripple * 60).toFixed(1));
+    turb.setAttribute('baseFrequency', (0.004 + ripple * 0.02).toFixed(4) + ' ' + (0.02 + ripple * 0.06).toFixed(4));
+    if (xOn < 0.005 && !on) { xRun = false; xLast = 0; return; }
+    requestAnimationFrame(xFrame);
   }
 })();
