@@ -215,7 +215,7 @@ body[data-mode="read"] .switch__ico--read { opacity: 1; transition: opacity 300m
   border-bottom: 0 !important; pointer-events: none;
   mix-blend-mode: difference;
 }
-.jn > * { pointer-events: auto; }
+.jn > *, .jn .jn__back { pointer-events: auto; }   /* `.jn button { all: unset }` would otherwise inherit "none" */
 .jn__where, .jn__pn, .jn__progress { display: none; }
 .jn .jn__back { grid-column: 1; color: #fff; font-size: 14px; letter-spacing: 0; }
 .jn__count { grid-column: 3; font-size: 13px; color: #fff; opacity: 0.6; font-variant-numeric: tabular-nums; }
