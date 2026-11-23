@@ -22,18 +22,12 @@
   });
 })();
 
-/* Read / Look switch — the underline sits under whichever word is active. */
+/* Read / Look switch — clicking the ball rolls it to the other side. */
 (function () {
-  var track = document.querySelector('.switch__track');
-  if (!track) return;
-  function place() {
-    var on = track.querySelector('.switch__btn[aria-selected="true"]');
-    if (!on) return;
-    track.style.setProperty('--sx', on.offsetLeft + 'px');
-    track.style.setProperty('--sw', on.offsetWidth + 'px');
-  }
-  new MutationObserver(place).observe(track, { attributes: true, subtree: true, attributeFilter: ['aria-selected'] });
-  window.addEventListener('resize', place);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
-  place();
+  var lane = document.querySelector('.switch__lane');
+  if (!lane) return;
+  lane.addEventListener('click', function () {
+    var off = document.querySelector('.switch__btn[aria-selected="false"]');
+    if (off) off.click();
+  });
 })();
