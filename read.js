@@ -47,11 +47,24 @@
 
     var x = 0, y = 0, tx = 0, ty = 0, raf = 0, active = null, byKey = false, shown = '', step = 0;
     function gallery(row) { return (row.dataset.gallery || row.dataset.preview).split(','); }
+    // the preview takes each image's own shape: same visual area, real aspect ratio
+    var AREA = 300 * 300 * 1.1;
+    function fitTo(im) {
+      if (!im.naturalWidth) return;
+      var a = im.naturalWidth / im.naturalHeight;
+      var w = Math.sqrt(AREA * a), h = w / a;
+      var k = Math.min(1, 440 / w, 420 / h);              // keep very wide / very tall images in bounds
+      pv.style.width = Math.round(w * k) + 'px';
+      pv.style.height = Math.round(h * k) + 'px';
+      kick();                                            // re-clamp the position to the new size
+    }
     function setImage(src) {
       if (src === shown) return;
       shown = src;
       var cur = imgFor(src);
       Object.keys(imgs).forEach(function (k) { imgs[k].classList.toggle('is-current', imgs[k] === cur); });
+      if (cur.complete && cur.naturalWidth) fitTo(cur);
+      else cur.onload = function () { if (shown === src) fitTo(cur); };
     }
     function setStep(row, i) {
       var g = gallery(row);
