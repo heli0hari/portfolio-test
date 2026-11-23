@@ -757,7 +757,7 @@
 
   /* ---------- Project detail modal ---------- */
   var modal = document.getElementById('projectModal');
-  var modalPanel      = modal && modal.querySelector('.project-modal__panel');
+  var modalPanel      = modal && (modal.querySelector('.project-modal__panel') || modal);
   var modalScroll      = modal && modal.querySelector('.project-modal__scroll');
   var modalMeta        = document.getElementById('projectModalMeta');
   var modalTitle       = document.getElementById('projectModalTitle');
@@ -1126,6 +1126,12 @@
 
     modalLastFocused = document.activeElement;
 
+    if (window.Journal) {
+      // the journal lays out the whole project (cover, chapters, navigation)
+      window.Journal.render(id, data, projectData, {
+        renderBlock: function (block) { var d = document.createElement('div'); renderBlocks([block], d); return d; }
+      });
+    } else {
     // Update Top Navigation
     var modalTopCat = document.getElementById('projectModalTopCat');
     if (modalTopCat) modalTopCat.textContent = data.category;
@@ -1163,6 +1169,7 @@
         if (modalScroll) modalScroll.scrollTop = 0;
         openProject(nextId);
       };
+    }
     }
 
     if (options.updateUrl !== false) syncURL('read', id);
