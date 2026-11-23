@@ -333,3 +333,7 @@ html.has-custom-cursor iframe { cursor: auto !important; }
 .archive__sticky, .reel__sticky { background-color: transparent !important; }
 html { background: #F2EEE7; transition: background-color var(--dur, 600ms) ease; }
 html:has(body[data-mode="look"]) { background: #131110; }
+
+/* no blue tap flash on phones — every control has its own pressed/active state */
+html { -webkit-tap-highlight-color: transparent; }
+.switch__btn:focus:not(:focus-visible), .switch__lane:focus:not(:focus-visible) { outline: none; }
