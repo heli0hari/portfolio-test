@@ -253,7 +253,7 @@
     function endLink(pid, dir) {
       var a = el('a', 'jend__link jend__link--' + dir);
       a.href = '#project/' + pid;
-      a.appendChild(el('span', 'jend__dir', dir === 'prev' ? '← Previous' : 'Next →'));
+      a.appendChild(el('span', 'jend__dir', dir === 'prev' ? 'Previous' : 'Next'));
       a.appendChild(el('span', 'jend__no', 'No. ' + pad(ids.indexOf(pid) + 1)));
       a.appendChild(el('span', 'jend__title')).textContent = all[pid].title;
       a.appendChild(el('span', 'jend__cat')).textContent = all[pid].category || '';

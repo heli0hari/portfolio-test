@@ -1,0 +1,115 @@
+/* ==========================================================================
+   voice.css — loaded last. Strips the generic UI-kit layer:
+   1. no tracked small caps — labels are set in sentence case, like text
+   2. one header shape per Look room: outlined numeral + title (the journal's motif)
+   3. no instruction text — the cursor carries the affordance
+   4. back-to-top is a thin scroll rail, the mode switch is typographic
+   5. no decorative arrows
+   6. title cards are frameless (no empty boxes)
+   ========================================================================== */
+
+/* ---------- 1. labels in sentence case ---------- */
+.eyebrow { text-transform: none; letter-spacing: 0.005em; font-size: 13.5px; }
+.thesis__side { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.back-to-top a span { text-transform: none; letter-spacing: 0.005em; }
+.rail__hint { text-transform: none; letter-spacing: 0.005em; font-size: 13.5px; }
+.pcard__badge { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.project-modal__eyebrow { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.cs-label { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.cs-compare__title { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.cs-table th { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.cs-road__phase { text-transform: none; letter-spacing: 0.005em; font-size: 13.5px; }
+.cs-label { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.cs-compare__col h4 { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.cs-table th { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.cs-road__phase { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.archive__eyebrow { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.archive__status, .archive__hint { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.viewer__cap, .viewer__count { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.reel__eyebrow { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.cell__cap { text-transform: none; letter-spacing: 0.005em; font-size: 12px; }
+.slate__count { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.reel__bar { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.viewer__cap, .viewer__count { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.totop { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.ix__range { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.ix__cols { text-transform: none; letter-spacing: 0.005em; font-size: 12.5px; }
+.ix__badge { text-transform: none; letter-spacing: 0.005em; font-size: 12px; }
+.ix__tags { text-transform: none; letter-spacing: 0.005em; font-size: 12.5px; }
+.colophon__label { text-transform: none; letter-spacing: 0.005em; font-size: 12.5px; }
+.colophon__base { text-transform: none; letter-spacing: 0.005em; font-size: 12.5px; }
+.jn__back { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.jn__ch { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.jtoc__btn { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.jc__kicker { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.jc__facts dt { text-transform: none; letter-spacing: 0.005em; font-size: 12.5px; }
+.jch__head { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.jsh { text-transform: none; letter-spacing: 0.005em; font-size: 13.5px; }
+.jq cite { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.jend__dir { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+.jend__back { text-transform: none; letter-spacing: 0.005em; font-size: 13px; }
+/* ---------- 2. Look rooms: numeral + title ---------- */
+.lk__no {
+  display: block;
+  font-size: clamp(64px, 8vw, 132px); line-height: 0.8; letter-spacing: -0.06em;
+  font-weight: 500; font-variant-numeric: tabular-nums;
+  color: transparent; -webkit-text-stroke: 1px rgba(237, 233, 226, 0.6);
+  margin-bottom: 14px;
+}
+.archive__head, .reel__head, .grade__head { max-width: 440px; }
+.archive__head .chroma__intro, .reel__intro { margin-top: 12px; }
+.grade__head { padding-bottom: 8px; }
+@media (max-width: 700px) { .lk__no { font-size: 64px; margin-bottom: 10px; } }
+
+/* ---------- 3. affordances instead of hints ---------- */
+.cell { cursor: zoom-in; }
+.cell--slate { cursor: default; }
+.archive__bar { justify-content: flex-start; }
+
+/* ---------- 4a. back to top: a scroll rail on the right edge ---------- */
+.totop {
+  right: clamp(14px, 2vw, 28px); bottom: auto; top: 50%;
+  translate: 8px -50%;
+  flex-direction: column; gap: 12px; align-items: center;
+  padding: 6px 4px; border: 0; border-radius: 0;
+  background: none; -webkit-backdrop-filter: none; backdrop-filter: none;
+  color: var(--meta);
+  mix-blend-mode: difference;
+}
+.totop.is-shown { translate: 0 -50%; }
+.totop:hover { border-color: transparent; color: var(--ink); }
+.totop__rail { position: relative; width: 1px; height: clamp(80px, 16vh, 160px); background: rgba(237, 233, 226, 0.22); overflow: hidden; }
+.totop__rail i { position: absolute; inset: 0; background: var(--ink); transform-origin: top; transform: scaleY(0); }
+.totop__t { font-size: 12px; }
+@media (max-width: 720px) { .totop { right: 8px; bottom: auto; padding: 6px 2px; } }
+
+/* ---------- 4b. Read / Look: words, not a pill ---------- */
+.switch__track { background: none; border-radius: 0; padding: 0 0 8px; gap: 28px; }
+.switch__slider {
+  top: auto; bottom: 0; left: 0; height: 2px; width: var(--sw, 50%);
+  background: var(--ink); border-radius: 0;
+  transform: translateX(var(--sx, 0)) !important;
+  transition: transform 450ms var(--ease), width 450ms var(--ease);
+}
+.switch__btn {
+  padding: 0; font-size: clamp(22px, 2.2vw, 30px); letter-spacing: -0.03em;
+  color: var(--meta);
+}
+.switch__btn:hover { color: var(--ink); }
+.switch__btn[aria-selected="true"] { color: var(--ink); }
+.switch__btn:focus-visible { border-radius: 2px; }
+@media (max-width: 640px) {
+  .switch__track { padding: 0 0 6px; gap: 22px; }
+  .switch__slider { top: auto; bottom: 0; left: 0; }
+  .switch__btn { font-size: 22px; padding: 0; }
+}
+
+/* ---------- 5. no decorative arrows ---------- */
+.ew__item { grid-template-columns: auto 1fr; grid-template-areas: "no name" ". desc"; }
+
+/* ---------- 6. title cards: type on the strip, no empty box ---------- */
+.cell--slate .cell__pic { background: none; outline: 0; box-shadow: none; padding: 0 0 6px; }
+.cell--slate .slate__no {
+  font-size: clamp(64px, 7vw, 112px); line-height: 0.8; letter-spacing: -0.06em;
+  color: transparent; -webkit-text-stroke: 1px rgba(237, 233, 226, 0.6); margin-bottom: 18px;
+}

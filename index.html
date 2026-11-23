@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="look.css?v=5">
   <link rel="stylesheet" href="read.css?v=5">
   <link rel="stylesheet" href="journal.css?v=6">
+<link rel="stylesheet" href="voice.css?v=2">
   <script type="importmap">
     { "imports": { "three": "./vendor/three/three.module.min.js" } }
   </script>
@@ -75,7 +76,7 @@
             <span class="thesis__side">UX &middot; RESEARCH &middot; SYSTEMS</span>
 
             <div class="thesis__main">
-              <p class="thesis__cap thesis__cap--top">research, strategy and digital experiences by a <span class="thesis__arrow">&rarr;</span></p>
+              <p class="thesis__cap thesis__cap--top">research, strategy and digital experiences by a</p>
 
               <div class="thesis__words">
                 <span class="thesis__word">Analyst.</span>
@@ -83,7 +84,7 @@
                 <span class="thesis__word">Designer.</span>
               </div>
 
-              <p class="thesis__cap thesis__cap--bottom"><span class="thesis__arrow">&rarr;</span> turning insights into impact</p>
+              <p class="thesis__cap thesis__cap--bottom">turning insights into impact</p>
             </div>
 
             
@@ -93,7 +94,7 @@
             <span class="thesis__side">3D &middot; MOTION &middot; FILM</span>
 
             <div class="thesis__main">
-              <p class="thesis__cap thesis__cap--top">creative concepts and visual explorations by a <span class="thesis__arrow">&rarr;</span></p>
+              <p class="thesis__cap thesis__cap--top">creative concepts and visual explorations by a</p>
 
               <div class="thesis__words">
                 <span class="thesis__word">Dreamer.</span>
@@ -101,7 +102,7 @@
                 <span class="thesis__word">Storyteller.</span>
               </div>
 
-              <p class="thesis__cap thesis__cap--bottom"><span class="thesis__arrow">&rarr;</span> executing wild ideas, precisely</p>
+              <p class="thesis__cap thesis__cap--bottom">executing wild ideas, precisely</p>
             </div>
 
             
@@ -132,13 +133,12 @@
         </div>
       </div>
 
-      <div class="hero__scrollcue">Selected work ↓</div>
+      <div class="hero__scrollcue">Selected work</div>
     </section>
 
     <!-- ============ READ — EDITORIAL INDEX ============ -->
     <section class="ix" data-panel="read" id="index" aria-labelledby="ixTitle">
       <header class="ix__head">
-        <div class="eyebrow">Selected work</div>
         <h2 class="ix__title" id="ixTitle">Index</h2>
         <p class="ix__range">10 projects &middot; 2022&ndash;2026</p>
       </header>
@@ -264,7 +264,6 @@
     <!-- ============ READ — ELSEWHERE (secondary) ============ -->
     <section class="ew" data-panel="read" aria-labelledby="ewTitle">
       <header class="ew__head">
-        <div class="eyebrow">Elsewhere</div>
         <h2 class="ew__title" id="ewTitle">Experiments in Look</h2>
       </header>
       <ul class="ew__list">
@@ -273,7 +272,6 @@
             <span class="ew__no">A</span>
             <span class="ew__name">Chroma</span>
             <span class="ew__desc">A growing collection of photographs documenting people, colour, architecture and everyday moments.</span>
-            <span class="ew__go" aria-hidden="true">&rarr;</span>
           </a>
         </li>
         <li>
@@ -281,7 +279,6 @@
             <span class="ew__no">B</span>
             <span class="ew__name">Color Grading</span>
             <span class="ew__desc">In the time between things</span>
-            <span class="ew__go" aria-hidden="true">&rarr;</span>
           </a>
         </li>
         <li>
@@ -289,7 +286,6 @@
             <span class="ew__no">C</span>
             <span class="ew__name">Motion &amp; 3D</span>
             <span class="ew__desc">Real-time renders, animation studies and experimental motion work.</span>
-            <span class="ew__go" aria-hidden="true">&rarr;</span>
           </a>
         </li>
       </ul>
@@ -298,7 +294,6 @@
     <!-- ============ READ — FOOTER ============ -->
     <footer class="colophon" data-panel="read">
       <div class="colophon__lead">
-        <div class="eyebrow">Get in touch</div>
         <p class="colophon__line">Let's create something together.</p>
         <a class="colophon__mail" href="mailto:harigovind.ie@gmail.com">harigovind.ie@gmail.com</a>
       </div>
@@ -333,7 +328,7 @@
         <div class="archive__stage" id="archiveStage" aria-label="Interactive sculpture of photographs"></div>
 
         <header class="archive__head chroma__head" id="archiveHead">
-            <div class="eyebrow">Look</div>
+            <span class="lk__no" aria-hidden="true">01</span>
             <h2 class="archive__title chroma__title">Chroma</h2>
             <p class="chroma__intro">
                 A growing collection of photographs documenting people, colour, architecture and everyday moments.
@@ -342,7 +337,6 @@
 
         <div class="archive__bar">
           <div class="archive__status" aria-live="polite"><span id="archiveNow">&nbsp;</span></div>
-          <div class="archive__hint" id="archiveHint">Drag to turn &middot; Scroll to open</div>
         </div>
         <div class="archive__rail" aria-hidden="true"><i id="archiveRail"></i></div>
         <div class="archive__loading" id="archiveLoading"><i></i></div>
@@ -360,7 +354,7 @@
   <div class="reel" id="reel">
     <div class="reel__sticky">
       <header class="reel__head">
-        <div class="eyebrow">Look</div>
+        <span class="lk__no" aria-hidden="true">02</span>
         <h2 class="reel__title">Motion &amp; 3D</h2>
         <p class="reel__intro">Real-time renders, animation studies and experimental motion work.</p>
       </header>
@@ -371,7 +365,6 @@
 
       <div class="reel__bar">
         <div class="reel__now" id="reelNow" aria-live="polite">&nbsp;</div>
-        <div class="reel__hint">Scroll to advance &middot; Click to view</div>
       </div>
       <div class="reel__progress" aria-hidden="true"><i id="reelProgress"></i></div>
     </div>
@@ -382,7 +375,7 @@
 <section class="grade-room" data-panel="look" aria-labelledby="gradeTitle">
   <div class="chroma__showcase">
     <header class="grade__head">
-      <div class="eyebrow">Look</div>
+      <span class="lk__no" aria-hidden="true">03</span>
       <h2 class="grade__title" id="gradeTitle">Color Grading</h2>
     </header>
     <div class="cs-frame">
@@ -438,7 +431,7 @@
   <div class="project-modal journal" id="projectModal" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="jTitle">
     <div class="project-modal__scroll">
       <nav class="jn" aria-label="Project">
-        <button type="button" class="jn__back" data-modal-close>&larr; Index</button>
+        <button type="button" class="jn__back" data-modal-close>Index</button>
         <div class="jn__where">
           <span class="jn__proj" id="jnProj"></span>
           <button type="button" class="jn__ch" id="jnCh" aria-expanded="false" aria-controls="jnMenu" aria-label="Chapters">
@@ -474,12 +467,11 @@
   <div class="project-modal__scroll">
     <header class="project-modal__header">
       <button type="button" class="project-modal__back" data-modal-close aria-label="Close contact">
-        &larr; Harigovind Sajimon
+        Harigovind Sajimon
       </button>
     </header>
 
     <div class="project-modal__inner">
-      <div class="project-modal__eyebrow">GET IN TOUCH</div>
       <h1 class="project-modal__title">Let's create something together.</h1>
       
       <p class="project-modal__desc">
@@ -511,12 +503,12 @@
 
 
   <script src="journal-config.js?v=4"></script>
-  <script src="journal.js?v=6"></script>
+  <script src="journal.js?v=7"></script>
   <script src="script.js?v=4"></script>
   <script src="reel.js?v=4"></script>
-  <script type="module" src="archive-page.js?v=4"></script>
-  <button class="totop" id="toTop" type="button" aria-label="Back to top" hidden><span aria-hidden="true">&uarr;</span> Top</button>
-  <script src="look.js?v=2"></script>
+  <script type="module" src="archive-page.js?v=5"></script>
+  <button class="totop" id="toTop" type="button" aria-label="Back to top" hidden><span class="totop__rail" aria-hidden="true"><i id="toTopFill"></i></span><span class="totop__t">Top</span></button>
+  <script src="look.js?v=3"></script>
   <script src="read.js?v=5"></script>
 </body>
 </html>

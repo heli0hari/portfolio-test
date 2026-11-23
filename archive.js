@@ -336,7 +336,7 @@ export function mountArchive(container, photos, opts = {}) {
       pn.photoMat.map = tex;
       pn.photoMat.color.set(0xffffff);
       pn.photoMat.needsUpdate = true;
-      pn.fade = 0;
+      pn.fade = pn.lq ? 1 : 0;            // already showing a soft preview: just sharpen
       if (pn.sculpt && opts.onLoad) opts.onLoad(++loadedSculpt, nSculpt);
     };
     loader.load(mini, onTex, undefined, onErr);
@@ -344,10 +344,34 @@ export function mountArchive(container, photos, opts = {}) {
   function unload(pn) {
     if (!pn.tex) return;
     pn.tex.dispose(); pn.tex = null;
-    pn.photoMat.map = null;
-    pn.photoMat.color.setHSL((pn.photo.hue || 0) / 360, pn.photo.bw ? 0 : 0.3, 0.035);
+    if (pn.lq) { pn.photoMat.map = pn.lq; pn.photoMat.color.set(0xffffff); }
+    else { pn.photoMat.map = null; pn.photoMat.color.setHSL((pn.photo.hue || 0) / 360, pn.photo.bw ? 0 : 0.3, 0.035); }
     pn.photoMat.needsUpdate = true;
   }
+
+  /* ---------- instant soft previews ----------
+     One small atlas (every photo at 40px) arrives first, so no face is ever an
+     empty tile — each photo then sharpens when its own image loads. */
+  const atlasUrl = opts.atlas || 'images/chroma/atlas.json';
+  fetch(atlasUrl).then(r => r.json()).then(meta => {
+    loader.load(atlasUrl.replace(/\.json$/, '.jpg'), atlas => {
+      atlas.colorSpace = THREE.SRGBColorSpace;
+      atlas.generateMipmaps = false;
+      atlas.minFilter = THREE.LinearFilter;
+      const idx = new Map(meta.src.map((s, i) => [s, i]));
+      const C = meta.cell, W = meta.cols * C, H = meta.rows * C, inset = 0.75;
+      panels.forEach(pn => {
+        const i = idx.get(pn.photo.src);
+        if (i == null) return;
+        const t = atlas.clone();                       // shares the one uploaded image
+        const cx = (i % meta.cols) * C, cy = Math.floor(i / meta.cols) * C;
+        t.repeat.set((C - 2 * inset) / W, (C - 2 * inset) / H);
+        t.offset.set((cx + inset) / W, 1 - (cy + C - inset) / H);
+        pn.lq = t;
+        if (!pn.tex) { pn.photoMat.map = t; pn.photoMat.color.set(0xffffff); pn.photoMat.needsUpdate = true; }
+      });
+    });
+  }).catch(() => {});
   let pageTimer = 0;
   function pageTextures(inCarousel, sNow) {
     // sculpture first; once the carousel forms, keep the nearest cards loaded
@@ -555,7 +579,7 @@ export function mountArchive(container, photos, opts = {}) {
     const hit = (pointerIn && !dragging) ? pick() : null;
     if (hit !== hovered) {
       hovered = hit;
-      el.style.cursor = hit ? 'pointer' : 'grab';
+      el.style.cursor = hit ? 'zoom-in' : 'grab';   // the cursor says what a click does
       if (hit) report(hit); else onHover(null);
     }
 

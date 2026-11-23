@@ -10,25 +10,46 @@
   rooms.forEach(function (r) { io.observe(r); });
 })();
 
-/* Back to top — appears on the Look page once you're a screen down. */
+/* Back to top — a thin rail on the right edge of the Look page; it fills as you scroll. */
 (function () {
   var btn = document.getElementById('toTop');
+  var fill = document.getElementById('toTopFill');
   if (!btn) return;
   btn.hidden = false;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   var ticking = false;
   function update() {
     ticking = false;
-    var show = document.body.getAttribute('data-mode') === 'look' && window.scrollY > window.innerHeight;
+    var look = document.body.getAttribute('data-mode') === 'look';
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var show = look && window.scrollY > window.innerHeight;
     btn.classList.toggle('is-shown', show);
     btn.tabIndex = show ? 0 : -1;
+    if (fill && max > 0) fill.style.transform = 'scaleY(' + Math.min(1, window.scrollY / max) + ')';
   }
   window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  window.addEventListener('resize', update);
   new MutationObserver(update).observe(document.body, { attributes: true, attributeFilter: ['data-mode'] });
   btn.addEventListener('click', function () {
     window.scrollTo({ top: 0, behavior: reduce.matches ? 'auto' : 'smooth' });
-    var first = document.querySelector('.switch button, a, button');
+    var first = document.querySelector('.switch__btn');
     if (first) first.focus({ preventScroll: true });
   });
   update();
+})();
+
+/* Read / Look switch — the underline sits under whichever word is active. */
+(function () {
+  var track = document.querySelector('.switch__track');
+  if (!track) return;
+  function place() {
+    var on = track.querySelector('.switch__btn[aria-selected="true"]');
+    if (!on) return;
+    track.style.setProperty('--sx', on.offsetLeft + 'px');
+    track.style.setProperty('--sw', on.offsetWidth + 'px');
+  }
+  new MutationObserver(place).observe(track, { attributes: true, subtree: true, attributeFilter: ['aria-selected'] });
+  window.addEventListener('resize', place);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+  place();
 })();
