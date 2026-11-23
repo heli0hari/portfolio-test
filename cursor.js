@@ -40,7 +40,9 @@
   new MutationObserver(function () { alphaT = isLook() && mx > 0 ? 1 : 0; if (!running) { running = true; requestAnimationFrame(frame); } })
     .observe(document.body, { attributes: true, attributeFilter: ['data-mode', 'class'] });
 
+  function overFrame(e) { return e.target && e.target.tagName === 'IFRAME'; }
   addEventListener('pointermove', function (e) {
+    if (overFrame(e)) { alphaT = 0; return; }      // at the edge of an embedded player: hand over
     mx = e.clientX + OFFSET; my = e.clientY + OFFSET;
     if (alpha === 0) { x = mx; y = my; }
     alphaT = isLook() ? 1 : 0; idle = 0;
@@ -109,6 +111,7 @@
   var ARM = 70;                                   // half-length of each line
   function xActive() { return document.body.getAttribute('data-mode') === 'read'; }
   addEventListener('pointermove', function (e) {
+    if (overFrame(e)) { tx = -100; return; }
     tx = e.clientX; ty = e.clientY;
     if (cx < 0) { cx = tx; cy = ty; }
     var t = e.target;
