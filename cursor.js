@@ -136,4 +136,22 @@
     if (xOn < 0.005 && !on) { xRun = false; xLast = 0; return; }
     requestAnimationFrame(xFrame);
   }
+
+  /* Embedded players (Vimeo) are separate pages: the site can't see the pointer
+     inside them, and they draw their own. So the companions step aside there. */
+  function frameHover(on) {
+    alphaT = on ? 0 : (isLook() ? 1 : 0);
+    if (on) { tx = -100; } 
+    if (!running) { running = true; requestAnimationFrame(frame); }
+    if (!xRun) { xRun = true; requestAnimationFrame(xFrame); }
+  }
+  function bindFrames(root) {
+    (root || document).querySelectorAll('iframe').forEach(function (f) {
+      if (f._cc) return; f._cc = 1;
+      f.addEventListener('pointerenter', function () { frameHover(true); });
+      f.addEventListener('pointerleave', function () { frameHover(false); });
+    });
+  }
+  bindFrames();
+  new MutationObserver(function () { bindFrames(); }).observe(document.body, { childList: true, subtree: true });
 })();

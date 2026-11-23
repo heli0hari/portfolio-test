@@ -286,3 +286,5 @@ body .switch__lane.is-dragging .switch__tail { transition: none; transform: tran
 body .switch__lane.is-dragging .switch__face { transition: none; transform: translateX(calc(var(--roll) * var(--p, 0))) rotate(calc(180deg * var(--p, 0))); }
 body .switch__lane.is-dragging .switch__ico--read { transition: none; opacity: calc(1 - var(--p, 0) * 2); }
 body .switch__lane.is-dragging .switch__ico--look { transition: none; opacity: calc(var(--p, 0) * 2 - 1); }
+/* inside embedded players the system pointer comes back (the companions can't follow there) */
+html.has-custom-cursor iframe { cursor: auto !important; }
