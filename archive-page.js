@@ -1,4 +1,4 @@
-import { mountArchive, webglAvailable } from './archive.js';
+import { mountArchive, webglAvailable } from './archive.js?v=1795405458';
 
 const stage = document.getElementById('archiveStage');
 const nowEl = document.getElementById('archiveNow');
