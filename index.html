@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="look.css?v=5">
   <link rel="stylesheet" href="read.css?v=5">
   <link rel="stylesheet" href="journal.css?v=6">
-<link rel="stylesheet" href="voice.css?v=7">
+<link rel="stylesheet" href="voice.css?v=8">
   <script type="importmap">
     { "imports": { "three": "./vendor/three/three.module.min.js" } }
   </script>
@@ -73,7 +73,7 @@
           <h1 class="thesis__srtitle" data-hero-mode="look">Exploring the intersection of wild imagination and technical precision through 3D and motion.</h1>
 
           <div class="thesis__poster" data-hero-mode="read" aria-hidden="true">
-            <span class="thesis__side">UX &middot; RESEARCH &middot; SYSTEMS</span>
+            <span class="thesis__side">UX &middot; Research &middot; Systems</span>
 
             <div class="thesis__main">
               <p class="thesis__cap thesis__cap--top">research, strategy and digital experiences by a</p>
@@ -91,7 +91,7 @@
           </div>
 
           <div class="thesis__poster" data-hero-mode="look" aria-hidden="true">
-            <span class="thesis__side">3D &middot; MOTION &middot; FILM</span>
+            <span class="thesis__side">3D &middot; Motion &middot; Film</span>
 
             <div class="thesis__main">
               <p class="thesis__cap thesis__cap--top">creative concepts and visual explorations by a</p>
@@ -303,26 +303,13 @@
         <p class="colophon__line">Let's create something together.</p>
         <a class="colophon__mail" href="mailto:harigovind.ie@gmail.com">harigovind.ie@gmail.com</a>
       </div>
-      <nav class="colophon__cols" aria-label="Footer">
-        <div>
-          <div class="colophon__label">Contact</div>
-          <a href="#contact" data-open-contact>Write a message</a>
-          <a href="mailto:harigovind.ie@gmail.com">Email</a>
-        </div>
-        <div>
-          <div class="colophon__label">Elsewhere</div>
-          <a href="https://www.linkedin.com/in/harigovind-s/" target="_blank" rel="noopener">LinkedIn</a>
-          <a href="images/Resume/Harigovind_Sajimon_CV.pdf">Download CV</a>
-        </div>
-        <div>
-          <div class="colophon__label">Index</div>
-          <a href="#index">Selected work</a>
-          <a href="#look">Look</a>
-        </div>
+      <nav class="colophon__links" aria-label="Footer">
+        <a href="https://www.linkedin.com/in/harigovind-s/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="images/Resume/Harigovind_Sajimon_CV.pdf">Download CV</a>
+        <a href="#look">Look</a>
       </nav>
       <div class="colophon__base">
         <span>Harigovind Sajimon &mdash; Designer, Dublin</span>
-        <span>Set in Bricolage Grotesque</span>
       </div>
     </footer>
 
@@ -471,40 +458,17 @@
     <div class="lightbox__cap" id="lightboxCap"></div>
   </div>
 
-<!-- ============ CONTACT MODAL ============ -->
-<div class="project-modal" id="contactModal" aria-hidden="true" tabindex="-1">
-  <div class="project-modal__scroll">
-    <header class="project-modal__header">
-      <button type="button" class="project-modal__back" data-modal-close aria-label="Close contact">
-        Harigovind Sajimon
-      </button>
-    </header>
-
-    <div class="project-modal__inner">
-      <h1 class="project-modal__title">Let's create something together.</h1>
-      
-      <p class="project-modal__desc">
-        I’m currently open to new opportunities for UX design, behavioral research, or 3D/motion projects. If you have an idea, a complex problem that needs analysis, or just want to chat, I'd love to hear from you.
-      </p>
-
-      <div class="cs-card">
-        <div class="cs-label">Email me directly</div>
-        <p><a href="mailto:harigovind.ie@gmail.com" class="contact-email">harigovind.ie@gmail.com</a></p>
-      </div>
-
-      <form action="https://formspree.io/f/xrenqprp" method="POST" class="cs-contact-form">
-  <div class="cs-card">
-    <input type="text" name="name" placeholder="Your Name" required>
-  </div>
-  <div class="cs-card">
-    <input type="email" name="email" placeholder="Your Email" required>
-  </div>
-  <div class="cs-card">
-    <textarea name="message" placeholder="Your Message" required></textarea>
-  </div>
-  
-  <button type="submit" class="cta__primary">Send Message</button>
-</form>
+<!-- ============ CONTACT ============ -->
+<div class="project-modal contact" id="contactModal" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true" aria-label="Contact">
+  <div class="project-modal__scroll contact__scroll">
+    <button type="button" class="contact__close" data-modal-close>Close</button>
+    <div class="contact__body">
+      <a class="contact__mail" href="mailto:harigovind.ie@gmail.com">harigovind.ie@gmail.com</a>
+      <button type="button" class="contact__copy" data-copy="harigovind.ie@gmail.com">Copy</button>
+      <ul class="contact__links">
+        <li><a href="https://www.linkedin.com/in/harigovind-s/" target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href="images/Resume/Harigovind_Sajimon_CV.pdf">Download CV</a></li>
+      </ul>
     </div>
   </div>
 </div>
@@ -512,11 +476,11 @@
 
 
   <script src="journal-config.js?v=4"></script>
-  <script src="journal.js?v=7"></script>
+  <script src="journal.js?v=8"></script>
   <script src="script.js?v=4"></script>
   <script src="reel.js?v=4"></script>
   <script type="module" src="archive-page.js?v=6"></script>
-    <script src="look.js?v=5"></script>
+    <script src="look.js?v=6"></script>
   <script src="read.js?v=5"></script>
 </body>
 </html>

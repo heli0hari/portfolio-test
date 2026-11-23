@@ -31,3 +31,19 @@
     if (off) off.click();
   });
 })();
+
+/* Contact — copy the address, and Escape closes the sheet. */
+(function () {
+  var modal = document.getElementById('contactModal');
+  if (!modal) return;
+  var copy = modal.querySelector('[data-copy]');
+  if (copy) copy.addEventListener('click', function () {
+    var done = function () { copy.textContent = 'Copied'; setTimeout(function () { copy.textContent = 'Copy'; }, 1600); };
+    if (navigator.clipboard) navigator.clipboard.writeText(copy.dataset.copy).then(done, function () {});
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') {
+      var c = modal.querySelector('[data-modal-close]'); if (c) c.click();
+    }
+  });
+})();

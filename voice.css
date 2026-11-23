@@ -159,3 +159,34 @@ body[data-mode="read"] .switch__ico--read { opacity: 1; transition: opacity 300m
 /* the Look rooms share the site's slate accent (the orange was left over from the standalone reel) */
 .reel, .archive, .viewer { --accent: #A8B5C4; }
 .cell__cap b { color: var(--meta); }
+
+/* ---------- contact: just the address and two links ---------- */
+.contact .contact__scroll {
+  display: grid; place-items: center; min-height: 100%;
+  padding: clamp(24px, 5vw, 72px);
+}
+.contact__close {
+  all: unset; cursor: pointer; position: absolute; top: clamp(18px, 3vw, 32px); right: clamp(18px, 3vw, 40px);
+  font-size: 14px; color: var(--meta); border-bottom: 1px solid transparent;
+}
+.contact__close:hover, .contact__close:focus-visible { color: var(--ink); border-color: var(--ink); }
+.contact__body { display: grid; grid-template-columns: auto auto; align-items: baseline; column-gap: 20px; row-gap: 28px; max-width: 100%; }
+.contact__mail {
+  font-size: clamp(30px, 6.4vw, 88px); line-height: 1; letter-spacing: -0.045em; font-weight: 500;
+  color: var(--ink); overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--hair); padding-bottom: 6px;
+  transition: border-color 200ms var(--ease);
+}
+.contact__mail:hover, .contact__mail:focus-visible { border-color: var(--ink); outline: none; }
+.contact__copy { all: unset; cursor: pointer; font-size: 14px; color: var(--meta); }
+.contact__copy:hover, .contact__copy:focus-visible { color: var(--ink); }
+.contact__links { grid-column: 1 / -1; list-style: none; margin: 0; padding: 0; display: flex; gap: 28px; }
+.contact__links a { font-size: 16px; color: var(--ink); border-bottom: 1px solid var(--hair); }
+.contact__links a:hover { border-color: var(--ink); }
+@media (max-width: 640px) { .contact__body { grid-template-columns: 1fr; row-gap: 18px; } }
+
+/* ---------- footer: the address, three links, a name ---------- */
+.colophon__links { display: flex; flex-wrap: wrap; gap: 12px 32px; align-self: end; justify-content: flex-end; }
+.colophon__links a { font-size: 16px; color: var(--ink); border-bottom: 1px solid var(--hair); width: fit-content; transition: border-color 200ms var(--ease); }
+.colophon__links a:hover, .colophon__links a:focus-visible { border-color: var(--ink); outline: none; }
+@media (max-width: 760px) { .colophon__links { justify-content: flex-start; } }
