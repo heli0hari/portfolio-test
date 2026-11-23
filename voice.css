@@ -279,7 +279,7 @@ html.has-custom-cursor, html.has-custom-cursor * { cursor: none !important; }
 .xhair__dot { position: absolute; left: -2px; top: -2px; width: 4px; height: 4px; border-radius: 50%; background: currentColor; will-change: transform; }
 
 /* dragging / swiping the switch: the ball follows the finger, then rolls home */
-.switch__lane { touch-action: pan-y; }
+.switch__track { touch-action: pan-y; user-select: none; -webkit-user-select: none; }
 .switch__lane.is-dragging { cursor: grabbing; }
 body .switch__lane.is-dragging .switch__drop,
 body .switch__lane.is-dragging .switch__tail { transition: none; transform: translateX(calc(var(--roll) * var(--p, 0))); }

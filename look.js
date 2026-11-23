@@ -37,19 +37,20 @@
     if (b) b.click();
   }
   var drag = null, suppressClick = false;
-  lane.addEventListener('pointerdown', function (e) {
+  // the whole switch (ball and words) can be swiped, not only the ball
+  track.addEventListener('pointerdown', function (e) {
     if (e.button !== 0) return;
     var roll = lane.getBoundingClientRect().width - lane.querySelector('.switch__face').getBoundingClientRect().width;
-    drag = { x: e.clientX, y: e.clientY, roll: Math.max(roll, 1), from: document.body.getAttribute('data-mode') === 'look' ? 1 : 0, moved: false, id: e.pointerId };
+    drag = { x: e.clientX, y: e.clientY, roll: Math.max(roll, 1), from: document.body.getAttribute('data-mode') === 'look' ? 1 : 0, moved: false, id: e.pointerId, touch: e.pointerType !== 'mouse' };
   });
-  lane.addEventListener('pointermove', function (e) {
+  track.addEventListener('pointermove', function (e) {
     if (!drag || e.pointerId !== drag.id) return;
     var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
     if (!drag.moved) {
-      if (Math.abs(dx) < 4) return;
-      if (Math.abs(dy) > Math.abs(dx)) { drag = null; return; }    // a vertical swipe is a page scroll
+      if (Math.abs(dx) < 4) { if (drag.touch && Math.abs(dy) > 10) drag = null; return; }   // a clear vertical swipe is a page scroll
+      if (drag.touch && Math.abs(dy) > Math.abs(dx) * 1.5) { drag = null; return; }
       drag.moved = true;
-      lane.setPointerCapture(e.pointerId);
+      try { track.setPointerCapture(e.pointerId); } catch (err) {}
       lane.classList.add('is-dragging');
     }
     var p = Math.min(1, Math.max(0, drag.from + dx / drag.roll));
@@ -60,14 +61,17 @@
     if (!drag) return;
     var d = drag; drag = null;
     if (!d.moved) return;
-    suppressClick = true; setTimeout(function () { suppressClick = false; }, 0);
     lane.classList.remove('is-dragging');
     track.style.removeProperty('--p');
     var p = d.p == null ? d.from : d.p;
     goTo(p > 0.5 ? 'look' : 'read');
+    // set after switching: the switch itself is a (synthetic) click that must go through
+    suppressClick = true; setTimeout(function () { suppressClick = false; }, 60);
   }
-  lane.addEventListener('pointerup', end);
-  lane.addEventListener('pointercancel', end);
+  track.addEventListener('pointerup', end);
+  track.addEventListener('pointercancel', end);
+  // a drag that ends over a word must not also count as a click on it
+  track.addEventListener('click', function (e) { if (suppressClick) { e.stopPropagation(); e.preventDefault(); } }, true);
   lane.addEventListener('click', function () { if (!suppressClick) toggle(); });
 })();
 
