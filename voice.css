@@ -140,8 +140,8 @@ body[data-mode="read"] .switch__ico--look { opacity: 0; }
 body[data-mode="look"] .switch__ico--look,
 body[data-mode="read"] .switch__ico--read { opacity: 1; transition: opacity 300ms var(--ease) 460ms; }   /* …the new one arrives as the drop settles */
 @media (max-width: 640px) {
-  .switch__track { --ball: 36px; column-gap: 16px; }
-  .switch__btn { font-size: 27px; padding: 0; }
+  .switch__track { --ball: 30px; column-gap: 14px; }
+  .switch__btn { font-size: 23px; padding: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .switch__drop, .switch__tail, .switch__face, .switch__ico { transition: none; }
