@@ -63,21 +63,31 @@ body {
   font-variation-settings: 'opsz' 96;
 }
 
-.archive__status, .archive__hint {
+.archive__bar {
   position: absolute;
-  bottom: var(--pad);
+  left: var(--pad); right: var(--pad); bottom: var(--pad);
   z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px 24px;
+  pointer-events: none;
+}
+.archive__status, .archive__hint {
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--meta);
   font-variant-numeric: tabular-nums;
-  pointer-events: none;
-  white-space: nowrap;
+  min-width: 0;
 }
-.archive__status span { white-space: pre; }
-.archive__status { left: var(--pad); color: var(--ink); }
-.archive__hint { right: var(--pad); }
+.archive__status { color: var(--ink); white-space: pre; overflow: hidden; text-overflow: ellipsis; }
+.archive__hint { text-align: right; }
+@media (max-width: 700px) {
+  /* stack on phones so the caption and the hint never collide */
+  .archive__bar { flex-direction: column-reverse; align-items: flex-start; }
+  .archive__hint { text-align: left; font-size: 10px; }
+}
 
 .is-open .archive__head { opacity: 0; translate: 0 -12px; }
 .archive__hint { transition: opacity 300ms var(--ease); }
@@ -130,6 +140,7 @@ body {
 @media (max-width: 700px) {
   .archive__title { font-size: 34px; }
   .archive__rail { display: none; }
+  .archive__status { font-size: 10.5px; }
 }
 
 /* ---------- viewer ---------- */

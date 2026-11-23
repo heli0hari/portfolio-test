@@ -66,7 +66,7 @@ viewer.addEventListener('touchend', e => {
 const section = document.getElementById('archive');
 const hint = document.getElementById('archiveHint');
 const rail = document.getElementById('archiveRail');
-const HINTS = ['Scroll to open', 'Keep scrolling', 'Drag or scroll to browse  ·  Click to view'];
+const HINTS = ['Drag to turn · Scroll to open', 'Keep scrolling', 'Drag or scroll to browse · Tap to view'];
 
 if (!webglAvailable()) {
   document.getElementById('archiveFallback').hidden = false;

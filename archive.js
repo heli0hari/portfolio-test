@@ -1,30 +1,51 @@
 /* =========================================================
-   Fragmented Archive — kinetic photo totem
-   assembled totem  ->  exploded view  ->  photo carousel
-   Progress (0..1) comes from the page scroll; drag spins it.
-   mountArchive(container, photos, opts) -> { list, setProgress, step, destroy }
+   Fragmented Archive
+   fragmented sculpture (drag to turn freely)
+     -> scroll: photo faces break out of the prisms
+     -> they re-form into a photo carousel (scroll / drag / keys)
+   mountArchive(container, photos, opts) -> { list, setProgress, stage, front, step, destroy }
    ========================================================= */
 import * as THREE from 'three';
 import { RoomEnvironment } from './vendor/three/RoomEnvironment.js';
 
 const DEG = Math.PI / 180;
 const ACCENT = new THREE.Color('#FF8A3D');
+const PW = 1.5, PH = 1.0;              // every photo panel is 3:2
 
-/* ---------- layout constants ---------- */
-const TIERS = 5, PER_TIER = 6, COUNT = TIERS * PER_TIER;
-const RA = 0.92;                       // totem radius
-const PW = 2 * Math.PI * RA / PER_TIER * 0.93;   // panel width (arc)
-const PH = PW / 1.5;                   // 3:2 panels
-const TIER_H = PH + 0.1;
-const SC = 1.65;                       // panel scale in the carousel
-const GAP = 1.1;                       // carousel spacing factor
-const RC = COUNT * PW * SC * GAP / (2 * Math.PI);   // carousel radius
-const STEP = 2 * Math.PI / COUNT;
+/* ---------- the sculpture: interlocking prisms ----------
+   c: centre, r: rotation (deg), s: size [x, y, z]
+   f: faces — 'p' photograph, 'g' smoked glass. Unlisted faces stay open,
+   so the prisms read as glass-and-photo sleeves rather than solid blocks.
+   Photo faces are 3:2; a face that would show a photo sideways turns to glass. */
+const PRISMS = [
+  { c: [0, 0.1, 0],        r: [0, 25, 0],     s: [2.25, 1.5, 1.0], f: { pz: 'p', nz: 'p', py: 'g', px: 'g' } },
+  { c: [0.75, 0.95, 0.6],  r: [0, -35, 12],   s: [1.5, 1.0, 1.0],  f: { pz: 'p', nz: 'p', py: 'p', ny: 'p' } },
+  { c: [-0.95, -0.6, 0.5], r: [20, 50, -10],  s: [1.8, 1.2, 0.8],  f: { pz: 'p', nz: 'p', py: 'g' } },
+  { c: [-0.2, 1.35, -0.7], r: [-15, -10, 25], s: [1.5, 1.0, 0.6],  f: { pz: 'p', nz: 'p', ny: 'g' } },
+  { c: [1.25, -0.7, -0.3], r: [10, -60, -20], s: [1.65, 1.1, 1.1], f: { pz: 'p', nz: 'p', py: 'p', ny: 'p' } },
+  { c: [-1.55, 0.6, -0.2], r: [0, 75, 15],    s: [1.35, 0.9, 0.9], f: { pz: 'p', nz: 'p', py: 'p' } },
+  { c: [0.1, -1.35, 0.7],  r: [-25, 15, 5],   s: [1.5, 1.0, 0.5],  f: { pz: 'p', nz: 'p', ny: 'g' } },
+  { c: [0.4, 0.2, -1.3],   r: [5, 10, -8],    s: [2.1, 1.4, 0.4],  f: { pz: 'p', nz: 'p' } },
+  { c: [-0.6, -0.2, 1.35], r: [-8, -25, 12],  s: [1.2, 0.8, 0.8],  f: { pz: 'p', nz: 'p', py: 'p' } },
+  { c: [1.65, 0.8, -1.0],  r: [30, -20, 40],  s: [1.2, 0.8, 0.4],  f: { pz: 'p', nz: 'p' } },
+  { c: [-1.25, -1.4, -0.6], r: [15, 40, -30], s: [1.35, 0.9, 0.5], f: { pz: 'p', nz: 'p' } },
+  { c: [0.9, 1.85, 0.2],   r: [-30, 30, 0],   s: [1.2, 0.8, 0.5],  f: { pz: 'p', nz: 'p' } },
+];
 
-/* phase timing on the 0..1 progress */
-const P_EXPLODE = [0.05, 0.32];
-const P_FORM = [0.34, 0.54];
-const P_SPIN = [0.56, 1.0];
+/* face -> [orientation, which size components give the face's w/h, which is the normal] */
+const FACES = {
+  pz: { e: [0, 0, 0],    w: 0, h: 1, n: 2, sgn: 1 },
+  nz: { e: [0, 180, 0],  w: 0, h: 1, n: 2, sgn: -1 },
+  px: { e: [0, 90, 0],   w: 2, h: 1, n: 0, sgn: 1 },
+  nx: { e: [0, -90, 0],  w: 2, h: 1, n: 0, sgn: -1 },
+  py: { e: [-90, 0, 0],  w: 0, h: 2, n: 1, sgn: 1 },
+  ny: { e: [90, 0, 0],   w: 0, h: 2, n: 1, sgn: -1 },
+};
+
+/* scroll phases */
+const P_EXPLODE = [0.04, 0.28];
+const P_FORM = [0.3, 0.5];
+const P_SPIN = [0.52, 1.0];
 
 function clamp(x, a, b) { return x < a ? a : x > b ? b : x; }
 function ease(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
@@ -37,6 +58,7 @@ function rng(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
+function eulerQ(e) { return new THREE.Quaternion().setFromEuler(new THREE.Euler(e[0] * DEG, e[1] * DEG, e[2] * DEG)); }
 
 export function webglAvailable() {
   try {
@@ -45,8 +67,8 @@ export function webglAvailable() {
   } catch (e) { return false; }
 }
 
-/* Curved panels: a flat plane bent around a cylinder in the vertex shader,
-   so the same panel can be a tight totem segment or a near-flat carousel card. */
+/* Panels bend around a cylinder in the vertex shader: flat in the sculpture,
+   gently curved in the carousel ring. */
 function bendable(mat, curve) {
   mat.onBeforeCompile = sh => {
     sh.uniforms.uCurve = curve;
@@ -62,7 +84,7 @@ function bendable(mat, curve) {
         if (abs(uCurve) > 1e-4) {
           float r = 1.0 / uCurve;
           transformed.x = sin(bendA) * (r + position.z);
-          transformed.z = (cos(bendA) * (r + position.z)) - r;
+          transformed.z = cos(bendA) * (r + position.z) - r;
         }`);
   };
   mat.customProgramCacheKey = () => 'bend';
@@ -76,18 +98,12 @@ export function mountArchive(container, photos, opts = {}) {
   const onHover = opts.onHover || function () {};
   const onStage = opts.onStage || function () {};
 
-  /* ---------- pick photos: landscape-ish, spread across the hue order ---------- */
-  const land = photos.filter(p => p.w / p.h > 1.3 && p.w / p.h < 1.85);
-  const list = [];
-  for (let i = 0; i < COUNT && land.length; i++) list.push(land[Math.floor(i * land.length / COUNT)]);
-  const N = list.length;
-
   /* ---------- renderer ---------- */
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, coarse ? 1.75 : 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  renderer.toneMappingExposure = 1.0;
   renderer.domElement.className = 'archive__canvas';
   container.appendChild(renderer.domElement);
 
@@ -95,114 +111,137 @@ export function mountArchive(container, photos, opts = {}) {
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   scene.environmentIntensity = 0.6;
-
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 200);
 
-  scene.add(new THREE.HemisphereLight(0xf2e8dc, 0x131110, 0.4));
-  const key = new THREE.DirectionalLight(0xffeedd, 1.5);
+  scene.add(new THREE.HemisphereLight(0xf2e8dc, 0x131110, 0.45));
+  const key = new THREE.DirectionalLight(0xffeedd, 1.4);
   key.position.set(-5, 6, 7);
   scene.add(key);
-  const rim = new THREE.DirectionalLight(0xbcc8d6, 0.5);
-  rim.position.set(6, 1, -6);
+  const rim = new THREE.DirectionalLight(0xffb27a, 0.7);      // warm rim catches the glass edges
+  rim.position.set(6, 2, -5);
   scene.add(rim);
-  const core = new THREE.PointLight(0xff8a3d, 6, 5, 1.6);   // warm light inside the spine
-  scene.add(core);
 
-  /* ---------- materials ---------- */
-  const satin = new THREE.MeshStandardMaterial({ color: 0x6b6b6b, metalness: 1, roughness: 0.34, envMapIntensity: 1.1 });
-  const matte = new THREE.MeshStandardMaterial({ color: 0x2b2825, metalness: 0.6, roughness: 0.5 });
-  const glow = new THREE.MeshBasicMaterial({ color: 0xff8a3d });
+  /* ---------- rig ----------
+     rig rotation = free trackball orientation in the sculpture,
+     blending to the carousel yaw as the panels break out. */
+  const tilt = new THREE.Group();
+  const rig = new THREE.Group();
+  tilt.add(rig);
+  scene.add(tilt);
 
-  /* ---------- groups ---------- */
-  const spinGroup = new THREE.Group();     // yaw (idle / drag / scroll)
-  const tiltGroup = new THREE.Group();     // pointer tilt
-  tiltGroup.add(spinGroup);
-  scene.add(tiltGroup);
+  /* ---------- shared materials ---------- */
+  const edgeMat = new THREE.LineBasicMaterial({ color: 0xd8c8b3, transparent: true, opacity: 0.4 });
+  const glassMat = new THREE.MeshPhysicalMaterial({
+    color: 0x6b6b6b, metalness: 0.1, roughness: 0.08, transparent: true, opacity: 0.16,
+    envMapIntensity: 1.8, side: THREE.DoubleSide, depthWrite: false,
+  });
 
-  /* ---------- central structure: spine, light slot, tier rings, arms, cap, base ---------- */
-  const structure = [];
-  const structGroup = new THREE.Group();   // shrinks away once the carousel forms
-  spinGroup.add(structGroup);
-  function part(mesh, y, explodeY) {
-    mesh.position.y = y;
-    structGroup.add(mesh);
-    structure.push({ mesh, y, ey: explodeY });
-    return mesh;
-  }
-  const totemH = TIERS * TIER_H;
-  part(new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, totemH + 1.4, 32), satin), 0, 0);
-  part(new THREE.Mesh(new THREE.BoxGeometry(0.035, totemH + 0.6, 0.035), glow), 0, 0).position.z = 0.115;
-  for (let k = 0; k <= TIERS; k++) {
-    const y = (k - TIERS / 2) * TIER_H;
-    const ring = new THREE.Mesh(new THREE.CylinderGeometry(RA * 0.86, RA * 0.86, 0.035, 48), k % 2 ? satin : matte);
-    part(ring, y, y * 1.9);
-    const arm = new THREE.Mesh(new THREE.BoxGeometry(RA * 1.9, 0.05, 0.12), satin);
-    arm.rotation.y = k * 37 * DEG;
-    part(arm, y + 0.03, y * 1.9 + 0.03);
-  }
-  part(new THREE.Mesh(new THREE.CylinderGeometry(RA * 0.62, RA * 0.75, 0.16, 48), satin), totemH / 2 + 0.22, totemH / 2 + 1.35);
-  part(new THREE.Mesh(new THREE.CylinderGeometry(RA * 0.85, RA * 0.95, 0.22, 48), matte), -totemH / 2 - 0.25, -totemH / 2 - 1.35);
-  const ringGlow = part(new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.012, 8, 48), glow), -totemH / 2 - 0.08, -totemH / 2 - 0.9);
-  ringGlow.rotation.x = Math.PI / 2;
+  /* ---------- build prisms: outlines, glass faces, photo face slots ---------- */
+  const extras = [];          // glass + outlines: they scatter and fade on explode
+  const slots = [];           // photo faces in sculpture space
+  const UP = new THREE.Vector3(0, 1, 0);
+  const rand = rng(7);
+
+  PRISMS.forEach(pr => {
+    const qB = eulerQ(pr.r);
+    const cB = new THREE.Vector3(...pr.c);
+    const box = new THREE.Group();
+    box.position.copy(cB); box.quaternion.copy(qB);
+    const lines = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(...pr.s)), edgeMat);
+    box.add(lines);
+    rig.add(box);
+    extras.push({ obj: box, home: cB.clone(), dir: cB.clone().normalize().multiplyScalar(2.5 + rand() * 1.5) });
+
+    Object.keys(pr.f).forEach(fk => {
+      const F = FACES[fk];
+      let w = pr.s[F.w], h = pr.s[F.h];
+      const off = pr.s[F.n] / 2;
+      // face orientation in box space, then in sculpture space
+      let qF = eulerQ(F.e);
+      let kind = pr.f[fk];
+      if (h > w) { qF.multiply(eulerQ([0, 0, 90])); [w, h] = [h, w]; }
+      const qW = qB.clone().multiply(qF);
+      const xAxis = new THREE.Vector3(1, 0, 0).applyQuaternion(qW);
+      const yAxis = new THREE.Vector3(0, 1, 0).applyQuaternion(qW);
+      if (kind === 'p') {
+        if (Math.abs(xAxis.dot(UP)) > 0.75 || Math.abs(w / h - 1.5) > 0.2) kind = 'g';
+        else if (yAxis.dot(UP) < -0.05) qW.multiply(eulerQ([0, 0, 180]));   // never upside down
+      }
+      const nLocal = new THREE.Vector3(); nLocal.setComponent(F.n, F.sgn * off);
+      const pos = nLocal.applyQuaternion(qB).add(cB);
+      if (kind === 'g') {
+        const g = new THREE.Mesh(new THREE.PlaneGeometry(w, h), glassMat);
+        g.position.copy(pos).sub(cB).applyQuaternion(qB.clone().invert());
+        g.quaternion.copy(qB.clone().invert().multiply(qW));
+        g.renderOrder = 3;
+        box.add(g);
+      } else {
+        slots.push({ pos, q: qW, scale: (w / PW) * 0.985 });
+      }
+    });
+  });
+
+  /* ---------- photos: landscape, spread across the hue order ---------- */
+  const land = photos.filter(p => p.w / p.h > 1.3 && p.w / p.h < 1.85);
+  const N = Math.min(slots.length, land.length);
+  const list = [];
+  for (let i = 0; i < N; i++) list.push(land[Math.floor(i * land.length / N)]);
+
+  /* ---------- carousel geometry ---------- */
+  const SC = 1.0;
+  const RC = N * PW * SC * 1.12 / (2 * Math.PI);
+  const STEP = 2 * Math.PI / N;
 
   /* ---------- panels ---------- */
   const geo = new THREE.PlaneGeometry(PW, PH, 24, 1);
-  const rimGeo = new THREE.PlaneGeometry(PW + 0.07, PH + 0.07, 24, 1);
-  const rand = rng(42);
+  const rimGeo = new THREE.PlaneGeometry(PW + 0.05, PH + 0.05, 24, 1);
   const panels = [];
   const pickables = [];
+  // shuffle which slot each photo takes so hue neighbours spread around the sculpture
+  const order = slots.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
 
   for (let i = 0; i < N; i++) {
     const p = list[i];
-    // carousel order = hue order; totem position is shuffled so colours mix
-    const tier = i % TIERS;
-    const col = Math.floor(i / TIERS);
-    const aA = (col / PER_TIER) * 2 * Math.PI + tier * 23 * DEG;
-    const rA = RA + (tier % 2 ? 0.07 : 0);
-    const yA = (tier - (TIERS - 1) / 2) * TIER_H;
-
-    const curve = { value: 1 / rA };
+    const slot = slots[order[i]];
+    const curve = { value: 0 };
     const photoMat = bendable(new THREE.MeshStandardMaterial({
       color: new THREE.Color().setHSL((p.hue || 0) / 360, p.bw ? 0 : 0.2, 0.18),
-      roughness: 0.5, metalness: 0, envMapIntensity: 0.4,
-      emissive: 0xffffff, emissiveIntensity: 0,
+      roughness: 0.5, metalness: 0, envMapIntensity: 0.35, emissive: 0xffffff, emissiveIntensity: 0,
     }), curve);
-    const backMat = bendable(new THREE.MeshStandardMaterial({ color: 0x24211e, metalness: 0.8, roughness: 0.4, side: THREE.BackSide }), curve);
+    const backMat = bendable(new THREE.MeshStandardMaterial({ color: 0x1f1c1a, metalness: 0.7, roughness: 0.45, side: THREE.BackSide }), curve);
     const rimMat = bendable(new THREE.MeshPhysicalMaterial({
-      color: 0x8a8a8a, metalness: 0.2, roughness: 0.12, transparent: true, opacity: 0.32,
-      envMapIntensity: 1.6, side: THREE.DoubleSide, depthWrite: false, emissive: 0x000000,
+      color: 0xd8c8b3, metalness: 0.9, roughness: 0.25, transparent: true, opacity: 0.55,
+      envMapIntensity: 1.4, depthWrite: false, emissive: 0x000000,
     }), curve);
 
     const holder = new THREE.Group();
-    const rimMesh = new THREE.Mesh(rimGeo, rimMat); rimMesh.position.z = -0.03; rimMesh.renderOrder = 2;
-    const photo = new THREE.Mesh(geo, photoMat);
-    const back = new THREE.Mesh(geo, backMat); back.position.z = -0.012;
+    const rimMesh = new THREE.Mesh(rimGeo, rimMat); rimMesh.position.z = -0.006; rimMesh.renderOrder = 2;
+    const photo = new THREE.Mesh(geo, photoMat); photo.position.z = 0.004;
+    const back = new THREE.Mesh(geo, backMat); back.position.z = -0.002;
     holder.add(rimMesh, back, photo);
     const g = new THREE.Group();
     g.add(holder);
-    spinGroup.add(g);
+    rig.add(g);
 
-    // exploded: pushed out, spread vertically, tilted
-    const aE = aA + (rand() - 0.5) * 0.5;
-    const rE = RA + 1.5 + rand() * 1.3;
-    const yE = yA * 1.9 + (rand() - 0.5) * 0.5;
-    const qA = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, aA, 0));
-    const qE = new THREE.Quaternion().setFromEuler(new THREE.Euler((rand() - 0.5) * 36 * DEG, aE + (rand() - 0.5) * 24 * DEG, (rand() - 0.5) * 30 * DEG, 'YXZ'));
+    // explode outward from the centre, with a tumble
+    const dir = slot.pos.clone().add(new THREE.Vector3(rand() - 0.5, rand() - 0.5, rand() - 0.5).multiplyScalar(0.6)).normalize();
+    const E = slot.pos.clone().add(dir.multiplyScalar(1.5 + rand() * 1.3));
+    const qE = slot.q.clone().multiply(eulerQ([(rand() - 0.5) * 45, (rand() - 0.5) * 45, (rand() - 0.5) * 35]));
     const aC = i * STEP;
-    const qC = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, aC, 0));
 
     const panel = {
       photo: p, index: i, g, holder, photoMat, rimMat, curve, hover: 0,
-      A: new THREE.Vector3(Math.sin(aA) * rA, yA, Math.cos(aA) * rA), qA, kA: 1 / rA,
-      E: new THREE.Vector3(Math.sin(aE) * rE, yE, Math.cos(aE) * rE), qE,
-      C: new THREE.Vector3(Math.sin(aC) * RC, 0, Math.cos(aC) * RC), qC, kC: SC / RC,
-      delay: rand() * 0.25,
+      A: slot.pos.clone(), qA: slot.q.clone(), sA: slot.scale,
+      E, qE,
+      C: new THREE.Vector3(Math.sin(aC) * RC, 0, Math.cos(aC) * RC), qC: eulerQ([0, aC / DEG, 0]),
+      kC: SC / RC,
+      delay: rand() * 0.3,
     };
     photo.userData.panel = panel;
     panels.push(panel);
     pickables.push(photo, back);
   }
-  structure.forEach(s => pickables.push(s.mesh));
 
   /* ---------- textures: cover-crop to 3:2, never stretched ---------- */
   const loader = new THREE.TextureLoader();
@@ -228,26 +267,20 @@ export function mountArchive(container, photos, opts = {}) {
     }
   })();
 
-  /* ---------- floor: contact shadow + warm pool ---------- */
-  function radial(stops) {
-    const c = document.createElement('canvas'); c.width = c.height = 256;
-    const x = c.getContext('2d'), g = x.createRadialGradient(128, 128, 0, 128, 128, 128);
-    stops.forEach(s => g.addColorStop(s[0], s[1]));
-    x.fillStyle = g; x.fillRect(0, 0, 256, 256);
-    return new THREE.CanvasTexture(c);
-  }
-  const floorY = -totemH / 2 - 0.42;
-  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(5, 5), new THREE.MeshBasicMaterial({
-    map: radial([[0, 'rgba(0,0,0,0.6)'], [0.55, 'rgba(0,0,0,0.2)'], [1, 'rgba(0,0,0,0)']]), transparent: true, depthWrite: false }));
-  const pool = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), new THREE.MeshBasicMaterial({
-    map: radial([[0, 'rgba(255,138,61,0.32)'], [0.4, 'rgba(255,138,61,0.08)'], [1, 'rgba(255,138,61,0)']]),
-    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
-  [shadow, pool].forEach(m => { m.rotation.x = -Math.PI / 2; m.position.y = floorY; scene.add(m); });
-  pool.position.y += 0.005;
+  /* ---------- soft contact shadow ---------- */
+  const c2 = document.createElement('canvas'); c2.width = c2.height = 256;
+  const x2 = c2.getContext('2d'), gr = x2.createRadialGradient(128, 128, 0, 128, 128, 128);
+  gr.addColorStop(0, 'rgba(0,0,0,0.55)'); gr.addColorStop(0.55, 'rgba(0,0,0,0.18)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+  x2.fillStyle = gr; x2.fillRect(0, 0, 256, 256);
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(6, 6),
+    new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c2), transparent: true, depthWrite: false }));
+  shadow.rotation.x = -Math.PI / 2; shadow.position.y = -2.9; shadow.scale.y = 0.5;
+  scene.add(shadow);
 
   /* ---------- camera framing ---------- */
   let vw = 1, vh = 1;
   const camA = new THREE.Vector3(), camC = new THREE.Vector3();
+  const R_SCULPT = 2.75;
   function resize() {
     vw = container.clientWidth; vh = container.clientHeight;
     if (!vw || !vh) return;
@@ -255,14 +288,11 @@ export function mountArchive(container, photos, opts = {}) {
     camera.aspect = vw / vh;
     camera.updateProjectionMatrix();
     const tan = Math.tan(camera.fov * DEG / 2);
-    // assembled: fit the whole totem with a little air
-    const needH = totemH + 1.3, needW = RA * 2 + 1.6;
-    const dA = Math.max(needH / 2 / tan, needW / 2 / tan / camera.aspect);
-    camA.set(0, 0.3, dA * 1.05);
-    // carousel: front card fills ~40% of width on desktop, ~80% on phones
-    const frac = camera.aspect < 1 ? 0.8 : 0.4;
+    const dA = Math.max(R_SCULPT / tan, R_SCULPT / tan / camera.aspect);
+    camA.set(0, 0.2, dA * (vw < 700 ? 0.92 : 1.0));
+    const frac = camera.aspect < 1 ? 0.8 : 0.4;          // front card's share of the width
     const dC = (PW * SC / frac) / 2 / tan / camera.aspect;
-    camC.set(0, 0.5, RC + Math.max(dC, PH * SC / 0.55 / 2 / tan));
+    camC.set(0, 0.45, RC + Math.max(dC, PH * SC / 0.55 / 2 / tan));
   }
   new ResizeObserver(resize).observe(container);
 
@@ -270,10 +300,20 @@ export function mountArchive(container, photos, opts = {}) {
   const pointer = new THREE.Vector2(9, 9);
   const ray = new THREE.Raycaster();
   let px = 0, py = 0, spx = 0, spy = 0;
-  let spin = 0, vel = 0, dragging = false, lastX = 0, downY = 0, moved = 0, lastInput = 0;
+  let dragging = false, lastX = 0, lastY = 0, downY = 0, moved = 0, lastInput = 0;
+  let avx = 0, avy = 0;                                 // free-rotation velocity (rad/frame)
+  let spin = 0, vel = 0;                                // carousel yaw
   let pointerIn = false, hovered = null, progress = 0, pSmooth = 0, frontIdx = -1, stage = -1;
+  const freeQ = eulerQ([12, -20, 0]);                   // opening view of the sculpture
   const el = renderer.domElement;
   el.style.touchAction = 'pan-y';
+
+  const qx = new THREE.Quaternion(), qy = new THREE.Quaternion();
+  const AX = new THREE.Vector3(1, 0, 0), AY = new THREE.Vector3(0, 1, 0);
+  function turnFree(dx, dy) {
+    qy.setFromAxisAngle(AY, dx); qx.setFromAxisAngle(AX, dy);
+    freeQ.premultiply(qy).premultiply(qx);
+  }
 
   function setPointer(e) {
     const r = el.getBoundingClientRect();
@@ -282,23 +322,34 @@ export function mountArchive(container, photos, opts = {}) {
     px = pointer.x; py = pointer.y;
   }
   el.addEventListener('pointerdown', e => {
-    dragging = true; moved = 0; lastX = e.clientX; downY = e.clientY; vel = 0;
+    dragging = true; moved = 0; lastX = e.clientX; lastY = downY = e.clientY;
+    avx = avy = vel = 0;
     setPointer(e);
   });
   el.addEventListener('pointermove', e => {
     pointerIn = e.pointerType === 'mouse';
     setPointer(e);
     if (!dragging) return;
-    const dx = e.clientX - lastX; lastX = e.clientX;
-    moved += Math.abs(dx);
-    const k = dragScale();
-    spin -= dx * k; vel = -dx * k; lastInput = performance.now();
+    const dx = e.clientX - lastX, dy = e.clientY - lastY;
+    lastX = e.clientX; lastY = e.clientY;
+    moved += Math.abs(dx) + Math.abs(dy);
+    lastInput = performance.now();
+    const uC = seg(pSmooth, P_FORM);
+    if (uC < 0.5) {
+      // sculpture: turn freely in any direction (vertical only with a mouse; touch keeps page scroll)
+      const k = 0.0065;
+      avx = dx * k; avy = (e.pointerType === 'mouse' ? dy : 0) * k;
+      turnFree(avx, avy);
+    } else {
+      const k = STEP / (vw * (camera.aspect < 1 ? 0.8 : 0.4));
+      spin -= dx * k; vel = -dx * k;
+    }
   });
   window.addEventListener('pointerup', e => {
     if (!dragging) return;
     dragging = false;
     lastInput = performance.now();
-    if (moved < 6 && Math.abs(e.clientY - downY) < 8 && e.target === el) {
+    if (moved < 7 && e.target === el) {
       setPointer(e);
       const pn = pick();
       if (pn) onOpen(pn.index, list);
@@ -307,13 +358,6 @@ export function mountArchive(container, photos, opts = {}) {
   el.addEventListener('pointerleave', () => { pointerIn = false; px = py = 0; pointer.set(9, 9); });
   el.addEventListener('pointercancel', () => { dragging = false; });
 
-  // in the carousel, one card width of drag = one step
-  function dragScale() {
-    const u = seg(pSmooth, P_FORM);
-    const cardPx = vw * (camera.aspect < 1 ? 0.8 : 0.4);
-    return (1 - u) * 0.008 + u * (STEP / cardPx);
-  }
-
   function pick() {
     ray.setFromCamera(pointer, camera);
     const hit = ray.intersectObjects(pickables, false)[0];
@@ -321,7 +365,7 @@ export function mountArchive(container, photos, opts = {}) {
   }
 
   /* ---------- loop ---------- */
-  const qTmp = new THREE.Quaternion(), vTmp = new THREE.Vector3(), lookTmp = new THREE.Vector3();
+  const qTmp = new THREE.Quaternion(), vTmp = new THREE.Vector3(), yawQ = new THREE.Quaternion();
   let running = false, last = 0, t = 0;
 
   function frame(now) {
@@ -335,11 +379,15 @@ export function mountArchive(container, photos, opts = {}) {
     const uC = seg(pSmooth, P_FORM);
     const uS = clamp((pSmooth - P_SPIN[0]) / (P_SPIN[1] - P_SPIN[0]), 0, 1);
 
-    // spin: idle drift on the totem, inertia after a drag, snap to a card in the carousel
     if (!dragging) {
+      // sculpture: inertia, then a slow idle turn
+      const damp = Math.exp(-dt * 3.5);
+      avx *= damp; avy *= damp;
+      if (Math.abs(avx) + Math.abs(avy) > 1e-5) turnFree(avx, avy);
+      if (!reduce && uE < 0.5 && now - lastInput > 1200) turnFree(dt * 0.12 * (hovered ? 0.15 : 1), 0);
+      // carousel: inertia + snap to a card
       vel *= Math.exp(-dt * 4);
       spin += vel;
-      if (!reduce) spin += dt * 0.22 * (1 - uC) * (hovered ? 0.2 : 1);
       if (uC > 0.98 && Math.abs(vel) < 0.002 && now - lastInput > 180) {
         const total = spin + uS * 2 * Math.PI;
         const snap = Math.round(total / STEP) * STEP;
@@ -347,21 +395,22 @@ export function mountArchive(container, photos, opts = {}) {
       }
     }
     const yaw = spin + uS * 2 * Math.PI;
-    spinGroup.rotation.y = -yaw;
+    yawQ.setFromAxisAngle(AY, -yaw);
+    rig.quaternion.copy(freeQ).slerp(yawQ, uC);
 
     spx += (px - spx) * k; spy += (py - spy) * k;
-    tiltGroup.rotation.x = (-0.05 + spy * -0.08) * (1 - uC * 0.6);
-    tiltGroup.rotation.z = spx * -0.03;
-    if (!reduce) tiltGroup.position.y = Math.sin(t * 0.7) * 0.035 * (1 - uC);
+    tilt.rotation.x = spy * -0.06;
+    tilt.rotation.y = spx * 0.08 * (1 - uC);
+    if (!reduce) tilt.position.y = Math.sin(t * 0.7) * 0.04 * (1 - uC);
 
-    // structure explodes vertically, then recedes behind the carousel
-    structure.forEach(s => { s.mesh.position.y = s.y + (s.ey - s.y) * uE * (1 - uC * 0.4); });
-    const sg = Math.max(0.001, 1 - uC);
-    structGroup.scale.set(sg, sg, sg);
-    structGroup.visible = uC < 0.995;
-    core.intensity = 6 * (1 - uC);
-    shadow.material.opacity = 1 - uC;
-    pool.material.opacity = (1 - uE * 0.5) * (1 - uC);
+    // glass + outlines scatter and fade
+    extras.forEach(x => {
+      x.obj.position.copy(x.home).addScaledVector(x.dir, uE);
+      x.obj.visible = uE < 0.98;
+    });
+    edgeMat.opacity = 0.4 * (1 - uE);
+    glassMat.opacity = 0.16 * (1 - uE);
+    shadow.material.opacity = 1 - uE;
 
     // hover
     const hit = (pointerIn && !dragging) ? pick() : null;
@@ -374,33 +423,30 @@ export function mountArchive(container, photos, opts = {}) {
 
     let best = 1e9, bestI = 0;
     panels.forEach(pn => {
-      // staggered explode so panels peel off one after another
-      const e = clamp(uE * 1.25 - pn.delay, 0, 1);
-      vTmp.copy(pn.A).lerp(pn.E, e).lerp(pn.C, uC);
+      const e = clamp(uE * 1.3 - pn.delay, 0, 1);
+      vTmp.copy(pn.A).lerp(pn.E, ease(e)).lerp(pn.C, uC);
       pn.g.position.copy(vTmp);
-      qTmp.copy(pn.qA).slerp(pn.qE, e).slerp(pn.qC, uC);
+      qTmp.copy(pn.qA).slerp(pn.qE, ease(e)).slerp(pn.qC, uC);
       pn.g.quaternion.copy(qTmp);
-      pn.g.scale.setScalar(1 + (SC - 1) * uC);
-      pn.curve.value = pn.kA + (pn.kC - pn.kA) * uC - pn.kA * 0.55 * e * (1 - uC);
+      pn.g.scale.setScalar(pn.sA + (SC - pn.sA) * uC);
+      pn.curve.value = pn.kC * uC;
 
       pn.hover += ((pn === hovered ? 1 : 0) - pn.hover) * (reduce ? 1 : 1 - Math.exp(-dt * 10));
-      pn.holder.position.z = pn.hover * 0.14;
-      pn.rimMat.emissive.copy(ACCENT).multiplyScalar(pn.hover * 1.2);
-      pn.rimMat.opacity = 0.32 + pn.hover * 0.4;
+      pn.holder.position.z = pn.hover * 0.12;
+      pn.rimMat.emissive.copy(ACCENT).multiplyScalar(pn.hover * 1.3);
       if (pn.fade !== undefined && pn.fade < 1) pn.fade = Math.min(1, pn.fade + dt * 1.5);
-      pn.photoMat.emissiveIntensity = pn.photoMat.map ? (0.32 + pn.hover * 0.15 + uC * 0.08) * (pn.fade ?? 1) : 0;
+      pn.photoMat.emissiveIntensity = pn.photoMat.map ? (0.26 + pn.hover * 0.12) * (pn.fade ?? 1) : 0;
 
       const a = ((pn.index * STEP - yaw) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
       if (Math.abs(a) < best) { best = Math.abs(a); bestI = pn.index; }
     });
 
-    // camera pulls back for the explosion, then moves out to the carousel
-    vTmp.copy(camA).multiplyScalar(1 + uE * (camera.aspect < 1 ? 0.55 : 0.15) * (1 - uC)).lerp(camC, uC);
+    // camera: pulls back for the explosion, then moves out to the carousel
+    vTmp.copy(camA).multiplyScalar(1 + uE * (camera.aspect < 1 ? 0.5 : 0.35) * (1 - uC)).lerp(camC, uC);
     camera.position.copy(vTmp);
-    lookTmp.set(0, -0.05 * (1 - uC) + 0.08 * uC, 0);
-    camera.lookAt(lookTmp);
+    camera.lookAt(0, 0.06 * uC, 0);
 
-    const s = uC > 0.9 ? 2 : uE > 0.1 ? 1 : 0;
+    const s = uC > 0.9 ? 2 : uE > 0.08 ? 1 : 0;
     if (s !== stage) { stage = s; onStage(s); }
     if (s === 2 && !hovered && bestI !== frontIdx) { frontIdx = bestI; onHover(list[bestI], bestI, N); }
     if (s !== 2) frontIdx = -1;
