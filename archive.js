@@ -507,7 +507,7 @@ export function mountArchive(container, photos, opts = {}) {
   const corner = new THREE.Vector3();
   function rectOf(pn) {
     if (!pn || !pn.g.visible) return null;
-    const mesh = pn.holder.children[2];
+    const mesh = pn.holder.children[pn.holder.children.length - 1];   // the photo plane (added last)
     mesh.updateWorldMatrix(true, false);
     const cr = el.getBoundingClientRect();
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;

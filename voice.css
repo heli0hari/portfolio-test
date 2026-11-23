@@ -218,8 +218,8 @@ body[data-mode="read"] .switch__ico--read { opacity: 1; transition: opacity 300m
 }
 .jn > *, .jn .jn__back { pointer-events: auto; }   /* `.jn button { all: unset }` would otherwise inherit "none" */
 .jn__where, .jn__pn, .jn__progress { display: none; }
-.jn .jn__back { grid-column: 1; color: #fff; font-size: 14px; letter-spacing: 0; }
-.jn__count { grid-column: 3; font-size: 13px; color: #fff; opacity: 0.6; font-variant-numeric: tabular-nums; }
+.jn .jn__back { grid-column: 1; color: #fff; font-size: clamp(14px, 1.15vw, 20px); letter-spacing: -0.01em; }
+.jn__count { grid-column: 3; font-size: clamp(13px, 1.05vw, 18px); color: #fff; opacity: 0.6; font-variant-numeric: tabular-nums; }
 
 /* ---------- quotes: a real voice, set large and given room ---------- */
 .jq--voice { padding-left: 0; border-left: 0; margin-top: clamp(56px, 7vw, 104px); margin-bottom: 14px; }
@@ -241,7 +241,7 @@ body[data-mode="read"] .switch__ico--read { opacity: 1; transition: opacity 300m
 @media (max-width: 1279px) {
   .journal.has-toc .jn__where { display: flex; grid-column: 2; justify-self: center; }
   .jn__proj { display: none; }
-  .jn .jn__ch { color: #fff; font-size: 13px; letter-spacing: 0; text-transform: none; opacity: 0.85; }
+  .jn .jn__ch { color: #fff; font-size: clamp(13px, 1.6vw, 16px); letter-spacing: 0; text-transform: none; opacity: 0.85; }
   .jn__ch #jnChNo { color: inherit; opacity: 0.6; }
   .jn__ch::after { content: none; }
   /* while the list is open, drop the blend so the menu sits on solid paper */
@@ -265,6 +265,11 @@ body[data-mode="read"] .switch__ico--read { opacity: 1; transition: opacity 300m
 .xhair { position: fixed; inset: 0; pointer-events: none; z-index: 2147482999; opacity: 0; color: var(--ink); }
 .xhair__defs { position: absolute; }
 .xhair__h, .xhair__v { position: absolute; left: 0; top: 0; overflow: visible; will-change: transform; }
-.xhair__h { width: 100%; height: 40px; }
-.xhair__v { width: 40px; height: 100%; }
-.xhair line { stroke: currentColor; stroke-opacity: 0.32; stroke-width: 1; vector-effect: non-scaling-stroke; filter: url(#xhairWarp); }
+.xhair__h { width: 140px; height: 40px;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 30%, #000 40%, transparent 46%, transparent 54%, #000 60%, #000 70%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 30%, #000 40%, transparent 46%, transparent 54%, #000 60%, #000 70%, transparent); }
+.xhair__v { width: 40px; height: 140px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 30%, #000 40%, transparent 46%, transparent 54%, #000 60%, #000 70%, transparent);
+          mask-image: linear-gradient(to bottom, transparent, #000 30%, #000 40%, transparent 46%, transparent 54%, #000 60%, #000 70%, transparent); }
+.xhair line { stroke: currentColor; stroke-opacity: 0.7; stroke-width: 1; filter: url(#xhairWarp); }
+.viewer__grid { position: absolute; pointer-events: none; z-index: 1; }

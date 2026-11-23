@@ -103,15 +103,16 @@
   var wrap = document.createElement('div');
   wrap.className = 'xhair'; wrap.setAttribute('aria-hidden', 'true');
   wrap.innerHTML =
-    '<svg class="xhair__defs" width="0" height="0"><filter id="xhairWarp" filterUnits="userSpaceOnUse" x="-60" y="-60" width="1120" height="1120">' +
+    '<svg class="xhair__defs" width="0" height="0"><filter id="xhairWarp" filterUnits="userSpaceOnUse" x="-30" y="-30" width="200" height="200">' +
       '<feTurbulence type="fractalNoise" baseFrequency="0.01 0.02" numOctaves="1" seed="3" result="n"/>' +
       '<feDisplacementMap in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter></svg>' +
-    '<svg class="xhair__h" viewBox="0 0 1000 40" preserveAspectRatio="none"><line x1="0" y1="20" x2="1000" y2="20"/></svg>' +
-    '<svg class="xhair__v" viewBox="0 0 40 1000" preserveAspectRatio="none"><line x1="20" y1="0" x2="20" y2="1000"/></svg>';
+    '<svg class="xhair__h" viewBox="0 0 140 40"><line x1="0" y1="20" x2="140" y2="20"/></svg>' +
+    '<svg class="xhair__v" viewBox="0 0 40 140"><line x1="20" y1="0" x2="20" y2="140"/></svg>';
   document.body.appendChild(wrap);
   var hEl = wrap.querySelector('.xhair__h'), vEl = wrap.querySelector('.xhair__v');
   var turb = wrap.querySelector('feTurbulence'), disp = wrap.querySelector('feDisplacementMap');
   var cx = -100, cy = -100, tx = -100, ty = -100, warp = 0, warpT = 0, xOn = 0, xLast = 0, xRun = false;
+  var ARM = 70;                                   // half-length of each line
   function xActive() { return document.body.getAttribute('data-mode') === 'read'; }
   addEventListener('pointermove', function (e) {
     tx = e.clientX; ty = e.clientY;
@@ -129,14 +130,14 @@
     xOn += (on - xOn) * (1 - Math.exp(-dt * 10));
     var k = 1 - Math.exp(-dt * 18);
     cx += (tx - cx) * k; cy += (ty - cy) * k;
-    hEl.style.transform = 'translate3d(0,' + (cy - 20) + 'px,0)';
-    vEl.style.transform = 'translate3d(' + (cx - 20) + 'px,0,0)';
+    hEl.style.transform = 'translate3d(' + (cx - ARM) + 'px,' + (cy - 20) + 'px,0)';
+    vEl.style.transform = 'translate3d(' + (cx - 20) + 'px,' + (cy - ARM) + 'px,0)';
     wrap.style.opacity = xOn.toFixed(3);
     // ripple: rises fast, then eases out while hovering, and dies away when leaving
     warp += ((warpT ? 1 : 0) - warp) * (1 - Math.exp(-dt * (warpT ? 9 : 5)));
     var ripple = warpT ? Math.sin(Math.min(warp, 1) * Math.PI) : warp;   // a swell, then settles back to straight
-    disp.setAttribute('scale', (ripple * 60).toFixed(1));
-    turb.setAttribute('baseFrequency', (0.004 + ripple * 0.02).toFixed(4) + ' ' + (0.02 + ripple * 0.06).toFixed(4));
+    disp.setAttribute('scale', (ripple * 16).toFixed(1));
+    turb.setAttribute('baseFrequency', (0.03 + ripple * 0.05).toFixed(4) + ' ' + (0.05 + ripple * 0.1).toFixed(4));
     if (xOn < 0.005 && !on) { xRun = false; xLast = 0; return; }
     requestAnimationFrame(xFrame);
   }
