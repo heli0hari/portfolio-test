@@ -1,5 +1,13 @@
-import { mountArchive, webglAvailable } from './archive.js?v=1795412069';
+// three.js + the sculpture load only when the section is about to be seen
+const ARCHIVE_URL = './archive.js?v=1795412069';
+function webglAvailable() {
+  try {
+    const c = document.createElement('canvas');
+    return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl')));
+  } catch (e) { return false; }
+}
 
+const section = document.getElementById('archive');
 const stage = document.getElementById('archiveStage');
 const nowEl = document.getElementById('archiveNow');
 const loadingBar = document.querySelector('#archiveLoading i');
@@ -148,7 +156,6 @@ viewer.addEventListener('touchend', e => {
 });
 
 /* ---------- sculpture ---------- */
-const section = document.getElementById('archive');
 const hint = document.getElementById('archiveHint');
 const rail = document.getElementById('archiveRail');
 const HINTS = ['Drag to turn · Scroll to open', 'Keep scrolling', 'Scroll or drag to browse · Click a photo to view'];
@@ -158,25 +165,32 @@ if (!webglAvailable()) {
   hint.hidden = true;
   section.style.height = 'auto';
 } else {
-  fetch('photos.json')
-    .then(r => r.json())
-    .then(data => {
+  // wait until the section is near the viewport (and visible — Look mode on the main site)
+  const near = new Promise(resolve => {
+    const io = new IntersectionObserver(en => {
+      if (en.some(e => e.isIntersecting)) { io.disconnect(); resolve(); }
+    }, { rootMargin: '1200px 0px' });
+    io.observe(section);
+  });
+  near.then(() => Promise.all([fetch('photos.json').then(r => r.json()), import(ARCHIVE_URL)]))
+    .then(([data, mod]) => {
+      const mountArchive = mod.mountArchive;
       api = mountArchive(stage, data.photos || [], {
         onOpen: open,
         onHover: (p, i, n) => { nowEl.textContent = p ? pad(i + 1) + ' / ' + pad(n) + '  —  ' + label(p) : api.total + ' photographs'; },
         onStage: s => {
           hint.textContent = HINTS[s];
-          document.body.classList.toggle('is-open', s > 0);
-          document.body.classList.toggle('is-carousel', s === 2);
+          section.classList.toggle('is-open', s > 0);
+          section.classList.toggle('is-carousel', s === 2);
           if (s === 0) nowEl.textContent = api.total + ' photographs';
         },
         onLoad: (d, n) => {
           loadingBar.style.transform = 'scaleX(' + (d / n) + ')';
-          if (d === n) document.body.classList.add('is-ready');
+          if (d === n) section.classList.add('is-ready');
         },
       });
       nowEl.textContent = api.total + ' photographs';
-      requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('is-mounted')));
+      requestAnimationFrame(() => requestAnimationFrame(() => section.classList.add('is-mounted')));
 
       // Scroll length: two screens for the explode + form, then enough to turn
       // the carousel once through every photo (~7% of a screen per photo).
@@ -194,6 +208,7 @@ if (!webglAvailable()) {
       }
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', () => { sizeSection(); onScroll(); });
+      new ResizeObserver(() => requestAnimationFrame(() => { sizeSection(); onScroll(); })).observe(stage);
       onScroll();
 
       // arrow keys step through the carousel when it's on screen

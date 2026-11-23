@@ -212,10 +212,10 @@
   }
 
   /* ---------- viewer (grows out of the frame it was opened from) ---------- */
-  var viewer = document.getElementById('viewer');
-  var vMedia = document.getElementById('viewerMedia');
-  var vCap = document.getElementById('viewerCap');
-  var vCount = document.getElementById('viewerCount');
+  var viewer = document.getElementById('reelViewer');
+  var vMedia = document.getElementById('reelViewerMedia');
+  var vCap = document.getElementById('reelViewerCap');
+  var vCount = document.getElementById('reelViewerCount');
   var vPos = 0, animating = false, fromPic = null, lastFocus = null;
   var EASE = 'cubic-bezier(0.65, 0, 0.35, 1)';
 
@@ -276,7 +276,7 @@
       twoFrames().then(function () { pic.style.visibility = 'hidden'; });
       a.finished.then(function () {
         a.cancel(); viewer.classList.remove('is-flipping'); animating = false;
-        document.getElementById('viewerClose').focus({ preventScroll: true });
+        document.getElementById('reelViewerClose').focus({ preventScroll: true });
       });
     });
   }
@@ -320,9 +320,9 @@
     var c = cells.filter(function (x) { return x.mediaIndex === vPos && !x.slate; })[0];
     if (c) scrollToCell(c);           // keep the film in step behind the viewer
   }
-  document.getElementById('viewerClose').addEventListener('click', closeViewer);
-  document.getElementById('viewerPrev').addEventListener('click', function () { stepViewer(-1); });
-  document.getElementById('viewerNext').addEventListener('click', function () { stepViewer(1); });
+  document.getElementById('reelViewerClose').addEventListener('click', closeViewer);
+  document.getElementById('reelViewerPrev').addEventListener('click', function () { stepViewer(-1); });
+  document.getElementById('reelViewerNext').addEventListener('click', function () { stepViewer(1); });
   viewer.addEventListener('click', function (e) { if (e.target === viewer) closeViewer(); });
   document.addEventListener('keydown', function (e) {
     if (!viewer.classList.contains('is-open')) return;
@@ -338,6 +338,8 @@
       build(buildSections(d));
       layout(); readScroll(); cur = target;
       window.addEventListener('resize', function () { layout(); readScroll(); });
+      // the main site hides this section in Read mode; lay out again when it appears
+      if ('ResizeObserver' in window) new ResizeObserver(function () { layout(); readScroll(); }).observe(stage);
       requestAnimationFrame(frame);
     })
     .catch(function (e) { console.warn('Reel: could not load forge.json', e); });

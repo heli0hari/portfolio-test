@@ -37,7 +37,7 @@ body {
 .archive__stage { position: absolute; inset: 0; }
 .archive__canvas { display: block; width: 100%; height: 100%; cursor: grab; opacity: 0; transition: opacity 700ms var(--ease); }
 /* the sculpture appears as soon as it exists; each photo then fades into its face */
-.is-mounted .archive__canvas { opacity: 1; }
+.archive.is-mounted .archive__canvas { opacity: 1; }
 .archive__canvas:active { cursor: grabbing; }
 
 .archive__head {
@@ -95,7 +95,7 @@ body {
   .archive__hint { text-align: left; font-size: 10px; }
 }
 
-.is-open .archive__head { opacity: 0; translate: 0 -12px; }
+.archive.is-open .archive__head { opacity: 0; translate: 0 -12px; }
 .archive__hint { transition: opacity 300ms var(--ease); }
 
 .archive__rail {
@@ -107,7 +107,7 @@ body {
   z-index: 2;
 }
 .archive__rail { transition: opacity 400ms var(--ease); }
-.is-carousel .archive__rail { opacity: 0; }   /* it would cross the cards */
+.archive.is-carousel .archive__rail { opacity: 0; }   /* it would cross the cards */
 .archive__rail i {
   position: absolute; inset: 0;
   background: var(--ink);
@@ -136,7 +136,7 @@ body {
   transform: scaleX(0.15);
   transition: transform 900ms var(--ease), opacity 600ms var(--ease) 900ms;
 }
-.is-ready .archive__loading i { opacity: 0; }
+.archive.is-ready .archive__loading i { opacity: 0; }
 
 .archive__fallback {
   position: absolute; inset: 0;

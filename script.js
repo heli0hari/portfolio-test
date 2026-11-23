@@ -431,7 +431,7 @@
   var chromaFilters = document.getElementById('chromaFilters');
   var chromaCaption = document.getElementById('chromaCaption');
 
-  if (chromaField) {
+  if (chromaField || document.getElementById('chromaArchiveField')) {
     fetch('photos.json')
       .then(function (res) { return res.json(); })
       .then(function (data) { initChroma(data); })
@@ -547,7 +547,7 @@
     featured.forEach(function (p, n) {
       fFrag.appendChild(makeTile(p, featuredIndices[n], featuredIndices, true));
     });
-    chromaField.appendChild(fFrag);
+    if (chromaField) chromaField.appendChild(fFrag);   // the 3D archive replaces this grid on the Look page
 
     /* ---- archive grid (inside the overlay) ----
        No scope = pages through every photo, respecting the tag filter. */

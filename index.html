@@ -32,6 +32,10 @@
   <meta name="theme-color" content="#131110">
 
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="look.css?v=1">
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three/three.module.min.js" } }
+  </script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
   <script>
@@ -262,49 +266,56 @@
       </ul>
     </section>
 
-<!-- ============ LOOK MOMENT — FORGE ============ -->
-<section class="forge" data-panel="look" aria-label="Look — Forge 3D work">
-
-    <header class="forge__header">
+<!-- ============ LOOK MOMENT — FORGE (curved reel) ============ -->
+<section class="forge-room look-room" data-panel="look" aria-label="Look — Forge 3D work">
+  <div class="reel" id="reel">
+    <div class="reel__sticky">
+      <header class="reel__head">
         <div class="eyebrow">Look</div>
-        <h2 class="forge__title">
-            Motion & 3D
-        </h2>
-        <p class="forge__intro">
-            Real-time renders, animation studies and experimental motion work.
-        </p>
-    </header>
+        <h2 class="reel__title">Motion &amp; 3D</h2>
+        <p class="reel__intro">Real-time renders, animation studies and experimental motion work.</p>
+      </header>
 
-    <section class="forge__section">
-        <div class="forge__section-head">
-            <h3>Motorhead</h3>
-        </div>
-        <div class="forge__cars" id="forgeCars">
-        </div>
-    </section>
+      <div class="reel__stage" id="reelStage">
+        <div class="reel__track" id="reelTrack" role="list"></div>
+      </div>
 
-    <section class="forge__section">
-        <div class="forge__section-head">
-            <h3>3D Typography</h3>
-        </div>
-        <div class="forge__grid" id="glyphGrid">
-        </div>
-    </section>
-
+      <div class="reel__bar">
+        <div class="reel__now" id="reelNow" aria-live="polite">&nbsp;</div>
+        <div class="reel__hint">Scroll to advance &middot; Click to view</div>
+      </div>
+      <div class="reel__progress" aria-hidden="true"><i id="reelProgress"></i></div>
+    </div>
+  </div>
 </section>
 
 <!-- ============ LOOK MOMENT — CHROMA ============ -->
 <section class="chroma" data-panel="look" aria-label="Look — Chroma photography">
 
-    <header class="chroma__head">
-        <div class="eyebrow">Look</div>
-        <h2 class="chroma__title">Chroma</h2>
-        <p class="chroma__intro">
-            A growing collection of photographs documenting people, colour, architecture and everyday moments.
-        </p>
-    </header>
+    <div class="archive look-room" id="archive">
+      <div class="archive__sticky">
+        <div class="archive__stage" id="archiveStage" aria-label="Interactive sculpture of photographs"></div>
 
-    <div class="chroma__field" id="chromaField"></div>
+        <header class="archive__head chroma__head" id="archiveHead">
+            <div class="eyebrow">Look</div>
+            <h2 class="archive__title chroma__title">Chroma</h2>
+            <p class="chroma__intro">
+                A growing collection of photographs documenting people, colour, architecture and everyday moments.
+            </p>
+        </header>
+
+        <div class="archive__bar">
+          <div class="archive__status" aria-live="polite"><span id="archiveNow">&nbsp;</span></div>
+          <div class="archive__hint" id="archiveHint">Drag to turn &middot; Scroll to open</div>
+        </div>
+        <div class="archive__rail" aria-hidden="true"><i id="archiveRail"></i></div>
+        <div class="archive__loading" id="archiveLoading"><i></i></div>
+
+        <div class="archive__fallback" id="archiveFallback" hidden>
+          <p>This view needs WebGL, which isn't available in this browser.</p>
+        </div>
+      </div>
+    </div>
 
     <!-- 1. CAPTION & VIEW ALL BUTTON (Moved ABOVE the video) -->
     <div class="chroma__caption" style="margin-bottom: 80px;">
@@ -322,6 +333,34 @@
 
 </section>
 
+  </div>
+
+
+  <!-- ============ LOOK — 3D ROOM VIEWERS ============ -->
+  <div class="viewer" id="reelViewer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Viewer">
+    <div class="viewer__count" id="reelViewerCount"></div>
+    <button type="button" class="viewer__close" id="reelViewerClose" aria-label="Close">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5L19 19M19 5L5 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+    <button type="button" class="viewer__btn viewer__btn--prev" id="reelViewerPrev" aria-label="Previous">&#8249;</button>
+    <figure class="viewer__fig">
+      <div class="viewer__media" id="reelViewerMedia"></div>
+      <figcaption class="viewer__cap" id="reelViewerCap"></figcaption>
+    </figure>
+    <button type="button" class="viewer__btn viewer__btn--next" id="reelViewerNext" aria-label="Next">&#8250;</button>
+  </div>
+
+  <div class="viewer" id="viewer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Photograph viewer">
+    <div class="viewer__count" id="viewerCount"></div>
+    <button type="button" class="viewer__close" id="viewerClose" aria-label="Close">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5L19 19M19 5L5 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+    <button type="button" class="viewer__btn viewer__btn--prev" id="viewerPrev" aria-label="Previous">&#8249;</button>
+    <figure class="viewer__fig">
+      <img class="viewer__img" id="viewerImg" alt="">
+      <figcaption class="viewer__cap" id="viewerCap"></figcaption>
+    </figure>
+    <button type="button" class="viewer__btn viewer__btn--next" id="viewerNext" aria-label="Next">&#8250;</button>
   </div>
 
   <!-- ============ FORGE LIGHTBOX (video player) ============ -->
@@ -435,5 +474,8 @@
 </div>
 
   <script src="script.js"></script>
+  <script src="reel.js?v=4"></script>
+  <script type="module" src="archive-page.js?v=4"></script>
+  <script src="look.js?v=1"></script>
 </body>
 </html>
