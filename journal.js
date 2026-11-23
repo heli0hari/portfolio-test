@@ -69,7 +69,7 @@
     (cfg.skip || []).forEach(function (i) { skip[i] = 1; });
 
     modal.setAttribute('data-theme', theme);
-    modal.style.setProperty('--pj', 'oklch(0.80 0.07 ' + (data.hue != null ? data.hue : 220) + ')');
+    modal.style.setProperty('--pj', 'oklch(0.52 0.09 ' + (data.hue != null ? data.hue : 220) + ')');   // deep enough to read on paper
     article.innerHTML = '';
     article.className = 'jr';
 

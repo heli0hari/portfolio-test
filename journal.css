@@ -5,12 +5,13 @@
    --pj is a quiet per-project accent derived from the project's hue.
    ========================================================= */
 .project-modal.journal {
-  --ground: #131110;
-  --ink: #EDE9E2;
-  --meta: #8A857D;
-  --accent: #A8B5C4;
-  --plate: #1D1A18;
-  --hair: rgba(237, 233, 226, 0.12);
+  /* Read palette — warm paper, like the index it opens from */
+  --ground: #F2EEE7;
+  --ink: #1A1815;
+  --meta: #7C756B;
+  --accent: #4E6478;
+  --plate: #E6E0D5;
+  --hair: rgba(26, 24, 21, 0.14);
   --pj: var(--accent);
   --pad: clamp(20px, 5vw, 72px);
   --gut: clamp(0px, 20vw, 300px);        /* the asymmetric left margin chapters hang in */
@@ -59,8 +60,8 @@
   position: absolute; top: calc(100% + 6px); left: 50%; translate: -50% 0;
   list-style: none; margin: 0; padding: 8px;
   min-width: 220px;
-  background: var(--plate); border: 1px solid var(--hair);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  background: var(--ground); border: 1px solid var(--hair);
+  box-shadow: 0 20px 40px rgba(26, 24, 21, 0.12);
 }
 .jn__menu[hidden] { display: none; }
 
@@ -306,7 +307,7 @@
 .journal[data-theme="material"] .jq p { font-size: clamp(24px, 3vw, 44px); }
 
 /* visual — images first, cinematic spacing, text kept quiet */
-.journal[data-theme="visual"] { --ground: #0e0d0c; --measure: 52ch; --gut: clamp(0px, 24vw, 380px); }
+.journal[data-theme="visual"] { --ground: #EBE6DC; --measure: 52ch; --gut: clamp(0px, 24vw, 380px); }
 .journal[data-theme="visual"] .jf { margin: clamp(16px, 2.4vw, 40px) 0; }
 .journal[data-theme="visual"] .jch { border-top: 0; padding-top: clamp(48px, 7vw, 104px); }
 .journal[data-theme="visual"] .jch__title { font-size: clamp(26px, 3.2vw, 48px); }

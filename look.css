@@ -406,4 +406,9 @@ body[data-mode="look"].in-room {
 .archive__head.chroma__head { padding: 0; margin: 0; }
 .archive__head .chroma__intro { margin: 0; font-size: 14px; line-height: 1.5; color: var(--meta); max-width: 34ch; }
 .archive .archive__title { color: var(--ink); }
-.chroma__showcase { margin-top: 96px; }   /* breathing room after the 3D archive */
+.chroma { padding-bottom: 0; }
+/* Color Grading — its own room, after Motion & 3D */
+.grade-room { padding: 96px 0 var(--rhythm); border-top: 1px solid var(--hair); }
+.grade-room .chroma__showcase { margin: 0 auto; gap: 28px; }
+.grade__head .eyebrow { display: block; margin-bottom: 14px; color: var(--meta); }
+.grade__title { margin: 0; font-weight: 600; font-size: clamp(30px, 3.6vw, 52px); line-height: 0.95; letter-spacing: -0.03em; color: var(--ink); }

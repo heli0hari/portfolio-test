@@ -32,9 +32,9 @@
   <meta name="theme-color" content="#131110">
 
   <link rel="stylesheet" href="styles.css?v=2">
-  <link rel="stylesheet" href="look.css?v=2">
+  <link rel="stylesheet" href="look.css?v=3">
   <link rel="stylesheet" href="read.css?v=4">
-  <link rel="stylesheet" href="journal.css?v=2">
+  <link rel="stylesheet" href="journal.css?v=3">
   <script type="importmap">
     { "imports": { "three": "./vendor/three/three.module.min.js" } }
   </script>
@@ -358,14 +358,6 @@
       </div>
     </div>
 
-    <!-- 2. VIDEO SHOWCASE (Moved BELOW the button) -->
-    <div class="chroma__showcase">
-        <div class="eyebrow">Color Grading</div>
-        <div class="cs-frame">
-          <iframe src="https://player.vimeo.com/video/1211043548?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="In the time between things"></iframe>
-        </div>
-    </div>
-
 </section>
 
 <!-- ============ LOOK MOMENT — FORGE (curved reel) ============ -->
@@ -390,6 +382,20 @@
     </div>
   </div>
 </section>
+
+<!-- ============ LOOK MOMENT — COLOR GRADING ============ -->
+<section class="grade-room" data-panel="look" aria-labelledby="gradeTitle">
+  <div class="chroma__showcase">
+    <header class="grade__head">
+      <div class="eyebrow">Look</div>
+      <h2 class="grade__title" id="gradeTitle">Color Grading</h2>
+    </header>
+    <div class="cs-frame">
+          <iframe src="https://player.vimeo.com/video/1211043548?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="In the time between things"></iframe>
+        </div>
+  </div>
+</section>
+
 
   </div>
 
@@ -510,7 +516,7 @@
 
 
   <script src="journal-config.js?v=2"></script>
-  <script src="journal.js?v=2"></script>
+  <script src="journal.js?v=3"></script>
   <script src="script.js?v=2"></script>
   <script src="reel.js?v=4"></script>
   <script type="module" src="archive-page.js?v=4"></script>
