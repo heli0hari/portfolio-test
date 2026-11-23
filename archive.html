@@ -17,24 +17,29 @@
 <body>
 
   <main class="archive" id="archive">
-    <header class="archive__head">
-      <a class="archive__eyebrow" href="index.html#look">Portfolio / Photography</a>
-      <h1 class="archive__title">Fragmented<br>Archive</h1>
-    </header>
+    <div class="archive__sticky">
+      <div class="archive__stage" id="archiveStage" aria-label="Interactive sculpture of photographs"></div>
 
-    <div class="archive__stage" id="archiveStage" aria-label="Interactive sculpture of photographs"></div>
+      <header class="archive__head" id="archiveHead">
+        <a class="archive__eyebrow" href="index.html#look">Portfolio / Photography</a>
+        <h1 class="archive__title">Fragmented<br>Archive</h1>
+      </header>
 
-    <div class="archive__status" aria-live="polite">
-      <span id="archiveNow">&nbsp;</span>
-    </div>
-    <div class="archive__hint" id="archiveHint">Drag to turn &nbsp;·&nbsp; Click a photograph</div>
-    <div class="archive__loading" id="archiveLoading"><i></i></div>
+      <div class="archive__status" aria-live="polite"><span id="archiveNow">&nbsp;</span></div>
+      <div class="archive__hint" id="archiveHint">Scroll to open</div>
+      <div class="archive__rail" aria-hidden="true"><i id="archiveRail"></i></div>
+      <div class="archive__loading" id="archiveLoading"><i></i></div>
 
-    <div class="archive__fallback" id="archiveFallback" hidden>
-      <p>This view needs WebGL, which isn't available in this browser.</p>
-      <a href="index.html#look">See the photographs in Chroma &rarr;</a>
+      <div class="archive__fallback" id="archiveFallback" hidden>
+        <p>This view needs WebGL, which isn't available in this browser.</p>
+        <a href="index.html#look">See the photographs in Chroma &rarr;</a>
+      </div>
     </div>
   </main>
+
+  <footer class="archive__foot">
+    <a href="index.html#look">&larr; Back to the portfolio</a>
+  </footer>
 
   <!-- viewer -->
   <div class="viewer" id="viewer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Photograph viewer">

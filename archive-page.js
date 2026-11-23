@@ -63,26 +63,55 @@ viewer.addEventListener('touchend', e => {
 });
 
 /* ---------- sculpture ---------- */
+const section = document.getElementById('archive');
+const hint = document.getElementById('archiveHint');
+const rail = document.getElementById('archiveRail');
+const HINTS = ['Scroll to open', 'Keep scrolling', 'Drag or scroll to browse  ·  Click to view'];
+
 if (!webglAvailable()) {
   document.getElementById('archiveFallback').hidden = false;
-  document.getElementById('archiveHint').hidden = true;
+  hint.hidden = true;
+  section.style.height = 'auto';
 } else {
   fetch('photos.json')
     .then(r => r.json())
     .then(data => {
-      let done = 0;
       const api = mountArchive(stage, data.photos || [], {
         onOpen: open,
-        onHover: (p, i, n) => { nowEl.textContent = p ? pad(i + 1) + ' / ' + pad(n) + '  —  ' + label(p) : ' '; },
-        onReady: () => document.body.classList.add('is-ready'),
+        onHover: (p, i, n) => { nowEl.textContent = p ? pad(i + 1) + ' / ' + pad(n) + '  —  ' + label(p) : '\u00a0'; },
+        onStage: s => {
+          hint.textContent = HINTS[s];
+          document.body.classList.toggle('is-open', s > 0);
+          if (s === 0) nowEl.textContent = api.list.length + ' photographs';
+        },
+        onLoad: (d, n) => {
+          loadingBar.style.transform = 'scaleX(' + (d / n) + ')';
+          if (d === n) document.body.classList.add('is-ready');
+        },
       });
-      // loading line: rough progress from texture count
-      const n = api.list.length;
-      const poll = setInterval(() => {
-        done = Math.min(n, done + 1);
-        if (document.body.classList.contains('is-ready')) { loadingBar.style.transform = 'scaleX(1)'; clearInterval(poll); }
-      }, 120);
-      nowEl.textContent = n + ' photographs';
+      nowEl.textContent = api.list.length + ' photographs';
+
+      function progress() {
+        const r = section.getBoundingClientRect();
+        const total = section.offsetHeight - window.innerHeight;
+        return total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0;
+      }
+      function onScroll() {
+        const p = progress();
+        api.setProgress(p);
+        rail.style.transform = 'scaleY(' + p.toFixed(4) + ')';
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      onScroll();
+
+      // arrow keys step through the carousel when it's on screen
+      document.addEventListener('keydown', e => {
+        if (viewer.classList.contains('is-open') || api.stage() !== 2) return;
+        if (e.key === 'ArrowRight') { api.step(1); e.preventDefault(); }
+        else if (e.key === 'ArrowLeft') { api.step(-1); e.preventDefault(); }
+        else if (e.key === 'Enter' && api.front() >= 0) open(api.front(), api.list);
+      });
     })
     .catch(err => console.warn('Archive: could not load photos.json', err));
 }
