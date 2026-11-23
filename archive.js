@@ -197,7 +197,9 @@ export function mountArchive(container, photos, opts = {}) {
   const GAP = 0.14;
   const widthOf = p => PH * clamp(p.w / p.h, 0.55, 2.0);
   const totalLen = all.reduce((s, p) => s + widthOf(p) * SC + GAP, 0);
-  const RC = Math.max(9, totalLen / (2 * Math.PI) * 1.02);
+  const RC = Math.max(9, totalLen / (2 * Math.PI));   // the ring closes exactly: endless loop, no ends
+  const CIRC = 2 * Math.PI * RC;
+  const dmod = (a, b) => ((((a - b) % CIRC) + CIRC * 1.5) % CIRC) - CIRC / 2;   // shortest arc from b to a
   const SCROLL_LEN = 40 * (PW * SC + GAP);            // scroll covers ~40 cards; drag/keys go further
 
   /* ---------- panels ---------- */
@@ -219,7 +221,7 @@ export function mountArchive(container, photos, opts = {}) {
     const curve = { value: 0 };
     // unlit + no tone mapping: the photograph shows exactly as exported
     const photoMat = bendable(new THREE.MeshBasicMaterial({
-      color: new THREE.Color().setHSL((p.hue || 0) / 360, p.bw ? 0 : 0.2, 0.18),
+      color: new THREE.Color().setHSL((p.hue || 0) / 360, p.bw ? 0 : 0.15, 0.06),
       toneMapped: false,
     }), curve);
     const backMat = bendable(new THREE.MeshStandardMaterial({ color: 0x1f1c1a, metalness: 0.7, roughness: 0.45, side: THREE.BackSide }), curve);
@@ -279,7 +281,7 @@ export function mountArchive(container, photos, opts = {}) {
     panels.forEach(pn => { pn.visT = visible.includes(pn) ? 1 : 0; });
     sFirst = visible.length ? visible[0].s : 0;
     sLast = visible.length ? visible[visible.length - 1].s : 0;
-    sOffset = -scrollS();             // start at the first card
+    sOffset = 0;
     vel = 0;
   }
 
@@ -307,7 +309,7 @@ export function mountArchive(container, photos, opts = {}) {
     if (!pn.tex) return;
     pn.tex.dispose(); pn.tex = null;
     pn.photoMat.map = null;
-    pn.photoMat.color.setHSL((pn.photo.hue || 0) / 360, pn.photo.bw ? 0 : 0.2, 0.18);
+    pn.photoMat.color.setHSL((pn.photo.hue || 0) / 360, pn.photo.bw ? 0 : 0.15, 0.06);
     pn.photoMat.needsUpdate = true;
   }
   let pageTimer = 0;
@@ -316,7 +318,7 @@ export function mountArchive(container, photos, opts = {}) {
     let want;
     if (!inCarousel) want = panels.filter(pn => pn.sculpt);
     else {
-      const byDist = visible.slice().sort((a, b) => Math.abs(a.s - sNow) - Math.abs(b.s - sNow));
+      const byDist = visible.slice().sort((a, b) => Math.abs(dmod(a.s, sNow)) - Math.abs(dmod(b.s, sNow)));
       want = byDist.slice(0, KEEP);
       const keep = new Set(want);
       panels.forEach(pn => { if (pn.tex && !keep.has(pn) && !(pn.sculpt && seg(pSmooth, P_FORM) < 0.5)) unload(pn); });
@@ -381,9 +383,9 @@ export function mountArchive(container, photos, opts = {}) {
   }
   function scrollS() {
     const uS = clamp((pSmooth - P_SPIN[0]) / (P_SPIN[1] - P_SPIN[0]), 0, 1);
-    return uS * Math.min(SCROLL_LEN, sLast - sFirst);
+    return uS * Math.min(SCROLL_LEN, CIRC);
   }
-  function currentS() { return clamp(sFirst + scrollS() + sOffset, sFirst, sLast); }
+  function currentS() { return sFirst + scrollS() + sOffset; }
   function cardPx() { return vw * (camera.aspect < 1 ? 0.8 : 0.4); }
 
   function setPointer(e) {
@@ -411,10 +413,8 @@ export function mountArchive(container, photos, opts = {}) {
       turnFree(avx, avy);
     } else {
       const k = (PW * SC) / cardPx();
-      const before = currentS();
       sOffset -= dx * k;
-      sOffset = clamp(sFirst + scrollS() + sOffset, sFirst, sLast) - sFirst - scrollS();
-      vel = currentS() - before;
+      vel = -dx * k;
     }
   });
   window.addEventListener('pointerup', e => {
@@ -468,10 +468,9 @@ export function mountArchive(container, photos, opts = {}) {
       if (uC > 0.98 && Math.abs(vel) < 0.002 && now - lastInput > 180 && visible.length) {
         const sNow = currentS();
         let near = visible[0];
-        visible.forEach(pn => { if (Math.abs(pn.s - sNow) < Math.abs(near.s - sNow)) near = pn; });
-        sOffset += (near.s - sNow) * (reduce ? 1 : 1 - Math.exp(-dt * 7));
+        visible.forEach(pn => { if (Math.abs(dmod(pn.s, sNow)) < Math.abs(dmod(near.s, sNow))) near = pn; });
+        sOffset += dmod(near.s, sNow) * (reduce ? 1 : 1 - Math.exp(-dt * 7));
       }
-      sOffset = clamp(sFirst + scrollS() + sOffset, sFirst, sLast) - sFirst - scrollS();
     }
     const sNow = currentS();
     const yaw = sNow / RC;
@@ -525,7 +524,7 @@ export function mountArchive(container, photos, opts = {}) {
       // fade in after loading; faces in the sculpture are a touch dimmer so it still reads as an object
       if (pn.photoMat.map) pn.photoMat.color.setScalar((0.35 + 0.65 * (pn.fade ?? 1)) * (0.86 + 0.14 * Math.max(uC, pn.hover)));
 
-      if (pn.visT && Math.abs(pn.s - sNow) < best) { best = Math.abs(pn.s - sNow); front = pn; }
+      if (pn.visT && Math.abs(dmod(pn.s, sNow)) < best) { best = Math.abs(dmod(pn.s, sNow)); front = pn; }
     });
 
     pageTimer -= dt;
@@ -559,8 +558,6 @@ export function mountArchive(container, photos, opts = {}) {
 
   return {
     total: all.length,
-    tags: tags.map(t => ({ tag: t, count: tagCounts[t] })),
-    filter(tag) { layout(tag || null); frontPn = null; return visible.length; },
     setProgress(p) { progress = clamp(p, 0, 1); },
     stage() { return stage; },
     openFront() { if (frontPn) openPanel(frontPn); },
@@ -568,9 +565,10 @@ export function mountArchive(container, photos, opts = {}) {
       if (!visible.length) return;
       const sNow = currentS();
       let i = 0, best = 1e9;
-      visible.forEach((pn, j) => { if (Math.abs(pn.s - sNow) < best) { best = Math.abs(pn.s - sNow); i = j; } });
-      const target = visible[clamp(i + d, 0, visible.length - 1)].s;
-      vel = 0; sOffset += target - sNow; lastInput = performance.now() - 1000;
+      visible.forEach((pn, j) => { const dd = Math.abs(dmod(pn.s, sNow)); if (dd < best) { best = dd; i = j; } });
+      const n = visible.length;
+      const target = visible[((i + d) % n + n) % n].s;
+      vel = 0; sOffset += dmod(target, sNow); lastInput = performance.now() - 1000;
     },
     destroy() { stop(); io.disconnect(); renderer.dispose(); el.remove(); }
   };

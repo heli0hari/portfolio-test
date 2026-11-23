@@ -91,24 +91,7 @@ if (!webglAvailable()) {
         },
       });
       nowEl.textContent = api.total + ' photographs';
-
-      // tag filter (single choice) — narrows the carousel
-      const bar = document.getElementById('archiveFilters');
-      function chip(text, count, tag) {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'archive__chip';
-        b.innerHTML = text + '<small>' + count + '</small>';
-        b.setAttribute('aria-pressed', tag === null ? 'true' : 'false');
-        b.addEventListener('click', () => {
-          bar.querySelectorAll('.archive__chip').forEach(c => c.setAttribute('aria-pressed', String(c === b)));
-          api.filter(tag);
-          b.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
-        });
-        bar.appendChild(b);
-      }
-      chip('All', api.total, null);
-      api.tags.forEach(t => chip(t.tag, t.count, t.tag));
+      setTimeout(() => document.body.classList.add('is-ready'), 6000);   // slow network: show it anyway
 
       function progress() {
         const r = section.getBoundingClientRect();
