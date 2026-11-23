@@ -49,12 +49,12 @@ window.JOURNAL = {
     ]
   },
   'tolstoy-farm': {
-    facts: { Role: 'Product & Brand Design', Context: 'Client project', Duration: '4 days', Tools: 'Figma, Photoshop, Illustrator' },
+    facts: { Role: 'Product & Brand Design', Context: 'Client project · branding help', Team: 'Solo', Duration: '4 days', Tools: 'Figma, Photoshop, Illustrator' },
     theme: 'visual', cover: 'bleed',
     chapters: [{ at: 1, label: 'Identity' }]
   },
   'hiro-assistant': {
-    facts: { Role: 'UX Designer', Context: 'Personal project', Duration: '1 week', Tools: 'Figma, ChatGPT (research), Photoshop' },
+    facts: { Role: 'UX Designer', Context: 'Personal project · for portfolio', Team: 'Solo', Duration: '1 week', Tools: 'Figma, ChatGPT (research), Photoshop' },
     theme: 'human', cover: 'split',
     chapters: [
       { at: 1, label: 'Overview' },
@@ -67,7 +67,7 @@ window.JOURNAL = {
     ]
   },
   'city-in-hand': {
-    facts: { Role: '3D Artist', Context: 'Art installation', Duration: '3 days', Tools: 'RenderDoc, Blender, Bambu Studio' },
+    facts: { Role: '3D Artist', Context: 'Personal project · art installation', Team: 'Solo', Duration: '3 days', Tools: 'RenderDoc, Blender, Bambu Studio' },
     theme: 'material', cover: 'bleed',
     chapters: [
       { at: 1, label: 'Overview' },
@@ -78,7 +78,7 @@ window.JOURNAL = {
     ]
   },
   'dub-transit': {
-    facts: { Role: 'UI/UX Designer', Team: 'Solo', Duration: '1 week', Tools: 'Figma, Photoshop, Google AI Studio' },
+    facts: { Role: 'UI/UX Designer', Context: 'Personal project · learning API integrations', Team: 'Solo', Duration: '1 week', Tools: 'Figma, Photoshop, Google AI Studio' },
     theme: 'system', cover: 'inset',
     chapters: [
       { at: 1, label: 'Overview' },
@@ -91,7 +91,7 @@ window.JOURNAL = {
     ]
   },
   'theyyam-threads': {
-    facts: { Role: 'Visual Designer', Team: 'Team of three', Duration: '1 week', Tools: 'Illustrator, Figma, Procreate' },
+    facts: { Role: 'Visual Designer', Context: 'Personal project', Team: 'Team of three', Duration: '1 week', Tools: 'Illustrator, Figma, Procreate' },
     theme: 'visual', cover: 'bleed',
     chapters: [
       { at: 1, label: 'Overview' },
