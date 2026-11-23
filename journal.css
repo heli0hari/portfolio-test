@@ -147,6 +147,13 @@
   margin-bottom: clamp(18px, 2.4vw, 28px);
 }
 .jch__no { color: var(--pj); font-variant-numeric: tabular-nums; }
+/* oversized outlined chapter numerals — shared by every project */
+.journal .jch__head { margin-bottom: 0; align-items: flex-end; }
+.journal .jch__no {
+  font-size: clamp(88px, 14vw, 220px); line-height: 0.8; letter-spacing: -0.06em;
+  color: transparent; -webkit-text-stroke: 1px var(--pj);
+}
+.journal .jch__title { margin-top: 24px; }
 .jch__title {
   margin: 0 0 clamp(36px, 5vw, 64px) var(--gut);
   max-width: 18ch;
@@ -283,14 +290,7 @@
 .journal[data-theme="human"] .jch__title { max-width: 16ch; }
 .journal[data-theme="human"] .jf img, .journal[data-theme="human"] .jc__media { border-radius: 4px; }
 
-/* data — oversized chapter numerals, strict grid, loud statements */
-.journal[data-theme="data"] .jch__head { margin-bottom: 0; }
-.journal[data-theme="data"] .jch__no {
-  font-size: clamp(88px, 14vw, 220px); line-height: 0.8; letter-spacing: -0.06em;
-  color: transparent; -webkit-text-stroke: 1px var(--pj);
-}
-.journal[data-theme="data"] .jch__head { align-items: flex-end; }
-.journal[data-theme="data"] .jch__title { margin-top: 24px; }
+/* data — strict grid, loud statements */
 .journal[data-theme="data"] .jq p { text-transform: uppercase; font-weight: 500; letter-spacing: -0.02em; font-size: clamp(26px, 3.8vw, 58px); }
 .journal[data-theme="data"] .jq p { max-width: 20ch; }
 .journal[data-theme="data"] .jx .cs-list { columns: 2; column-gap: 40px; }

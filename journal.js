@@ -329,7 +329,7 @@
       // margin chapter list steps aside whenever a picture runs under it
       var tocEl = toc.parentNode, tr = tocEl.getBoundingClientRect(), hit = false;
       if (tr.width) {
-        var media = article.querySelectorAll('img, iframe, video');
+        var media = article.querySelectorAll('img, iframe, video, .jch__no');
         for (var m = 0; m < media.length && !hit; m++) {
           var r = media[m].getBoundingClientRect();
           if (r.bottom > tr.top - 8 && r.top < tr.bottom + 8 && r.left < tr.right + 16 && r.right > tr.left) hit = true;
