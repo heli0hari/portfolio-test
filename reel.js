@@ -1,7 +1,7 @@
 /* =========================================================
-   Motion & 3D — film reel
-   Vertical scroll pulls a strip of film across the screen. Frames bend away
-   from the centre like film leaving a reel; the frame in the gate plays.
+   Motion & 3D — curved reel
+   Vertical scroll pulls a row of cards across the screen. Cards bend away
+   from the centre; the card in the middle plays.
    Content comes from forge.json (same file the main site uses).
    ========================================================= */
 (function () {
@@ -54,16 +54,14 @@
   }
 
   function build(sections) {
-    var frameNo = 0;
     sections.forEach(function (sec, si) {
       var s = cellEl('cell--slate');
       s.pic.innerHTML = '<div class="slate__no">' + pad(si + 1) + '</div>' +
         '<div class="slate__name">' + sec.name + '</div>' +
-        '<div class="slate__count">' + sec.items.length + ' frames</div>';
+        '<div class="slate__count">' + sec.items.length + ' pieces</div>';
       cells.push({ el: s.el, aspect: 0.72, slate: true, section: sec });
 
       sec.items.forEach(function (it, ii) {
-        frameNo++;
         var c = cellEl();
         c.el.setAttribute('role', 'listitem');
         c.el.setAttribute('tabindex', '0');
@@ -80,13 +78,14 @@
           vid.style.objectPosition = it.focus;
           c.pic.appendChild(vid);
           var tag = document.createElement('span');
-          tag.className = 'cell__play'; tag.textContent = 'Motion';
+          tag.className = 'cell__play'; tag.setAttribute('aria-hidden', 'true');
           c.pic.appendChild(tag);
         }
-        var edge = document.createElement('span');
-        edge.className = 'cell__edge';
-        edge.textContent = sec.code + ' ' + pad(ii + 1) + '  ▸  ' + pad(frameNo) + 'A';
-        c.el.appendChild(edge);
+        var cap = document.createElement('div');
+        cap.className = 'cell__cap';
+        cap.innerHTML = '<b>' + pad(ii + 1) + '</b><span></span>';
+        cap.lastChild.textContent = it.title;
+        c.el.appendChild(cap);
 
         var item = Object.assign({ section: sec, index: ii, n: sec.items.length }, it);
         var cell = { el: c.el, pic: c.pic, aspect: it.aspect, item: item, video: vid, mediaIndex: media.length };
@@ -105,15 +104,15 @@
   function layout() {
     vw = stage.clientWidth; vh = stage.clientHeight;
     cellH = track.clientHeight;
-    var band = cells.length ? parseFloat(getComputedStyle(cells[0].el).paddingTop) : 0;
-    var picH = cellH - band * 2;
+    var picH = cellH;
+    var gap = Math.max(22, vw * 0.022);
     var x = 0;
     cells.forEach(function (c) {
-      c.w = Math.round(picH * c.aspect + 12);
+      c.w = Math.round(picH * c.aspect);
       c.x = x;                      // left edge along the strip
       c.cx = x + c.w / 2;           // centre
       c.el.style.width = c.w + 'px';
-      x += c.w + 4;                 // a thin frame line between cells
+      x += c.w + gap;
     });
     first = cells.length ? cells[0].cx : 0;
     travel = cells.length ? cells[cells.length - 1].cx - first : 0;
@@ -200,11 +199,12 @@
       }
     });
 
+    cells.forEach(function (c, i) { c.el.classList.toggle('is-gate', i === gateIndex); });
     if (gateIndex !== lastNow) {
       lastNow = gateIndex;
       var g = cells[gateIndex];
       nowEl.textContent = !g ? ' ' : g.slate
-        ? g.section.name + '  —  ' + g.section.items.length + ' frames'
+        ? g.section.name + '  —  ' + g.section.items.length + ' pieces'
         : g.item.section.name + '  ' + pad(g.item.index + 1) + ' / ' + pad(g.item.n) + '  —  ' + g.item.title;
     }
     progEl.style.transform = 'scaleX(' + (travel ? cur / travel : 0).toFixed(4) + ')';
