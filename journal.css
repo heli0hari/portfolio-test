@@ -73,6 +73,7 @@
   opacity: 0; transition: opacity 400ms var(--ease);
 }
 .journal.is-scrolled.has-toc .jtoc { opacity: 1; pointer-events: auto; }
+.journal.is-scrolled.has-toc.toc-covered .jtoc { opacity: 0; pointer-events: none; }
 .jtoc ol, .jn__menu { list-style: none; }
 .jtoc ol { margin: 0; padding: 0; display: grid; gap: 6px; }
 .jtoc__btn {
@@ -271,14 +272,8 @@
    THEMES
    ========================================================= */
 
-/* system — technical, measured: grid, figure labels, numbered sections */
-.journal[data-theme="system"] .jc {
-  background-image: linear-gradient(to right, var(--hair) 1px, transparent 1px);
-  background-size: calc((100% + 1px) / 12) 100%;
-  background-position: 0 0;
-}
+/* system — technical, measured: figure labels, numbered sections */
 .journal[data-theme="system"] .jc__title { max-width: 16ch; }
-.journal[data-theme="system"] .jc__media { outline: 1px solid var(--hair); outline-offset: 10px; }
 .journal[data-theme="system"] .jch__title { font-size: clamp(28px, 4vw, 60px); }
 .journal[data-theme="system"] .jf img { outline: 1px solid var(--hair); }
 

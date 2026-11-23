@@ -327,6 +327,16 @@
       var max = scroller.scrollHeight - scroller.clientHeight;
       progress.style.transform = 'scaleX(' + (max > 0 ? scroller.scrollTop / max : 0).toFixed(4) + ')';
       modal.classList.toggle('is-scrolled', scroller.scrollTop > 40);
+      // margin chapter list steps aside whenever a picture runs under it
+      var tocEl = toc.parentNode, tr = tocEl.getBoundingClientRect(), hit = false;
+      if (tr.width) {
+        var media = article.querySelectorAll('img, iframe, video');
+        for (var m = 0; m < media.length && !hit; m++) {
+          var r = media[m].getBoundingClientRect();
+          if (r.bottom > tr.top - 8 && r.top < tr.bottom + 8 && r.left < tr.right + 16 && r.right > tr.left) hit = true;
+        }
+      }
+      modal.classList.toggle('toc-covered', hit);
       // keep the chapter indicator honest between observer callbacks
       var line = scroller.getBoundingClientRect().top + scroller.clientHeight * 0.33, cur = -1;
       Array.prototype.forEach.call(article.querySelectorAll('.jch'), function (s, k) { if (s.getBoundingClientRect().top < line) cur = k; });
