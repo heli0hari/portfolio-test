@@ -1,6 +1,7 @@
 /* =========================================================
    Read homepage — index interactions
-   - a small preview follows the cursor over the project index (desktop)
+   - a small preview follows the cursor over the project index (desktop);
+     moving left → right across a row flips through that project's images
    - keyboard focus shows the same preview beside the focused row
    - "Elsewhere" links switch to Look and land on that section
    - footer "Write a message" opens the existing contact modal
@@ -39,15 +40,41 @@
       warm.observe(list);
     }
 
-    var x = 0, y = 0, tx = 0, ty = 0, raf = 0, active = null, byKey = false;
+    // ticks along the bottom: which of the project's images is showing
+    var ticks = document.createElement('div');
+    ticks.className = 'ix-preview__ticks';
+    pv.appendChild(ticks);
+
+    var x = 0, y = 0, tx = 0, ty = 0, raf = 0, active = null, byKey = false, shown = '', step = 0;
+    function gallery(row) { return (row.dataset.gallery || row.dataset.preview).split(','); }
+    function setImage(src) {
+      if (src === shown) return;
+      shown = src;
+      var cur = imgFor(src);
+      Object.keys(imgs).forEach(function (k) { imgs[k].classList.toggle('is-current', imgs[k] === cur); });
+    }
+    function setStep(row, i) {
+      var g = gallery(row);
+      step = Math.max(0, Math.min(g.length - 1, i));
+      setImage(g[step]);
+      Array.prototype.forEach.call(ticks.children, function (t, j) { t.classList.toggle('is-on', j === step); });
+    }
     function show(row) {
       if (active === row) return;
       active = row;
-      var cur = imgFor(row.dataset.preview);
-      Object.keys(imgs).forEach(function (k) { imgs[k].classList.toggle('is-current', imgs[k] === cur); });
+      var g = gallery(row);
+      g.forEach(imgFor);                               // fetch this project's set as soon as it's hovered
+      ticks.innerHTML = g.length > 1 ? new Array(g.length + 1).join('<i></i>') : '';
+      setStep(row, 0);
       pv.classList.add('is-on');
     }
-    function hide() { active = null; pv.classList.remove('is-on'); }
+    // left → right across a row flips through that project's images
+    function stepFromPointer(row, clientX) {
+      var r = row.getBoundingClientRect(), n = gallery(row).length;
+      var f = (clientX - r.left) / r.width;
+      setStep(row, Math.floor(Math.max(0, Math.min(0.999, f)) * n));
+    }
+    function hide() { active = null; shown = ''; pv.classList.remove('is-on'); }
 
     function place() {
       // follow with a little lag; stay inside the viewport (flip left near the right edge)
@@ -69,7 +96,7 @@
       if (!active) { x = e.clientX + 28; y = e.clientY - 150; }   // first appearance: no swoop in
       byKey = false;
       tx = e.clientX; ty = e.clientY;
-      show(row); kick();
+      show(row); stepFromPointer(row, e.clientX); kick();
     });
     list.addEventListener('pointerleave', hide);
     window.addEventListener('scroll', function () { if (active && !byKey && !list.matches(':hover')) hide(); }, { passive: true });
@@ -90,6 +117,14 @@
       var r = active.getBoundingClientRect();
       ty = r.top + r.height / 2; kick();
     }, { passive: true });
+    // keyboard: ← / → flip through the focused project's images
+    list.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      var row = e.target.closest('.ix__row');
+      if (!row || row !== active) return;
+      e.preventDefault();
+      setStep(row, step + (e.key === 'ArrowRight' ? 1 : -1));
+    });
     list.addEventListener('focusout', function (e) {
       if (!list.contains(e.relatedTarget)) hide();
     });

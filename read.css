@@ -157,6 +157,17 @@
 }
 .ix-preview img.is-current { opacity: 1; transform: scale(1); }
 body[data-mode="look"] .ix-preview { display: none; }
+.ix-preview img { transition: opacity 220ms var(--ease), transform 900ms var(--ease); }
+.ix-preview__ticks {
+  position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 1;
+  display: flex; gap: 4px;
+}
+.ix-preview__ticks i {
+  flex: 1; height: 2px; border-radius: 1px;
+  background: rgba(237, 233, 226, 0.35);
+  transition: background-color 200ms var(--ease);
+}
+.ix-preview__ticks i.is-on { background: #EDE9E2; }
 
 /* touch / small screens: no hover — show a thumbnail in each row instead */
 @media (hover: none), (max-width: 820px) {
