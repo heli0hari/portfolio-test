@@ -22,14 +22,53 @@
   });
 })();
 
-/* Read / Look switch — clicking the ball rolls it to the other side. */
+/* Read / Look switch — click the ball, or drag / swipe it across. */
 (function () {
   var lane = document.querySelector('.switch__lane');
   if (!lane) return;
-  lane.addEventListener('click', function () {
+  var track = lane.parentNode;
+  function toggle() {
     var off = document.querySelector('.switch__btn[aria-selected="false"]');
     if (off) off.click();
+  }
+  function goTo(mode) {
+    if (document.body.getAttribute('data-mode') === mode) return;
+    var b = document.querySelector('.switch__btn[data-mode-btn="' + mode + '"]');
+    if (b) b.click();
+  }
+  var drag = null, suppressClick = false;
+  lane.addEventListener('pointerdown', function (e) {
+    if (e.button !== 0) return;
+    var roll = lane.getBoundingClientRect().width - lane.querySelector('.switch__face').getBoundingClientRect().width;
+    drag = { x: e.clientX, y: e.clientY, roll: Math.max(roll, 1), from: document.body.getAttribute('data-mode') === 'look' ? 1 : 0, moved: false, id: e.pointerId };
   });
+  lane.addEventListener('pointermove', function (e) {
+    if (!drag || e.pointerId !== drag.id) return;
+    var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!drag.moved) {
+      if (Math.abs(dx) < 4) return;
+      if (Math.abs(dy) > Math.abs(dx)) { drag = null; return; }    // a vertical swipe is a page scroll
+      drag.moved = true;
+      lane.setPointerCapture(e.pointerId);
+      lane.classList.add('is-dragging');
+    }
+    var p = Math.min(1, Math.max(0, drag.from + dx / drag.roll));
+    drag.p = p;
+    track.style.setProperty('--p', p.toFixed(3));
+  });
+  function end(e) {
+    if (!drag) return;
+    var d = drag; drag = null;
+    if (!d.moved) return;
+    suppressClick = true; setTimeout(function () { suppressClick = false; }, 0);
+    lane.classList.remove('is-dragging');
+    track.style.removeProperty('--p');
+    var p = d.p == null ? d.from : d.p;
+    goTo(p > 0.5 ? 'look' : 'read');
+  }
+  lane.addEventListener('pointerup', end);
+  lane.addEventListener('pointercancel', end);
+  lane.addEventListener('click', function () { if (!suppressClick) toggle(); });
 })();
 
 /* Contact — copy the address, and Escape closes the sheet. */

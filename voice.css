@@ -277,3 +277,12 @@ body[data-mode="read"] .switch__ico--read { opacity: 1; transition: opacity 300m
 /* the companions replace the system pointer on desktop (cursor.js adds the class) */
 html.has-custom-cursor, html.has-custom-cursor * { cursor: none !important; }
 .xhair__dot { position: absolute; left: -2px; top: -2px; width: 4px; height: 4px; border-radius: 50%; background: currentColor; will-change: transform; }
+
+/* dragging / swiping the switch: the ball follows the finger, then rolls home */
+.switch__lane { touch-action: pan-y; }
+.switch__lane.is-dragging { cursor: grabbing; }
+body .switch__lane.is-dragging .switch__drop,
+body .switch__lane.is-dragging .switch__tail { transition: none; transform: translateX(calc(var(--roll) * var(--p, 0))); }
+body .switch__lane.is-dragging .switch__face { transition: none; transform: translateX(calc(var(--roll) * var(--p, 0))) rotate(calc(180deg * var(--p, 0))); }
+body .switch__lane.is-dragging .switch__ico--read { transition: none; opacity: calc(1 - var(--p, 0) * 2); }
+body .switch__lane.is-dragging .switch__ico--look { transition: none; opacity: calc(var(--p, 0) * 2 - 1); }
