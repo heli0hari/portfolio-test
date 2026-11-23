@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="look.css?v=5">
   <link rel="stylesheet" href="read.css?v=5">
   <link rel="stylesheet" href="journal.css?v=6">
-<link rel="stylesheet" href="voice.css?v=5">
+<link rel="stylesheet" href="voice.css?v=7">
   <script type="importmap">
     { "imports": { "three": "./vendor/three/three.module.min.js" } }
   </script>
@@ -118,10 +118,12 @@
               Read<sup class="switch__sup">01</sup>
             </button>
             <span class="switch__lane" aria-hidden="true">
-              <span class="switch__ball">
+              <span class="switch__goo"><i class="switch__drop"></i><i class="switch__tail"></i></span>
+              <span class="switch__face">
                 <svg class="switch__ico switch__ico--read" viewBox="0 0 24 24"><path d="M5 7h14M5 11h14M5 15h14M5 19h8"/></svg>
                 <svg class="switch__ico switch__ico--look" viewBox="0 0 24 24"><path d="M2.5 12s3.6-6.5 9.5-6.5S21.5 12 21.5 12s-3.6 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3.2"/></svg>
               </span>
+              <svg class="switch__defs" width="0" height="0" focusable="false"><filter id="switchGoo"><feGaussianBlur in="SourceGraphic" stdDeviation="3.2" result="b"/><feColorMatrix in="b" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -8"/></filter></svg>
             </span>
             <button class="switch__btn" role="tab" data-mode-btn="look" aria-selected="false">
               Look<sup class="switch__sup">02</sup>

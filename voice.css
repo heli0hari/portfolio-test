@@ -80,52 +80,71 @@
   .archive__bar, .reel__bar { flex-direction: row; align-items: baseline; }
 }
 
-/* ---------- 4b. Read / Look: two words and a ball that rolls between them ----------
-   The ball travels exactly half its circumference (pi * r), so one roll turns it 180°:
-   the Read glyph (lines of text) rolls under and the Look glyph (an eye) comes up. */
+/* ---------- 4b. Read / Look: a small switch with the two words stacked beside it ----------
+   The drop travels half its circumference (pi * r), so the face turns exactly 180°:
+   the Read glyph rolls under and the Look glyph comes up. A lagging tail, merged
+   through an SVG goo filter, makes the move read as liquid rather than a slide. */
 .switch__track {
-  --ball: 34px;
+  --ball: 30px;
   --roll: calc(var(--ball) * 1.5708);            /* pi * r */
+  --flow: cubic-bezier(0.7, 0, 0.2, 1);
+  display: grid; grid-template-columns: auto auto; grid-template-rows: auto auto;
+  column-gap: 16px; row-gap: 0; align-items: center; justify-content: start;
   background: none; border-radius: 0; padding: 0;
-  align-items: center; gap: 16px;
 }
 .switch__slider { display: none; }
+.switch__lane { grid-column: 1; grid-row: 1 / span 2; }
+.switch__btn[data-mode-btn="read"] { grid-column: 2; grid-row: 1; }
+.switch__btn[data-mode-btn="look"] { grid-column: 2; grid-row: 2; }
 .switch__btn {
-  padding: 0; font-size: clamp(22px, 2.2vw, 30px); letter-spacing: -0.03em;
-  color: var(--meta);
+  justify-self: start; padding: 0; line-height: 1.1;
+  font-size: clamp(20px, 1.9vw, 26px); letter-spacing: -0.03em;
+  color: var(--meta); transition: color 500ms var(--ease);
 }
 .switch__btn:hover, .switch__btn[aria-selected="true"] { color: var(--ink); }
 .switch__btn:focus-visible { border-radius: 2px; }
-/* the lane is drawn as a hairline groove, so it reads as a switch without being a filled pill */
+
 .switch__lane {
   position: relative; display: block; box-sizing: content-box;
   width: calc(var(--ball) + var(--roll)); height: var(--ball);
   padding: 4px; border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--ink) 28%, transparent);
-  cursor: pointer;
-  transition: border-color 200ms var(--ease);
+  cursor: pointer; transition: border-color 200ms var(--ease);
 }
 .switch__lane:hover { border-color: color-mix(in srgb, var(--ink) 55%, transparent); }
-.switch__ball {
-  position: absolute; left: 4px; top: 4px;
-  width: var(--ball); height: var(--ball); border-radius: 50%;
-  background: var(--ink); color: var(--ground);
-  transition: transform 700ms cubic-bezier(0.55, 0, 0.25, 1), background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+.switch__defs { position: absolute; width: 0; height: 0; }
+.switch__goo { position: absolute; inset: 4px; filter: url(#switchGoo); }
+.switch__drop, .switch__tail {
+  position: absolute; left: 0; top: 0; width: var(--ball); height: var(--ball);
+  border-radius: 50%; background: var(--ink);
+  transition: transform 760ms var(--flow), background-color var(--dur) var(--ease);
 }
-body[data-mode="look"] .switch__ball { transform: translateX(var(--roll)) rotate(180deg); }
+.switch__tail { transform: scale(0.7); transition-duration: 980ms, var(--dur); transition-delay: 60ms, 0s; }
+body[data-mode="look"] .switch__drop { transform: translateX(var(--roll)); }
+body[data-mode="look"] .switch__tail { transform: translateX(var(--roll)) scale(0.7); }
+.switch__face {
+  position: absolute; left: 4px; top: 4px; width: var(--ball); height: var(--ball);
+  color: var(--ground);
+  transition: transform 760ms var(--flow), color var(--dur) var(--ease);
+}
+body[data-mode="look"] .switch__face { transform: translateX(var(--roll)) rotate(180deg); }
 .switch__ico {
   position: absolute; inset: 22%; width: 56%; height: 56%;
-  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-  transition: opacity 260ms var(--ease) 220ms;
+  fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+  transition: opacity 180ms var(--ease);         /* the outgoing glyph leaves first… */
 }
-.switch__ico--look { transform: rotate(180deg); opacity: 0; }       /* drawn upside down: upright after the roll */
-body[data-mode="look"] .switch__ico--read { opacity: 0; }
-body[data-mode="look"] .switch__ico--look { opacity: 1; }
+.switch__ico--look { transform: rotate(180deg); opacity: 0; }
+body[data-mode="look"] .switch__ico--read,
+body[data-mode="read"] .switch__ico--look { opacity: 0; }
+body[data-mode="look"] .switch__ico--look,
+body[data-mode="read"] .switch__ico--read { opacity: 1; transition: opacity 300ms var(--ease) 460ms; }   /* …the new one arrives as the drop settles */
 @media (max-width: 640px) {
-  .switch__track { --ball: 28px; gap: 12px; }
-  .switch__btn { font-size: 22px; padding: 0; }
+  .switch__track { --ball: 26px; column-gap: 14px; }
+  .switch__btn { font-size: 20px; padding: 0; }
 }
-@media (prefers-reduced-motion: reduce) { .switch__ball, .switch__ico { transition: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .switch__drop, .switch__tail, .switch__face, .switch__ico { transition: none; }
+}
 
 /* ---------- 5. no decorative arrows ---------- */
 .ew__item { grid-template-columns: auto 1fr; grid-template-areas: "no name" ". desc"; }
