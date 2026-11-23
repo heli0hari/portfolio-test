@@ -100,6 +100,8 @@ body {
   background: var(--hair);
   z-index: 2;
 }
+.archive__rail { transition: opacity 400ms var(--ease); }
+.is-carousel .archive__rail { opacity: 0; }   /* it would cross the cards */
 .archive__rail i {
   position: absolute; inset: 0;
   background: var(--ink);

@@ -82,6 +82,7 @@ if (!webglAvailable()) {
         onStage: s => {
           hint.textContent = HINTS[s];
           document.body.classList.toggle('is-open', s > 0);
+          document.body.classList.toggle('is-carousel', s === 2);
           if (s === 0) nowEl.textContent = api.list.length + ' photographs';
         },
         onLoad: (d, n) => {

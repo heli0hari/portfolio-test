@@ -292,7 +292,11 @@ export function mountArchive(container, photos, opts = {}) {
     camA.set(0, 0.2, dA * (vw < 700 ? 0.92 : 1.0));
     const frac = camera.aspect < 1 ? 0.8 : 0.4;          // front card's share of the width
     const dC = (PW * SC / frac) / 2 / tan / camera.aspect;
-    camC.set(0, 0, RC + Math.max(dC, PH * SC / 0.55 / 2 / tan));   // level: card centred, far side of the ring hidden
+    // ...but never taller than the space between the title area and the caption bar
+    const pad = Math.min(72, Math.max(22, vw * 0.05));
+    const availH = Math.max(0.3, Math.min(0.62, (vh - 2 * (pad + 48)) / vh));
+    const dH = (PH * SC / availH) / 2 / tan;
+    camC.set(0, 0, RC + Math.max(dC, dH));   // level: card centred, far side of the ring hidden
   }
   new ResizeObserver(resize).observe(container);
 
