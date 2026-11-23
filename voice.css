@@ -273,3 +273,7 @@ body[data-mode="read"] .switch__ico--read { opacity: 1; transition: opacity 300m
           mask-image: linear-gradient(to bottom, transparent, #000 30%, #000 40%, transparent 46%, transparent 54%, #000 60%, #000 70%, transparent); }
 .xhair line { stroke: currentColor; stroke-opacity: 0.7; stroke-width: 1; filter: url(#xhairWarp); }
 .viewer__grid { position: absolute; pointer-events: none; z-index: 1; }
+
+/* the companions replace the system pointer on desktop (cursor.js adds the class) */
+html.has-custom-cursor, html.has-custom-cursor * { cursor: none !important; }
+.xhair__dot { position: absolute; left: -2px; top: -2px; width: 4px; height: 4px; border-radius: 50%; background: currentColor; will-change: transform; }

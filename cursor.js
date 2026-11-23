@@ -11,6 +11,9 @@
   if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+  // these companions replace the system pointer (see .has-custom-cursor in voice.css)
+  document.documentElement.classList.add('has-custom-cursor');
+
   var cv = document.createElement('canvas');
   cv.className = 'cube-cursor';
   cv.setAttribute('aria-hidden', 'true');
@@ -32,8 +35,8 @@
   var mx = -100, my = -100, x = -100, y = -100, vx = 0, vy = 0;
   var rx = 0.6, ry = 0.8, rz = 0, s = 9, sT = 9, alpha = 0, alphaT = 0;
   var trail = [], tick = 0, last = 0, idle = 0;
-  var OFFSET = 22;                              // sits just off the pointer tip
-  function isLook() { return document.body.getAttribute('data-mode') === 'look' && !document.body.classList.contains('modal-open'); }
+  var OFFSET = 0;                               // the cube is the pointer
+  function isLook() { return document.body.getAttribute('data-mode') === 'look'; }
   new MutationObserver(function () { alphaT = isLook() && mx > 0 ? 1 : 0; if (!running) { running = true; requestAnimationFrame(frame); } })
     .observe(document.body, { attributes: true, attributeFilter: ['data-mode', 'class'] });
 
@@ -92,6 +95,8 @@
       draw(t.x, t.y, t.s * (0.7 + 0.3 * t.life), t.rx, t.ry, t.rz, 0.35 * t.life * t.life * alpha);
     }
     draw(x, y, s, rx, ry, rz, 0.95 * alpha);
+    ctx.globalAlpha = alpha; ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(mx, my, 1.6, 0, Math.PI * 2); ctx.fill();   // the exact hot spot
 
     idle += dt;
     if (alpha < 0.01 && alphaT === 0 && !trail.length) { ctx.clearRect(0, 0, W, H); running = false; last = 0; return; }
@@ -107,9 +112,10 @@
       '<feTurbulence type="fractalNoise" baseFrequency="0.01 0.02" numOctaves="1" seed="3" result="n"/>' +
       '<feDisplacementMap in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter></svg>' +
     '<svg class="xhair__h" viewBox="0 0 140 40"><line x1="0" y1="20" x2="140" y2="20"/></svg>' +
-    '<svg class="xhair__v" viewBox="0 0 40 140"><line x1="20" y1="0" x2="20" y2="140"/></svg>';
+    '<svg class="xhair__v" viewBox="0 0 40 140"><line x1="20" y1="0" x2="20" y2="140"/></svg>' +
+    '<i class="xhair__dot"></i>';
   document.body.appendChild(wrap);
-  var hEl = wrap.querySelector('.xhair__h'), vEl = wrap.querySelector('.xhair__v');
+  var hEl = wrap.querySelector('.xhair__h'), vEl = wrap.querySelector('.xhair__v'), dEl = wrap.querySelector('.xhair__dot');
   var turb = wrap.querySelector('feTurbulence'), disp = wrap.querySelector('feDisplacementMap');
   var cx = -100, cy = -100, tx = -100, ty = -100, warp = 0, warpT = 0, xOn = 0, xLast = 0, xRun = false;
   var ARM = 70;                                   // half-length of each line
@@ -132,6 +138,7 @@
     cx += (tx - cx) * k; cy += (ty - cy) * k;
     hEl.style.transform = 'translate3d(' + (cx - ARM) + 'px,' + (cy - 20) + 'px,0)';
     vEl.style.transform = 'translate3d(' + (cx - 20) + 'px,' + (cy - ARM) + 'px,0)';
+    dEl.style.transform = 'translate3d(' + tx + 'px,' + ty + 'px,0)';     // the dot is exact; the lines trail a touch
     wrap.style.opacity = xOn.toFixed(3);
     // ripple: rises fast, then eases out while hovering, and dies away when leaving
     warp += ((warpT ? 1 : 0) - warp) * (1 - Math.exp(-dt * (warpT ? 9 : 5)));

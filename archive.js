@@ -580,7 +580,7 @@ export function mountArchive(container, photos, opts = {}) {
     const hit = (pointerIn && !dragging) ? pick() : null;
     if (hit !== hovered) {
       hovered = hit;
-      el.style.cursor = hit ? 'zoom-in' : 'grab';   // the cursor says what a click does
+      el.style.cursor = hit ? 'zoom-in' : 'grab';   // the cursor says what a click does (hidden when the cube cursor is on)
       if (hit) report(hit); else onHover(null);
     }
 
