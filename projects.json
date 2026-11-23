@@ -1323,7 +1323,7 @@
       },
       {
         "type": "paragraph",
-        "value": "Once the task is broken down, Hiro doesn't hand the user a flat to-do list. Instead, it surfaces different suggested steps depending on the user's current <strong>energy level</strong>, so someone running low can still make meaningful progress without feeling overwhelmed."
+        "value": "Once the task is broken down, Hiro doesn't hand the user a flat to-do list. Instead, it surfaces different suggested steps depending on the user's current <strong>energy level</strong>, so someone running low can still get something done without feeling buried."
       },
       {
         "type": "table",
@@ -1369,11 +1369,11 @@
       },
       {
         "type": "paragraph",
-        "value": "Snooze Mode allows users to temporarily pause tasks, reminders, and notifications when they need time to rest or step away. Instead of forcing continuous productivity, Hiro recognises that recovery is essential for sustained focus."
+        "value": "Snooze Mode allows users to temporarily pause tasks, reminders, and notifications when they need time to rest or step away. Hiro doesn't push you to stay productive all the time. Resting is part of keeping focus."
       },
       {
         "type": "paragraph",
-        "value": "Users can choose predefined durations or create custom schedules, ensuring that breaks are intentional rather than avoidant. All progress is preserved, and tasks are gently reintroduced once the snooze period ends."
+        "value": "Users can choose predefined durations or create custom schedules, so a break is a decision, not a way of avoiding the task. All progress is preserved, and tasks are gently reintroduced once the snooze period ends."
       },
       {
         "type": "paragraph",
@@ -2145,7 +2145,7 @@
       },
       {
         "type": "paragraph",
-        "value": "A key innovation planned for Dub.Transit is a community-powered real-time bus tracking system, designed to overcome the limitations of existing transport data sources in Dublin."
+        "value": "The next big piece for Dub.Transit is community-powered bus tracking, to fill the gaps in Dublin's existing live data."
       },
       {
         "type": "subheading",
@@ -2669,7 +2669,7 @@
         "type": "image",
         "value": {
           "src": "images/Theyyam/Theyyam_3.jpg",
-          "alt": "Closeup of the 'Theyyam Threads' t-shirt design, a powerful black and white graphic of a Theyyam face."
+          "alt": "Closeup of the 'Theyyam Threads' t-shirt design, a black and white graphic of a Theyyam face."
         }
       },
       {
@@ -2711,7 +2711,7 @@
         "type": "image",
         "value": {
           "src": "images/Theyyam/Theyyam_Insp.jpg",
-          "alt": "A grid of inspiration photos showing the vibrant colors and intense expressions of Theyyam performers."
+          "alt": "A grid of inspiration photos of Theyyam performers, their colours and expressions."
         }
       },
       {
