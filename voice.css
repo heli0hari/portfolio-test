@@ -370,3 +370,10 @@ body[data-mode="look"] .chroma { margin-top: var(--f3); }
 /* short laptop screens: smaller Fibonacci steps, and the headline sizes to the space above the golden line */
 @media (min-width: 1024px) and (max-height: 820px) { :root { --f1: 34px; --f2: 55px; --f3: 89px; } }
 .thesis__word { font-size: min(clamp(46px, 8.4vw, 130px), calc((61.8svh - var(--hero-top) - var(--f2)) / 2.9)); }
+/* phones: the headline hangs from the top (no golden-line drop); Fibonacci gaps stay */
+@media (max-width: 760px) {
+  .hero__body { padding-top: var(--f2); }
+  .hero__thesis-wrap { min-height: 0; }
+  .thesis__word { font-size: clamp(46px, 8.4vw, 130px); }
+  .thesis__word:nth-child(3) { align-self: flex-end; text-align: right; margin-left: 0; }   /* no room for the 38.2% step */
+}
