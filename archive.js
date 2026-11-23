@@ -3,7 +3,7 @@
    fragmented sculpture (drag to turn freely)
      -> scroll: photo faces break out of the prisms
      -> they re-form into a photo carousel (scroll / drag / keys)
-   mountArchive(container, photos, opts) -> { total, tags, filter, setProgress, stage, openFront, step, destroy }
+   mountArchive(container, photos, opts) -> { total, count, setProgress, spinScreens, stage, step, destroy }
    ========================================================= */
 import * as THREE from 'three';
 import { RoomEnvironment } from './vendor/three/RoomEnvironment.js';
@@ -193,13 +193,14 @@ export function mountArchive(container, photos, opts = {}) {
   const sculptSet = new Set();
   for (let i = 0; i < nSculpt; i++) sculptSet.add(land[Math.floor(i * land.length / nSculpt)]);
 
-  /* ---------- carousel geometry (arc-length layout on one big ring) ---------- */
+  /* ---------- gallery geometry ----------
+     Photos wrap a cylinder in several rows (a curved gallery wall). Each row is
+     packed in hue order and stretched to the same circumference, so the wall
+     loops endlessly with no seam. */
   const SC = 1.0;
-  const GAP = 0.14;
+  const GAP = 0.12, VGAP = 0.16;
   const widthOf = p => PH * clamp(p.w / p.h, 0.55, 2.0);
-  const totalLen = all.reduce((s, p) => s + widthOf(p) * SC + GAP, 0);
-  const RC = Math.max(9, totalLen / (2 * Math.PI));   // the ring closes exactly: endless loop, no ends
-  const CIRC = 2 * Math.PI * RC;
+  let ROWS = 4, RC = 9, CIRC = 2 * Math.PI * 9;
   const dmod = (a, b) => ((((a - b) % CIRC) + CIRC * 1.5) % CIRC) - CIRC / 2;   // shortest arc from b to a
 
   /* ---------- panels ---------- */
@@ -242,7 +243,7 @@ export function mountArchive(container, photos, opts = {}) {
     const pn = {
       photo: p, index: i, w, g, holder, photoMat, rimMat, curve, hover: 0,
       sculpt: sculptSet.has(p), delay: rand() * 0.3,
-      s: 0, ang: 0, angT: 0, vis: 1, visT: 1, tex: null, loading: false,
+      s: 0, ang: 0, angT: 0, y: 0, yT: 0, dim: 1, vis: 1, visT: 1, tex: null, loading: false,
     };
     if (pn.sculpt) {
       const slot = slots[order[slotCursor++]];
@@ -271,12 +272,27 @@ export function mountArchive(container, photos, opts = {}) {
 
   function layout(tag) {
     visible = tag ? panels.filter(pn => (pn.photo.tags || []).includes(tag)) : panels.slice();
-    let s = 0;
-    visible.forEach((pn, j) => {
-      pn.s = s + pn.w * SC / 2;
-      pn.angT = pn.s / RC;
-      pn.vis_i = j;
-      s += pn.w * SC + GAP;
+    // greedy: next photo (hue order) goes to the shortest row, so colour flows left to right
+    const rows = Array.from({ length: ROWS }, () => []);
+    const len = new Array(ROWS).fill(0);
+    visible.forEach(pn => {
+      let r = 0;
+      for (let i = 1; i < ROWS; i++) if (len[i] < len[r] - 1e-6) r = i;
+      rows[r].push(pn); len[r] += pn.w * SC + GAP;
+    });
+    CIRC = Math.max(...len, 2 * Math.PI * 6);
+    RC = CIRC / (2 * Math.PI);
+    rows.forEach((row, r) => {
+      // stretch the gaps so every row spans exactly the circumference
+      const content = row.reduce((a, pn) => a + pn.w * SC, 0);
+      const gap = row.length ? (CIRC - content) / row.length : GAP;
+      let s = (r % 2) * gap * 0.5;            // small stagger between rows
+      row.forEach(pn => {
+        pn.s = s + pn.w * SC / 2;
+        pn.angT = pn.s / RC;
+        pn.yT = ((ROWS - 1) / 2 - r) * (PH * SC + VGAP);
+        s += pn.w * SC + gap;
+      });
     });
     panels.forEach(pn => { pn.visT = visible.includes(pn) ? 1 : 0; });
     sFirst = visible.length ? visible[0].s : 0;
@@ -289,7 +305,7 @@ export function mountArchive(container, photos, opts = {}) {
   const loader = new THREE.TextureLoader();
   const aniso = Math.min(8, renderer.capabilities.getMaxAnisotropy());
   let active = 0, loadedSculpt = 0;
-  const MAX_ACTIVE = 6, KEEP = 26;      // cards loaded around the front in the carousel
+  const MAX_ACTIVE = 6, KEEP = 64;      // cards kept loaded around the view in the gallery
 
   function load(pn) {
     pn.loading = true; active++;
@@ -341,7 +357,7 @@ export function mountArchive(container, photos, opts = {}) {
 
 
   /* ---------- camera framing ---------- */
-  let vw = 1, vh = 1;
+  let vw = 1, vh = 1, viewW = 10;
   const camA = new THREE.Vector3(), camC = new THREE.Vector3();
   const R_SCULPT = 2.75;
   function resize() {
@@ -353,13 +369,15 @@ export function mountArchive(container, photos, opts = {}) {
     const tan = Math.tan(camera.fov * DEG / 2);
     const dA = Math.max(R_SCULPT / tan, R_SCULPT / tan / camera.aspect);
     camA.set(0, 0.2, dA * (vw < 700 ? 0.92 : 1.0));
-    const frac = camera.aspect < 1 ? 0.8 : 0.4;          // a 3:2 card's share of the width
-    const dC = (PW * SC / frac) / 2 / tan / camera.aspect;
-    // ...but never taller than the space between the filter bar and the caption bar
+    // gallery: fewer rows on narrow screens; fit the wall between the title and caption bar
+    const rows = camera.aspect < 0.8 ? 3 : 4;
+    if (rows !== ROWS) { ROWS = rows; if (panels.length) layout(null); }
     const pad = Math.min(72, Math.max(22, vw * 0.05));
-    const availH = Math.max(0.3, Math.min(0.58, (vh - 2 * (pad + 56)) / vh));
-    const dH = (PH * SC / availH) / 2 / tan;
-    camC.set(0, 0, RC + Math.max(dC, dH));   // level: card centred, far side of the ring hidden
+    const availH = Math.max(0.4, Math.min(0.78, (vh - 2 * (pad + 40)) / vh));
+    const wallH = ROWS * PH * SC + (ROWS - 1) * VGAP;
+    const dH = (wallH / availH) / 2 / tan;
+    camC.set(0, 0, RC + dH);
+    viewW = 2 * dH * tan * camera.aspect;    // world width visible at the wall
   }
   new ResizeObserver(resize).observe(container);
 
@@ -370,7 +388,7 @@ export function mountArchive(container, photos, opts = {}) {
   let dragging = false, lastX = 0, lastY = 0, moved = 0, lastInput = 0;
   let avx = 0, avy = 0;                                 // free-rotation velocity
   let vel = 0;                                          // carousel velocity (arc length / frame)
-  let pointerIn = false, hovered = null, progress = 0, pSmooth = 0, spinP = 0, spinSmooth = 0, frontPn = null, stage = -1;
+  let pointerIn = false, hovered = null, progress = 0, pSmooth = 0, spinP = 0, spinSmooth = 0, stage = -1;
   const freeQ = eulerQ([12, -20, 0]);
   const el = renderer.domElement;
   el.style.touchAction = 'pan-y';
@@ -385,7 +403,6 @@ export function mountArchive(container, photos, opts = {}) {
     return spinSmooth * CIRC;
   }
   function currentS() { return sFirst + scrollS() + sOffset; }
-  function cardPx() { return vw * (camera.aspect < 1 ? 0.8 : 0.4); }
 
   function setPointer(e) {
     const r = el.getBoundingClientRect();
@@ -411,7 +428,7 @@ export function mountArchive(container, photos, opts = {}) {
       avx = dx * k; avy = (e.pointerType === 'mouse' ? dy : 0) * k;
       turnFree(avx, avy);
     } else {
-      const k = (PW * SC) / cardPx();
+      const k = viewW / vw;                  // the wall follows the finger 1:1
       sOffset -= dx * k;
       vel = -dx * k;
     }
@@ -462,15 +479,9 @@ export function mountArchive(container, photos, opts = {}) {
       avx *= damp; avy *= damp;
       if (Math.abs(avx) + Math.abs(avy) > 1e-5) turnFree(avx, avy);
       if (!reduce && uE < 0.5 && now - lastInput > 1200) turnFree(dt * 0.12 * (hovered ? 0.15 : 1), 0);
-      // carousel: inertia, then settle on the nearest card
+      // gallery: glide on after a drag
       vel *= Math.exp(-dt * 4);
       sOffset += vel;
-      if (uC > 0.98 && Math.abs(vel) < 0.002 && now - lastInput > 180 && visible.length) {
-        const sNow = currentS();
-        let near = visible[0];
-        visible.forEach(pn => { if (Math.abs(dmod(pn.s, sNow)) < Math.abs(dmod(near.s, sNow))) near = pn; });
-        sOffset += dmod(near.s, sNow) * (reduce ? 1 : 1 - Math.exp(-dt * 7));
-      }
     }
     const sNow = currentS();
     const yaw = sNow / RC;
@@ -494,19 +505,17 @@ export function mountArchive(container, photos, opts = {}) {
     if (hit !== hovered) {
       hovered = hit;
       el.style.cursor = hit ? 'pointer' : 'grab';
-      if (hit) report(hit);
-      else if (stage !== 2) onHover(null);
-      else frontPn = null;
+      if (hit) report(hit); else onHover(null);
     }
 
-    let front = null, best = 1e9;
     const lk = reduce ? 1 : 1 - Math.exp(-dt * 5);
     panels.forEach(pn => {
-      pn.ang += (pn.angT - pn.ang) * lk;          // smooth re-layout when the filter changes
+      pn.ang += dmod(pn.angT * RC, pn.ang * RC) / RC * lk;   // smooth re-layout (rows change on resize)
+      pn.y += (pn.yT - pn.y) * lk;
       pn.vis += (pn.visT - pn.vis) * lk;
       const e = pn.sculpt ? clamp(uE * 1.3 - pn.delay, 0, 1) : 0;
       const ee = ease(e);
-      cTmp.set(Math.sin(pn.ang) * RC, 0, Math.cos(pn.ang) * RC);
+      cTmp.set(Math.sin(pn.ang) * RC, pn.y, Math.cos(pn.ang) * RC);
       vTmp.copy(pn.A).lerp(pn.E, ee).lerp(cTmp, uC);
       pn.g.position.copy(vTmp);
       qC.setFromAxisAngle(AY, pn.ang);
@@ -518,13 +527,15 @@ export function mountArchive(container, photos, opts = {}) {
       pn.curve.value = (SC / RC) * uC;
 
       pn.hover += ((pn === hovered ? 1 : 0) - pn.hover) * (reduce ? 1 : 1 - Math.exp(-dt * 10));
-      pn.holder.position.z = pn.hover * 0.12;
+      // hover: the photo lifts toward you and grows; the rest of the wall dims slightly
+      pn.holder.position.z = pn.hover * (0.12 + 0.8 * uC);
+      pn.holder.scale.setScalar(1 + pn.hover * 0.4 * uC);
+      pn.dim += (((hovered && hovered !== pn && uC > 0.5) ? 0.55 : 1) - pn.dim) * (reduce ? 1 : 1 - Math.exp(-dt * 8));
       pn.rimMat.emissive.copy(ACCENT).multiplyScalar(pn.hover * 1.3);
       if (pn.fade !== undefined && pn.fade < 1) pn.fade = Math.min(1, pn.fade + dt * 1.5);
       // fade in after loading; faces in the sculpture are a touch dimmer so it still reads as an object
-      if (pn.photoMat.map) pn.photoMat.color.setScalar((0.35 + 0.65 * (pn.fade ?? 1)) * (0.86 + 0.14 * Math.max(uC, pn.hover)));
+      if (pn.photoMat.map) pn.photoMat.color.setScalar((0.35 + 0.65 * (pn.fade ?? 1)) * (0.86 + 0.14 * Math.max(uC, pn.hover)) * pn.dim);
 
-      if (pn.visT && Math.abs(dmod(pn.s, sNow)) < best) { best = Math.abs(dmod(pn.s, sNow)); front = pn; }
     });
 
     pageTimer -= dt;
@@ -536,8 +547,6 @@ export function mountArchive(container, photos, opts = {}) {
 
     const s = uC > 0.9 ? 2 : uE > 0.08 ? 1 : 0;
     if (s !== stage) { stage = s; onStage(s); }
-    if (s === 2 && !hovered && front && front !== frontPn) { frontPn = front; report(front); }
-    if (s !== 2) frontPn = null;
 
     renderer.render(scene, camera);
     requestAnimationFrame(frame);
@@ -552,9 +561,9 @@ export function mountArchive(container, photos, opts = {}) {
   const io = new IntersectionObserver(en => { en[0].isIntersecting ? start() : stop(); });
   io.observe(container);
   document.addEventListener('visibilitychange', () => { document.hidden ? stop() : start(); });
-  resize();
   layout(null);
-  panels.forEach(pn => { pn.ang = pn.angT; pn.vis = pn.visT; });
+  resize();
+  panels.forEach(pn => { pn.ang = pn.angT; pn.vis = pn.visT; pn.y = pn.yT; });
 
   return {
     total: all.length,
@@ -562,16 +571,9 @@ export function mountArchive(container, photos, opts = {}) {
     // intro: 0..1 over the explode + form; spin: 0..1 = one full turn of the carousel
     setProgress(intro, spin) { progress = clamp(intro, 0, 1); spinP = clamp(spin || 0, 0, 1); },
     stage() { return stage; },
-    openFront() { if (frontPn) openPanel(frontPn); },
-    step(d) {
-      if (!visible.length) return;
-      const sNow = currentS();
-      let i = 0, best = 1e9;
-      visible.forEach((pn, j) => { const dd = Math.abs(dmod(pn.s, sNow)); if (dd < best) { best = dd; i = j; } });
-      const n = visible.length;
-      const target = visible[((i + d) % n + n) % n].s;
-      vel = 0; sOffset += dmod(target, sNow); lastInput = performance.now() - 1000;
-    },
+    step(d) { vel = d * viewW * 0.5 * (1 - Math.exp(-4 / 60)); lastInput = performance.now(); },
+    // scroll length for one full loop of the wall, in screens
+    spinScreens() { return clamp((CIRC / viewW) * 0.9, 2, 7); },   // capped: on phones scroll moves faster than 1:1
     destroy() { stop(); io.disconnect(); renderer.dispose(); el.remove(); }
   };
 }

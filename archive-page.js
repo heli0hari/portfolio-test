@@ -1,4 +1,4 @@
-import { mountArchive, webglAvailable } from './archive.js?v=1795405676';
+import { mountArchive, webglAvailable } from './archive.js?v=1795406544';
 
 const stage = document.getElementById('archiveStage');
 const nowEl = document.getElementById('archiveNow');
@@ -66,7 +66,7 @@ viewer.addEventListener('touchend', e => {
 const section = document.getElementById('archive');
 const hint = document.getElementById('archiveHint');
 const rail = document.getElementById('archiveRail');
-const HINTS = ['Drag to turn · Scroll to open', 'Keep scrolling', 'Drag or scroll to browse · Tap to view'];
+const HINTS = ['Drag to turn · Scroll to open', 'Keep scrolling', 'Scroll or drag to browse · Click a photo to view'];
 
 if (!webglAvailable()) {
   document.getElementById('archiveFallback').hidden = false;
@@ -78,7 +78,7 @@ if (!webglAvailable()) {
     .then(data => {
       const api = mountArchive(stage, data.photos || [], {
         onOpen: open,
-        onHover: (p, i, n) => { nowEl.textContent = p ? pad(i + 1) + ' / ' + pad(n) + '  —  ' + label(p) : '\u00a0'; },
+        onHover: (p, i, n) => { nowEl.textContent = p ? pad(i + 1) + ' / ' + pad(n) + '  —  ' + label(p) : api.total + ' photographs'; },
         onStage: s => {
           hint.textContent = HINTS[s];
           document.body.classList.toggle('is-open', s > 0);
@@ -95,8 +95,9 @@ if (!webglAvailable()) {
 
       // Scroll length: two screens for the explode + form, then enough to turn
       // the carousel once through every photo (~7% of a screen per photo).
-      const INTRO = 2, PER_PHOTO = 0.07;
-      section.style.height = ((1 + INTRO + api.count * PER_PHOTO) * 100) + 'vh';
+      const INTRO = 2;
+      function sizeSection() { section.style.height = ((1 + INTRO + api.spinScreens()) * 100) + 'vh'; }
+      sizeSection();
       function onScroll() {
         const vh = window.innerHeight;
         const y = -section.getBoundingClientRect().top;
@@ -107,7 +108,7 @@ if (!webglAvailable()) {
         rail.style.transform = 'scaleY(' + Math.min(1, Math.max(0, y / total)).toFixed(4) + ')';
       }
       window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', onScroll);
+      window.addEventListener('resize', () => { sizeSection(); onScroll(); });
       onScroll();
 
       // arrow keys step through the carousel when it's on screen
@@ -115,7 +116,6 @@ if (!webglAvailable()) {
         if (viewer.classList.contains('is-open') || api.stage() !== 2) return;
         if (e.key === 'ArrowRight') { api.step(1); e.preventDefault(); }
         else if (e.key === 'ArrowLeft') { api.step(-1); e.preventDefault(); }
-        else if (e.key === 'Enter') api.openFront();
       });
     })
     .catch(err => console.warn('Archive: could not load photos.json', err));
