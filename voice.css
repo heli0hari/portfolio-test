@@ -84,10 +84,10 @@
    The ball travels exactly half its circumference (pi * r), so one roll turns it 180°:
    the Read glyph (lines of text) rolls under and the Look glyph (an eye) comes up. */
 .switch__track {
-  --ball: 40px;
+  --ball: 34px;
   --roll: calc(var(--ball) * 1.5708);            /* pi * r */
   background: none; border-radius: 0; padding: 0;
-  align-items: center; gap: 14px;
+  align-items: center; gap: 16px;
 }
 .switch__slider { display: none; }
 .switch__btn {
@@ -96,9 +96,18 @@
 }
 .switch__btn:hover, .switch__btn[aria-selected="true"] { color: var(--ink); }
 .switch__btn:focus-visible { border-radius: 2px; }
-.switch__lane { position: relative; display: block; width: calc(var(--ball) + var(--roll)); height: var(--ball); cursor: pointer; }
+/* the lane is drawn as a hairline groove, so it reads as a switch without being a filled pill */
+.switch__lane {
+  position: relative; display: block; box-sizing: content-box;
+  width: calc(var(--ball) + var(--roll)); height: var(--ball);
+  padding: 4px; border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--ink) 28%, transparent);
+  cursor: pointer;
+  transition: border-color 200ms var(--ease);
+}
+.switch__lane:hover { border-color: color-mix(in srgb, var(--ink) 55%, transparent); }
 .switch__ball {
-  position: absolute; left: 0; top: 0;
+  position: absolute; left: 4px; top: 4px;
   width: var(--ball); height: var(--ball); border-radius: 50%;
   background: var(--ink); color: var(--ground);
   transition: transform 700ms cubic-bezier(0.55, 0, 0.25, 1), background-color var(--dur) var(--ease), color var(--dur) var(--ease);
@@ -112,9 +121,8 @@ body[data-mode="look"] .switch__ball { transform: translateX(var(--roll)) rotate
 .switch__ico--look { transform: rotate(180deg); opacity: 0; }       /* drawn upside down: upright after the roll */
 body[data-mode="look"] .switch__ico--read { opacity: 0; }
 body[data-mode="look"] .switch__ico--look { opacity: 1; }
-.switch__lane:hover .switch__ball { box-shadow: 0 0 0 6px var(--hair); }
 @media (max-width: 640px) {
-  .switch__track { --ball: 32px; gap: 12px; }
+  .switch__track { --ball: 28px; gap: 12px; }
   .switch__btn { font-size: 22px; padding: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .switch__ball, .switch__ico { transition: none; } }
