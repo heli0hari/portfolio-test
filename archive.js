@@ -292,7 +292,7 @@ export function mountArchive(container, photos, opts = {}) {
     camA.set(0, 0.2, dA * (vw < 700 ? 0.92 : 1.0));
     const frac = camera.aspect < 1 ? 0.8 : 0.4;          // front card's share of the width
     const dC = (PW * SC / frac) / 2 / tan / camera.aspect;
-    camC.set(0, 0.45, RC + Math.max(dC, PH * SC / 0.55 / 2 / tan));
+    camC.set(0, 0, RC + Math.max(dC, PH * SC / 0.55 / 2 / tan));   // level: card centred, far side of the ring hidden
   }
   new ResizeObserver(resize).observe(container);
 
@@ -446,7 +446,7 @@ export function mountArchive(container, photos, opts = {}) {
     // camera: pulls back for the explosion, then moves out to the carousel
     vTmp.copy(camA).multiplyScalar(1 + uE * (camera.aspect < 1 ? 0.5 : 0.35) * (1 - uC)).lerp(camC, uC);
     camera.position.copy(vTmp);
-    camera.lookAt(0, 0.06 * uC, 0);
+    camera.lookAt(0, 0, 0);
 
     const s = uC > 0.9 ? 2 : uE > 0.08 ? 1 : 0;
     if (s !== stage) { stage = s; onStage(s); }
