@@ -380,3 +380,7 @@ body[data-mode="look"] .chroma { margin-top: var(--f3); }
 
 /* Look: the pointer is just the centre dot */
 .xhair.is-dot .xhair__h, .xhair.is-dot .xhair__v { display: none; }
+/* the dot keeps a thin ring in the opposite tone, so it stays visible on light photos and dark ground alike */
+.xhair__dot { box-shadow: 0 0 0 1.5px rgba(242, 238, 231, 0.85); }
+body[data-mode="look"] .xhair__dot { box-shadow: 0 0 0 1.5px rgba(19, 17, 16, 0.85); }
+.xhair.is-dot .xhair__dot { left: -3px; top: -3px; width: 6px; height: 6px; }
