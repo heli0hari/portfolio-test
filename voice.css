@@ -377,3 +377,6 @@ body[data-mode="look"] .chroma { margin-top: var(--f3); }
   .thesis__word { font-size: clamp(46px, 8.4vw, 130px); }
   .thesis__word:nth-child(3) { align-self: flex-end; text-align: right; margin-left: 0; }   /* no room for the 38.2% step */
 }
+
+/* Look: the pointer is just the centre dot */
+.xhair.is-dot .xhair__h, .xhair.is-dot .xhair__v { display: none; }
