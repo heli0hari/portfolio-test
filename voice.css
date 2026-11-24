@@ -370,8 +370,8 @@ body[data-mode="look"] .chroma { margin-top: var(--f3); }
 /* short laptop screens: smaller Fibonacci steps, and the headline sizes to the space above the golden line */
 @media (min-width: 1024px) and (max-height: 820px) { :root { --f1: 34px; --f2: 55px; --f3: 89px; } }
 .thesis__word { font-size: min(clamp(46px, 8.4vw, 130px), calc((61.8svh - var(--hero-top) - var(--f2)) / 2.9)); }
-/* phones: the headline hangs from the top (no golden-line drop); Fibonacci gaps stay */
-@media (max-width: 760px) {
+/* phones and portrait tablets: the headline hangs from the top (no golden-line drop); Fibonacci gaps stay */
+@media (max-width: 760px), (orientation: portrait) and (max-width: 1100px) {
   .hero__body { padding-top: var(--f2); }
   .hero__thesis-wrap { min-height: 0; }
   .thesis__word { font-size: clamp(46px, 8.4vw, 130px); }
@@ -384,3 +384,12 @@ body[data-mode="look"] .chroma { margin-top: var(--f3); }
 .xhair__dot { box-shadow: 0 0 0 1.5px rgba(242, 238, 231, 0.85); }
 body[data-mode="look"] .xhair__dot { box-shadow: 0 0 0 1.5px rgba(19, 17, 16, 0.85); }
 .xhair.is-dot .xhair__dot { left: -3px; top: -3px; width: 6px; height: 6px; }
+
+/* portrait tablets (iPad): phone-style stack, sized up for the larger screen */
+@media (orientation: portrait) and (min-width: 761px) and (max-width: 1100px) {
+  :root { --f1: 55px; --f2: 89px; --f3: 144px; }
+  .thesis__word { font-size: clamp(72px, 11vw, 140px); }
+  .switch__track { --ball: 44px; }
+  .switch__btn { font-size: 34px; }
+  .hero__mark, .hero__meta { font-size: 16px; }
+}
