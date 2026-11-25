@@ -392,25 +392,50 @@ body[data-mode="look"] .xhair__dot { box-shadow: 0 0 0 1.5px rgba(19, 17, 16, 0.
 }
 
 
-/* ---------- job title, stated plainly under the headline ---------- */
-:root { --role-h: 74px; }
-.hero__role {
-  margin: var(--f1) 0 0;
-  display: flex; flex-direction: column; gap: 4px;
+/* ---------- top bar: availability + section links (the name lives in the role line) ---------- */
+.hero__status { display: inline-flex; align-items: center; gap: 10px; letter-spacing: 0.02em; }
+.hero__dot {
+  width: 7px; height: 7px; border-radius: 50%; background: #3f9a5b; flex: none;
+  box-shadow: 0 0 0 0 rgba(63, 154, 91, 0.45);
+  animation: heroPulse 2.4s var(--ease) infinite;
 }
+@keyframes heroPulse { 0% { box-shadow: 0 0 0 0 rgba(63,154,91,.45); } 70%,100% { box-shadow: 0 0 0 8px rgba(63,154,91,0); } }
+@media (prefers-reduced-motion: reduce) { .hero__dot { animation: none; } }
+.hero__nav { display: flex; gap: clamp(18px, 2.4vw, 36px); }
+.hero__nav a {
+  font-size: 14px; color: var(--ink);
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  padding-bottom: 2px;
+  transition: background-size 300ms var(--ease), color var(--dur) var(--ease);
+}
+.hero__nav a:hover, .hero__nav a:focus-visible { background-size: 100% 1px; outline: none; }
+@media (max-width: 640px) {
+  .hero__bar { flex-wrap: wrap; row-gap: 14px; }
+  .hero__status { font-size: 13px; }
+  .hero__nav { gap: 20px; }
+  .hero__nav a { font-size: 13px; }
+}
+
+/* ---------- job title ----------
+   desktop: sits on the golden line at the right edge, level with the switch, so the
+   headline keeps its full size and the staircase ends in the role line
+   phones / portrait: stacks under the headline */
+.hero__body { position: relative; }
+.hero__role { margin: 0; display: flex; flex-direction: column; gap: 6px; }
 .hero__role-t {
-  font-size: clamp(18px, 1.6vw, 24px); font-weight: 500; letter-spacing: -0.015em;
+  font-size: clamp(18px, 1.6vw, 26px); font-weight: 500; letter-spacing: -0.015em;
   font-variation-settings: 'opsz' 24;
 }
 .hero__role-s { font-size: 14px; color: var(--meta); transition: color var(--dur) var(--ease); }
-/* the headline gives up the role line's height, so the switch stays on the golden line */
-.thesis__word { font-size: min(clamp(46px, 8.4vw, 130px), calc((61.8svh - var(--hero-top) - var(--f2) - var(--f1) - var(--role-h)) / 2.9)); }
-@media (max-width: 760px), (orientation: portrait) and (max-width: 1100px) {
-  .thesis__word { font-size: clamp(46px, 8.4vw, 130px); }
-  .hero__role { margin-top: var(--f1); }
+@media (min-width: 761px) and (orientation: landscape), (min-width: 1101px) {
+  .hero__role {
+    position: absolute; right: 0;
+    top: calc(61.8svh - var(--hero-top) + 48px + 12px);
+    align-items: flex-end; text-align: right;
+  }
 }
-@media (orientation: portrait) and (min-width: 761px) and (max-width: 1100px) {
-  .thesis__word { font-size: clamp(72px, 11vw, 140px); }
+@media (max-width: 760px), (orientation: portrait) and (max-width: 1100px) {
+  .hero__role { margin-top: var(--f1); }
 }
 @media (max-width: 640px) {
   .hero__role-t { font-size: 17px; }

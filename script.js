@@ -139,6 +139,25 @@
     });
   });
 
+  /* top bar: Work / About jump to their Read sections (switching from Look first); Contact opens the contact sheet */
+  document.querySelectorAll('.hero__nav [data-goto]').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      var target = link.dataset.goto;
+      if (target === 'contact') {
+        var cta = document.querySelector('.cta__primary');
+        if (cta) cta.click();
+        return;
+      }
+      var go = function () {
+        var el = document.getElementById(target);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+      if (body.getAttribute('data-mode') !== 'read') { switchTo('read'); setTimeout(go, 450); }
+      else go();
+    });
+  });
+
   /* ---------- Initial mode from the URL ----------
      #look opens Look directly (shareable); anything else lands on Read. */
   (function initMode() {
