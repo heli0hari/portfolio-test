@@ -409,12 +409,16 @@ body[data-mode="look"] .xhair__dot { box-shadow: 0 0 0 1.5px rgba(19, 17, 16, 0.
   transition: background-size 300ms var(--ease), color var(--dur) var(--ease);
 }
 .hero__nav a:hover, .hero__nav a:focus-visible { background-size: 100% 1px; outline: none; }
+/* phones: one quiet line — status left, links right; the location drops out */
 @media (max-width: 640px) {
-  .hero__bar { flex-wrap: wrap; row-gap: 14px; }
-  .hero__status { font-size: 13px; }
-  .hero__nav { gap: 20px; }
+  .hero__bar { flex-wrap: nowrap; align-items: center; }
+  .hero__status { font-size: 13px; gap: 8px; white-space: nowrap; }
+  .hero__dot { width: 6px; height: 6px; }
+  .hero__loc { display: none; }
+  .hero__nav { gap: 16px; }
   .hero__nav a { font-size: 13px; }
 }
+@media (max-width: 360px) { .hero__nav a[data-goto="index"] { display: none; } }
 
 /* ---------- job title ----------
    desktop: sits on the golden line at the right edge, level with the switch, so the
