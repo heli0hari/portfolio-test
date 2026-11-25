@@ -394,6 +394,7 @@ body[data-mode="look"] .xhair__dot { box-shadow: 0 0 0 1.5px rgba(19, 17, 16, 0.
 
 /* ---------- top bar: availability + section links (the name lives in the role line) ---------- */
 .hero__status { display: inline-flex; align-items: center; gap: 10px; letter-spacing: 0.02em; }
+.hero__loc { margin-left: -10px; }
 .hero__dot {
   width: 7px; height: 7px; border-radius: 50%; background: #3f9a5b; flex: none;
   box-shadow: 0 0 0 0 rgba(63, 154, 91, 0.45);
