@@ -661,6 +661,24 @@
         }
       },
       {
+        "type": "video",
+        "value": {
+          "items": [
+            {
+              "image": "images/IRCamera/IR_Hardware.jpg",
+              "alt": "Raspberry Pi 3 Model A+ next to the 2.8-inch ST7789 TFT display board.",
+              "label": "Pi 3 A+ and the 2.8″ display"
+            },
+            {
+              "image": "images/IRCamera/IR_Filter.jpg?v=2",
+              "alt": "A 37 mm variable infrared filter marked 550–750 nm.",
+              "label": "37 mm IR filter, 550–750 nm"
+            }
+          ],
+          "caption": "The core hardware, and the filter that sets which wavelengths reach the sensor."
+        }
+      },
+      {
         "type": "subheading",
         "value": "Ideas I ruled out"
       },
@@ -708,6 +726,43 @@
       {
         "type": "paragraph",
         "value": "An infrared flash gives the sensor light the eye barely sees, which helps indoors, at night and through dark filters. I picked 850 nm over 940 nm because the sensor is much less sensitive at 940. Two small 3 W LED boards are switched by a logic-level MOSFET module, since the common IRF520 module can’t be driven properly from the Pi’s 3.3 V pins."
+      },
+      {
+        "type": "heading",
+        "value": "The Case"
+      },
+      {
+        "type": "paragraph",
+        "value": "I modelled the case in <b>Blender</b> around the Pi, the camera module and the screen, and printed early versions to test the fit. Each print checks that the boards sit on their screw posts and that the ports and the lens line up with their openings."
+      },
+      {
+        "type": "video",
+        "value": {
+          "items": [
+            {
+              "image": "images/IRCamera/IR_Case_Back.jpg",
+              "alt": "3D-printed back plate with a raised camera mount and screw holes.",
+              "label": "Back plate with camera mount"
+            },
+            {
+              "image": "images/IRCamera/IR_Case_Mount.jpg",
+              "alt": "3D-printed panel with a round recess and a mount for the camera board.",
+              "label": "Lens side"
+            },
+            {
+              "image": "images/IRCamera/IR_Case_Front.jpg",
+              "alt": "Inside of a 3D-printed shell with screw posts and port cut-outs.",
+              "label": "Shell with port cut-outs"
+            },
+            {
+              "image": "images/IRCamera/IR_Case_Shell.jpg",
+              "alt": "An earlier, simpler 3D-printed shell.",
+              "label": "Earlier shell"
+            }
+          ],
+          "cols": 2,
+          "caption": "Early test prints of the case."
+        }
       },
       {
         "type": "heading",

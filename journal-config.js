@@ -65,9 +65,10 @@ window.JOURNAL = {
       { at: 1, label: 'Overview' },
       { at: 5, label: 'First results' },
       { at: 10, label: 'Hardware' },
-      { at: 22, label: 'Software' },
-      { at: 26, label: 'Interface' },
-      { at: 35, label: 'Reflection' }
+      { at: 23, label: 'Case' },
+      { at: 26, label: 'Software' },
+      { at: 30, label: 'Interface' },
+      { at: 39, label: 'Reflection' }
     ]
   },
   'city-beneaththesurface': {
