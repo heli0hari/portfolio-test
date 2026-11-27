@@ -395,13 +395,6 @@ body[data-mode="look"] .xhair__dot { box-shadow: 0 0 0 1.5px rgba(19, 17, 16, 0.
 /* ---------- top bar: availability + section links (the name lives in the role line) ---------- */
 .hero__status { display: inline-flex; align-items: center; gap: 10px; letter-spacing: 0.02em; }
 .hero__loc { margin-left: -10px; }
-.hero__dot {
-  width: 7px; height: 7px; border-radius: 50%; background: #3f9a5b; flex: none;
-  box-shadow: 0 0 0 0 rgba(63, 154, 91, 0.45);
-  animation: heroPulse 2.4s var(--ease) infinite;
-}
-@keyframes heroPulse { 0% { box-shadow: 0 0 0 0 rgba(63,154,91,.45); } 70%,100% { box-shadow: 0 0 0 8px rgba(63,154,91,0); } }
-@media (prefers-reduced-motion: reduce) { .hero__dot { animation: none; } }
 .hero__nav { display: flex; gap: clamp(18px, 2.4vw, 36px); }
 .hero__nav a {
   font-size: 14px; color: var(--ink);
@@ -414,12 +407,11 @@ body[data-mode="look"] .xhair__dot { box-shadow: 0 0 0 1.5px rgba(19, 17, 16, 0.
 @media (max-width: 640px) {
   .hero__bar { flex-wrap: nowrap; align-items: center; }
   .hero__status { font-size: 13px; gap: 8px; white-space: nowrap; }
-  .hero__dot { width: 6px; height: 6px; }
   .hero__loc { display: none; }
   .hero__nav { gap: 16px; }
   .hero__nav a { font-size: 13px; }
 }
-@media (max-width: 360px) { .hero__nav a[data-goto="index"] { display: none; } }
+@media (max-width: 360px) { .hero__nav a[data-goto="work"] { display: none; } }
 
 /* ---------- job title ----------
    desktop: sits on the golden line at the right edge, level with the switch, so the
@@ -628,3 +620,10 @@ html.film-full .film.is-idle .film__hit { cursor: none !important; }
 /* phone-only line breaks in the role line, so it breaks at the dash and the middot, never mid-phrase */
 .br-m { display: none; }
 @media (max-width: 640px) { .br-m { display: inline; } }
+
+/* one numbering system only: the side index keeps the section numbers (read from .lk__no),
+   so the big section numerals, card numbers and per-section "Back to top" buttons step back */
+.lk__no { display: none; }
+.cw__no { display: none; }
+.bar__acts [data-totop], .grade__foot { display: none; }
+.cw__card { grid-template-columns: minmax(0, 1fr); grid-template-areas: "media" "name" "cat" "desc"; column-gap: 0; }

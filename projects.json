@@ -4,7 +4,7 @@
     "category": "3D, Geometry Nodes & Compositing",
     "year": "2026",
     "hue": 95,
-    "description": "A Gaussian-splat alley, relit in Blender, with a creature built entirely in Geometry Nodes crawling through it.",
+    "description": "Relit a Gaussian-splat alley in Blender, then built the creature crawling through it entirely in Geometry Nodes.",
     "image": "images/Alley/Alley_Title.jpg",
     "tags": [
       "Gaussian Splatting",
@@ -160,7 +160,7 @@
     "category": "Motion Design & Geometry Nodes",
     "year": "2026",
     "hue": 18,
-    "description": "A procedural Geometry Nodes system for a client project: a field of glass disks that turn, grow and glow orange as an effector passes through them.",
+    "description": "A field of glass disks that turn, grow and glow orange when an effector passes through, all driven by one procedural Geometry Nodes setup.",
     "image": "images/DiskField/DF_Title.jpg",
     "tags": [
       "Geometry Nodes",
@@ -350,7 +350,7 @@
     "category": "3D Printing & Product Design",
     "year": "2026",
     "hue": 42,
-    "description": "A photograph turned into a lithophane lamp: made first as a birthday gift, then turned into a standard workflow I now use to make them on demand.",
+    "description": "First made from a single photograph as a birthday gift. I've since turned it into a workflow and make these lamps on demand.",
     "image": "images/LithophaneLamp/Lamp_Cover.jpg?v=2",
     "tags": [
       "3D Printing",
@@ -523,7 +523,7 @@
     "category": "Hardware & Interaction Design",
     "year": "2026",
     "hue": 320,
-    "description": "A hand-built Raspberry Pi camera that shoots near-infrared photos and turns them into false colour. Work in progress.",
+    "description": "I built this Raspberry Pi camera by hand. It shoots near-infrared photos and turns them into false colour. Still in progress.",
     "image": "images/IRCamera/IR_Sample.jpg",
     "tags": [
       "In progress",
@@ -978,7 +978,7 @@
     "category": "Product & Brand Design",
     "year": "2026",
     "hue": 80,
-    "description": "WealthX links every account, investment, and asset into a single AI-powered intelligence layer, so your capital always knows exactly where it stands.",
+    "description": "WealthX brings every account, investment and asset into one place, with an AI layer that keeps track of where your money stands.",
     "image": "images/WealthX/WX_Logo.jpg",
     "tags": [
       "Brand Identity",
@@ -1102,7 +1102,7 @@
       },
       {
         "type": "paragraph",
-        "value": "Three categories that rarely share a shelf identity. The thread isn't a motif, it's a method: uncoated kraft, one ink line, one colour per product, and a vein-textured band that wraps every pack in the same place."
+        "value": "Coffee, tea and spices rarely share one shelf identity. What ties them together here is a set of rules: uncoated kraft, one ink line, one colour per product, and a vein-textured band that wraps every pack in the same place."
       },
       {
         "type": "image",
@@ -1120,7 +1120,7 @@
       },
       {
         "type": "paragraph",
-        "value": "Five botanicals drawn by hand, fruit leading, not flower, because coffee and tea blossoms look the same from two feet away."
+        "value": "Five botanicals, drawn by hand. Each one shows the fruit rather than the flower, because coffee and tea blossoms look the same from two feet away."
       },
       {
         "type": "image",
@@ -1164,7 +1164,7 @@
     "category": "Behavioural Design",
     "year": "2026",
     "hue": 30,
-    "description": "A behavioural productivity assistant for the hardest part of any task: getting from meaning to start to actually starting.",
+    "description": "A productivity assistant built around behaviour, for the hardest part of any task, which is getting from meaning to start to actually starting.",
     "image": "images/Hiro/Title.jpg",
     "tags": [
       "UX Design",
@@ -2332,7 +2332,7 @@
     "category": "User Experience Design",
     "year": "2025",
     "hue": 150,
-    "description": "A real-time transit application that simplifies navigating Dublin’s transport network with simple route search, live bus tracking, service alerts, weather, and an AI assistant for planning trips.",
+    "description": "Live bus tracking, simple route search, service alerts, weather and an AI trip-planning assistant, to make Dublin’s transport network easier to get around.",
     "image": "images/dubtransit/dubscreen.png",
     "tags": [
       "UX Design",
@@ -2929,7 +2929,7 @@
     "category": "Data Visualization",
     "year": "2025",
     "hue": 210,
-    "description": "An interactive data visualization and public installation that reveals the invisible labor sustaining cities by turning public sentiment into visuals that move and change.",
+    "description": "An interactive data visualization and public installation about the invisible labor that keeps cities running. Public sentiment drives the visuals, which move and change.",
     "image": "images/City/City_Main.jpg",
     "tags": [
       "Information Design",
@@ -3338,7 +3338,7 @@
       },
       {
         "type": "paragraph",
-        "value": "Working on this meant reading into where Theyyam comes from and what it stands for, not just how it looks. The shirts became a small way to carry that tradition to people who might never see a performance."
+        "value": "Working on this meant reading into where Theyyam comes from and what it stands for, as well as how it looks. The shirts became a small way to carry that tradition to people who might never see a performance."
       },
       {
         "type": "image",
@@ -3354,7 +3354,7 @@
     "category": "Product Design",
     "year": "2022",
     "hue": 280,
-    "description": "A mediatory system for artisans to sell their knowledge and craft, helping customers get hands-on experience.",
+    "description": "Artisans sell their knowledge and craft through it, and customers get to try the work hands-on.",
     "image": null,
     "tags": [
       "Brand",
@@ -3458,7 +3458,7 @@
     "category": "System Design",
     "year": "2022",
     "hue": 90,
-    "description": "A 5-week semester project to understand and design for complex, interconnected socio-economic problems.",
+    "description": "A 5-week semester project spent mapping tangled, connected socio-economic problems, then designing for them.",
     "image": null,
     "tags": [
       "System Design",
@@ -3627,7 +3627,7 @@
     "category": "Illustration",
     "year": "2019",
     "hue": 30,
-    "description": "A set of hand-drawn illustrations of the lights and lamps around IIT Bombay, drawn with a Micron pen in a sketchbook.",
+    "description": "Hand-drawn illustrations of the lights and lamps around IIT Bombay, done with a Micron pen in a sketchbook.",
     "image": "images/Illustrations/Lamp_Decorative.jpg",
     "tags": [
       "Illustration",
