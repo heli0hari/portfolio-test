@@ -155,3 +155,20 @@
     });
   });
 })();
+
+/* Creative cards with a clip: play it while the card is hovered (mouse only, loads on first hover) */
+(function () {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('.cw__card').forEach(function (card) {
+    var v = card.querySelector('video[data-src]');
+    if (!v) return;
+    card.addEventListener('pointerenter', function () {
+      if (!v.src) v.src = v.dataset.src;
+      var p = v.play();
+      if (p && p.catch) p.catch(function () {});
+      card.classList.add('is-playing');
+    });
+    card.addEventListener('pointerleave', function () { v.pause(); card.classList.remove('is-playing'); });
+  });
+})();

@@ -319,3 +319,18 @@
 @media (prefers-reduced-motion: reduce) {
   .journal * { transition: none !important; }
 }
+
+/* video blocks: portrait clips stay within the screen; rows sit side by side */
+.journal .cs-vfig { margin: 0; }
+.journal .cs-vfig__cell { position: relative; }
+.journal .cs-vfig .cs-video { width: auto; max-width: 100%; max-height: 82vh; margin: 0 auto; background: #000; }
+.journal .cs-vfig--row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+.journal .cs-vfig--row figcaption { grid-column: 1 / -1; margin-top: 0; }
+@media (max-width: 600px) { .journal .cs-vfig--row { grid-template-columns: 1fr; } }
+.journal .cs-vfig--row .cs-video { width: 100%; max-height: none; }
+.journal .cs-vfig__label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--meta); }
+.journal .cs-vfig figcaption { margin-top: 12px; font-size: 13px; color: var(--meta); }
+/* a single portrait image (layout: "portrait" in projects.json) stays within one screen */
+.jf--portrait { text-align: center; }
+.jf--portrait img { width: auto; max-width: 100%; max-height: 86vh; margin: 0 auto; }
+.jf--portrait figcaption { justify-content: center; margin-left: auto; margin-right: auto; }

@@ -190,7 +190,7 @@
   /* Project case studies are loaded from projects.json (ported from the old
      portfolio). Rendered by renderBlocks() into the instrument-panel language. */
   var projectData = {};
-  fetch('projects.json?v=5')
+  fetch('projects.json?v=7')
     .then(function (r) { return r.json(); })
     .then(function (d) {
       projectData = d;
@@ -517,11 +517,24 @@
         }
 
         case 'video': {
-          node = mk('video', 'cs-video');
-          node.src = v.src || v;
-          node.controls = true; node.muted = true; node.loop = true;
-          node.setAttribute('playsinline', '');
-          if (v.poster) node.poster = v.poster;
+          /* one clip, or several side by side ({ items: [...] }); loop: true plays silently on repeat
+             like a moving image, otherwise the clip gets controls and sound */
+          var clips = (v && v.items) || [v];
+          node = mk('figure', 'cs-vfig' + (clips.length > 1 ? ' cs-vfig--row' : ''));
+          clips.forEach(function (c) {
+            var cell = mk('div', 'cs-vfig__cell');
+            var vid = mk('video', 'cs-video');
+            vid.src = c.src || c;
+            vid.setAttribute('playsinline', '');
+            vid.preload = 'metadata';
+            if (c.poster) vid.poster = c.poster;
+            if (c.loop) { vid.muted = true; vid.loop = true; vid.autoplay = true; vid.setAttribute('muted', ''); }
+            else { vid.controls = true; }
+            if (c.label) cell.appendChild(mk('span', 'cs-vfig__label', c.label));
+            cell.appendChild(vid);
+            node.appendChild(cell);
+          });
+          if (v.caption) node.appendChild(mk('figcaption', null, v.caption));
           break;
         }
 

@@ -15,6 +15,18 @@
    coverImage  optional replacement for the cover image ({ src, alt })
    ========================================================= */
 window.JOURNAL = {
+  'alley-creature': {
+    facts: { Role: '3D Artist', Context: 'Personal project · experiment', Team: 'Solo', Tools: 'Blender, Geometry Nodes, DaVinci Resolve' },
+    theme: 'material', cover: 'split',
+    chapters: [
+      { at: 1, label: 'Overview' },
+      { at: 3, label: 'Environment' },
+      { at: 6, label: 'Lighting' },
+      { at: 9, label: 'Creature' },
+      { at: 15, label: 'Edit' },
+      { at: 18, label: 'Reflection' }
+    ]
+  },
   'wealthx': {
     facts: { Role: 'Product & Brand Design', Context: 'Personal project', Team: 'Solo', Duration: '3 days', Tools: 'Figma, Photoshop, Illustrator', Platform: 'iOS · Web' },
     theme: 'visual', cover: 'bleed',

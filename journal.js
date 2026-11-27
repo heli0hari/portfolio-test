@@ -187,7 +187,7 @@
           case 'image': {
             var run = [v];
             while (bl[i + 1] && bl[i + 1].type === 'image') run.push(bl[++i].value);
-            if (run.length === 1) into.appendChild(figure(v, modes[cyc++ % modes.length]));
+            if (run.length === 1) into.appendChild(figure(v, v.layout || modes[cyc++ % modes.length]));
             else into.appendChild(sequence(run));
             break;
           }
