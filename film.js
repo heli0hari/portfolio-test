@@ -70,7 +70,17 @@ function setup(root) {
     if (!player) return;
     player.getPaused().then(function (p) { return p ? player.play() : player.pause(); }).catch(function () {});
   }
-  hit.addEventListener('click', playPause);
+  // one click plays or pauses; a double click goes full screen (the single click waits a moment to tell them apart)
+  var clickT = 0;
+  hit.addEventListener('click', function () {
+    clearTimeout(clickT);
+    clickT = setTimeout(playPause, 230);
+  });
+  hit.addEventListener('dblclick', function (e) {
+    e.preventDefault();
+    clearTimeout(clickT);
+    toggleFull();
+  });
   toggleBtn.addEventListener('click', playPause);
   muteBtn.addEventListener('click', function () {
     if (!player) return;
@@ -96,16 +106,23 @@ function setup(root) {
   });
 
   // full screen: the whole frame, so these controls come along
-  fsBtn.addEventListener('click', function () {
-    if (document.fullscreenElement) document.exitFullscreen();
-    else if (root.requestFullscreen) root.requestFullscreen();
+  function toggleFull() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    } else if (root.requestFullscreen) root.requestFullscreen();
     else if (root.webkitRequestFullscreen) root.webkitRequestFullscreen();
-  });
-  document.addEventListener('fullscreenchange', function () {
-    var on = document.fullscreenElement === root;
+  }
+  fsBtn.addEventListener('click', toggleFull);
+  function onFull() {
+    var on = (document.fullscreenElement || document.webkitFullscreenElement) === root;
+    // the site's own pointer can't follow into full screen, so the normal pointer comes back there
+    document.documentElement.classList.toggle('film-full', !!(document.fullscreenElement || document.webkitFullscreenElement));
     root.classList.toggle('is-full', on);
     fsBtn.textContent = on ? 'Exit full screen' : 'Full screen';
-  });
+    if (on) { root.classList.remove('is-idle'); }
+  }
+  document.addEventListener('fullscreenchange', onFull);
+  document.addEventListener('webkitfullscreenchange', onFull);
 
   // controls rest out of sight while the film plays and the pointer is still
   var idleT = 0;

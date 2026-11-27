@@ -619,3 +619,7 @@ html, body { overflow-x: clip; }
   .grade__films { grid-template-columns: 1fr; }
   .chroma__showcase .film--tall { width: min(100%, calc(78svh * 9 / 16)); margin: 0 auto; }
 }
+/* full-screen film: the normal pointer is back (the site's pointer can't go into full screen) */
+html.film-full.has-custom-cursor, html.film-full.has-custom-cursor * { cursor: auto !important; }
+html.film-full .film__hit, html.film-full .film__btn, html.film-full .film__track { cursor: pointer !important; }
+html.film-full .film.is-idle .film__hit { cursor: none !important; }
