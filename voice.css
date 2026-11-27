@@ -622,8 +622,7 @@ html.film-full .film.is-idle .film__hit { cursor: none !important; }
 @media (max-width: 640px) { .br-m { display: inline; } }
 
 /* one numbering system only: the side index keeps the section numbers (read from .lk__no),
-   so the big section numerals, card numbers and per-section "Back to top" buttons step back */
+   so the big section numerals and card numbers step back */
 .lk__no { display: none; }
 .cw__no { display: none; }
-.bar__acts [data-totop], .grade__foot { display: none; }
 .cw__card { grid-template-columns: minmax(0, 1fr); grid-template-areas: "media" "name" "cat" "desc"; column-gap: 0; }
