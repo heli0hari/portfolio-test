@@ -173,17 +173,20 @@
   });
 })();
 
-/* Creative cards slide sideways as you scroll down (the section pins while they pass), like the
-   Motion & 3D reel — only when there are more cards than fit on screen. */
+/* Selected work: the cards slide sideways as you scroll down (the section pins while they pass),
+   like the Motion & 3D reel, only when there are more cards than fit. A sideways swipe on the cards
+   moves the page with them, and on phones the row settles on the nearest card when scrolling stops. */
 (function () {
   var sec = document.querySelector('.cw'), pin = sec && sec.querySelector('.cw__pin'), list = sec && sec.querySelector('.cw__list');
   if (!list) return;
-  var mq = window.matchMedia('(max-width: 760px)');   // re-measure when crossing the phone breakpoint
-  var travel = 0, on = false;
+  var phone = window.matchMedia('(max-width: 760px)');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var travel = 0, on = false, lastSet = -1, idle = 0;
+  function secTop() { return sec.getBoundingClientRect().top + window.scrollY; }
   function layout() {
     sec.classList.remove('is-pinned'); list.scrollLeft = 0; sec.style.height = '';
     travel = Math.max(0, list.scrollWidth - list.clientWidth);
-    on = travel > 8 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    on = travel > 8 && !reduce.matches;
     sec.classList.toggle('is-pinned', on);
     if (!on) return;
     travel = Math.max(0, list.scrollWidth - list.clientWidth);
@@ -192,14 +195,39 @@
   }
   function update() {
     if (!on) return;
+    var y = Math.min(travel, Math.max(0, -sec.getBoundingClientRect().top));
+    lastSet = Math.round(y);
+    list.scrollLeft = y;              // scrolled (not moved), so the edge fade stays put
+  }
+  // nearest card start, in the list's scroll coordinates
+  function nearest(x) {
+    var pad = parseFloat(getComputedStyle(list).paddingLeft) || 0, best = 0, d = 1e9;
+    Array.prototype.forEach.call(list.children, function (li) {
+      var s = Math.min(travel, Math.max(0, li.offsetLeft - pad));
+      if (Math.abs(s - x) < d) { d = Math.abs(s - x); best = s; }
+    });
+    return best;
+  }
+  function settle() {
+    if (!on || !phone.matches) return;
     var y = -sec.getBoundingClientRect().top;
-    var p = Math.min(1, Math.max(0, y / Math.max(1, travel)));
-    list.scrollLeft = p * travel;     // scrolled (not moved), so the edge fade stays put
+    if (y <= 2 || y >= travel - 2) return;            // only while the row is mid-way
+    var t = nearest(y);
+    if (Math.abs(t - y) > 2) window.scrollTo({ top: secTop() + t, behavior: 'smooth' });
   }
   var raf = 0;
-  window.addEventListener('scroll', function () { if (!raf) raf = requestAnimationFrame(function () { raf = 0; update(); }); }, { passive: true });
+  window.addEventListener('scroll', function () {
+    if (!raf) raf = requestAnimationFrame(function () { raf = 0; update(); });
+    clearTimeout(idle); idle = setTimeout(settle, 160);
+  }, { passive: true });
+  // a sideways swipe on the cards: move the page to match, so both stay in step
+  list.addEventListener('scroll', function () {
+    if (!on || Math.abs(list.scrollLeft - lastSet) < 2) return;
+    lastSet = Math.round(list.scrollLeft);
+    window.scrollTo(0, secTop() + list.scrollLeft);
+  }, { passive: true });
   window.addEventListener('resize', layout);
   window.addEventListener('load', layout);
-  if (mq.addEventListener) mq.addEventListener('change', layout);
+  if (phone.addEventListener) phone.addEventListener('change', layout);
   layout();
 })();
