@@ -155,6 +155,196 @@
       }
     ]
   },
+  "diskfield": {
+    "title": "DiskField: Procedural Glass Disks",
+    "category": "Motion Design & Geometry Nodes",
+    "year": "2026",
+    "hue": 18,
+    "description": "A procedural Geometry Nodes system for a client project: a field of glass disks that turn, grow and glow orange as an effector passes through them.",
+    "image": "images/DiskField/DF_Title.jpg",
+    "tags": [
+      "Geometry Nodes",
+      "Blender",
+      "Motion Design",
+      "Cycles"
+    ],
+    "content": [
+      {
+        "type": "image",
+        "value": {
+          "src": "images/DiskField/DF_Title.jpg",
+          "alt": "A diagonal line of glass disks, the ones nearest the effector turning orange.",
+          "caption": "A frame from the line layout."
+        }
+      },
+      {
+        "type": "paragraph",
+        "value": "DiskField is a procedural <b>Geometry Nodes</b> system I built for a client project. It’s a field of thin glass disks that react to a moving effector: the disks closest to it turn, grow and glow orange, and the rest stay clear glass. Nothing is animated disk by disk. I move one effector, and the whole field responds."
+      },
+      {
+        "type": "quote",
+        "value": {
+          "text": "One node tree, and the same idea becomes a line, a ring, a grid or any curve I draw."
+        }
+      },
+      {
+        "type": "heading",
+        "value": "01. The Effect"
+      },
+      {
+        "type": "paragraph",
+        "value": "Every disk measures its distance to the effector with <b>Geometry Proximity</b>. That one distance drives everything else: how far the disk turns, how big it gets and how much of the orange it takes on. A falloff keeps the change soft, so the colour travels through the field instead of switching on and off."
+      },
+      {
+        "type": "video",
+        "value": {
+          "items": [
+            {
+              "src": "images/DiskField/DF_Line.mp4",
+              "poster": "images/DiskField/DF_Title.jpg",
+              "loop": true,
+              "label": "Final render"
+            },
+            {
+              "image": "images/DiskField/DF_Line_Wire.jpg",
+              "alt": "The line layout in the Blender viewport, with the effector sphere among the disks.",
+              "label": "In the viewport"
+            }
+          ],
+          "aspect": "1 / 1",
+          "caption": "The effector passing along the line, and the same setup in the viewport."
+        }
+      },
+      {
+        "type": "heading",
+        "value": "02. One System, Many Layouts"
+      },
+      {
+        "type": "paragraph",
+        "value": "The layout is just a setting. The same node tree can place the disks along a line, around a ring, on a grid or along any path curve, and the effect behaves the same way in each."
+      },
+      {
+        "type": "video",
+        "value": {
+          "items": [
+            {
+              "image": "images/DiskField/DF_Ring.jpg",
+              "alt": "Disks arranged in a ring, the ones near the effector turned orange.",
+              "label": "Ring"
+            },
+            {
+              "image": "images/DiskField/DF_Grid_View.jpg",
+              "alt": "A flat grid of small disks with an orange cluster around the effector.",
+              "label": "Grid"
+            },
+            {
+              "image": "images/DiskField/DF_Curve.jpg",
+              "alt": "Disks following a curved path.",
+              "label": "Curve"
+            }
+          ],
+          "aspect": "6 / 5",
+          "caption": "Three layouts from the same setup."
+        }
+      },
+      {
+        "type": "image",
+        "value": {
+          "src": "images/DiskField/DF_Grid.jpg",
+          "alt": "Rendered grid of glass disks with a soft orange cluster.",
+          "caption": "The grid layout, rendered."
+        }
+      },
+      {
+        "type": "heading",
+        "value": "03. Built to Be Changed"
+      },
+      {
+        "type": "paragraph",
+        "value": "I built it as a set of controls rather than a single shot, so the look could change without rebuilding anything. Layout, shape and motion all sit on one modifier panel."
+      },
+      {
+        "type": "lined-list",
+        "value": [
+          {
+            "title": "Layout.",
+            "text": "Line, ring, grid or a path curve, with count, gap, jitter, seed and an option to stop disks overlapping."
+          },
+          {
+            "title": "Shape.",
+            "text": "Radius, thickness, aspect, sides and bevel, each with its own randomness."
+          },
+          {
+            "title": "Effector.",
+            "text": "An object that moves or orbits through the field, with a falloff that sets how far its influence reaches."
+          },
+          {
+            "title": "Look.",
+            "text": "Lighting, backdrop and background text or image, so the same setup can sit in different compositions."
+          }
+        ]
+      },
+      {
+        "type": "video",
+        "value": {
+          "items": [
+            {
+              "image": "images/DiskField/DF_Panel.jpg",
+              "alt": "The DiskField modifier panel with layout and shape controls.",
+              "label": "Controls"
+            },
+            {
+              "image": "images/DiskField/DF_Nodes.jpg",
+              "alt": "Part of the Geometry Nodes tree behind the setup.",
+              "label": "Node tree"
+            }
+          ],
+          "aspect": "3 / 4",
+          "caption": "The modifier panel, and part of the node tree behind it."
+        }
+      },
+      {
+        "type": "heading",
+        "value": "04. Compositions"
+      },
+      {
+        "type": "paragraph",
+        "value": "With the system in place, new compositions were a few settings away rather than a new scene each time."
+      },
+      {
+        "type": "video",
+        "value": {
+          "items": [
+            {
+              "src": "images/DiskField/DF_Stack.mp4",
+              "poster": "images/DiskField/DF_Stack_poster.jpg",
+              "loop": true,
+              "label": "Abstract stack"
+            },
+            {
+              "image": "images/DiskField/DF_Wall.jpg",
+              "alt": "A wall of glass disks in rows with an orange cluster in the lower half.",
+              "label": "Wall"
+            },
+            {
+              "image": "images/DiskField/DF_Soft.jpg",
+              "alt": "A soft, close render of the diagonal line.",
+              "label": "Close up"
+            }
+          ],
+          "caption": "More looks from the same setup."
+        }
+      },
+      {
+        "type": "heading",
+        "value": "05. Reflection"
+      },
+      {
+        "type": "paragraph",
+        "value": "The time went into the system, not the shots. Once the proximity effect worked, every new layout, look or composition was a change of settings rather than a rebuild."
+      }
+    ]
+  },
   "lithophane-lamp": {
     "title": "Lithophane Lamp",
     "category": "3D Printing & Product Design",

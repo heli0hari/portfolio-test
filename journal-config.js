@@ -15,6 +15,18 @@
    coverImage  optional replacement for the cover image ({ src, alt })
    ========================================================= */
 window.JOURNAL = {
+  'diskfield': {
+    facts: { Role: '3D & Motion Designer', Context: 'Client project', Team: 'Solo', Tools: 'Blender, Geometry Nodes, Cycles' },
+    theme: 'material', cover: 'split',
+    chapters: [
+      { at: 1, label: 'Overview' },
+      { at: 3, label: 'Effect' },
+      { at: 6, label: 'Layouts' },
+      { at: 10, label: 'System' },
+      { at: 14, label: 'Compositions' },
+      { at: 17, label: 'Reflection' }
+    ]
+  },
   'lithophane-lamp': {
     facts: { Role: 'Designer & Maker', Context: 'Birthday gift, now made on demand', Team: 'Solo', Duration: '1 day per lamp · 6.5-hour print', Tools: 'Blender, Bambu Studio, Bambu Lab A1 mini' },
     theme: 'material', cover: 'split',

@@ -173,18 +173,19 @@
   });
 })();
 
-/* Phones: the creative cards slide sideways as you scroll down (the section pins while they pass),
-   like the Motion & 3D reel. Wider screens show all cards at once, so nothing happens there. */
+/* Creative cards slide sideways as you scroll down (the section pins while they pass), like the
+   Motion & 3D reel — only when there are more cards than fit on screen. */
 (function () {
   var sec = document.querySelector('.cw'), pin = sec && sec.querySelector('.cw__pin'), list = sec && sec.querySelector('.cw__list');
   if (!list) return;
-  var mq = window.matchMedia('(max-width: 760px)');
+  var mq = window.matchMedia('(max-width: 760px)');   // re-measure when crossing the phone breakpoint
   var travel = 0, on = false;
   function layout() {
-    on = mq.matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    sec.classList.remove('is-pinned'); list.scrollLeft = 0; sec.style.height = '';
+    travel = Math.max(0, list.scrollWidth - list.clientWidth);
+    on = travel > 8 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     sec.classList.toggle('is-pinned', on);
-    list.style.transform = '';
-    if (!on) { sec.style.height = ''; return; }
+    if (!on) return;
     travel = Math.max(0, list.scrollWidth - list.clientWidth);
     sec.style.height = (pin.offsetHeight + travel) + 'px';
     update();
@@ -193,7 +194,7 @@
     if (!on) return;
     var y = -sec.getBoundingClientRect().top;
     var p = Math.min(1, Math.max(0, y / Math.max(1, travel)));
-    list.style.transform = 'translate3d(' + (-p * travel).toFixed(1) + 'px,0,0)';
+    list.scrollLeft = p * travel;     // scrolled (not moved), so the edge fade stays put
   }
   var raf = 0;
   window.addEventListener('scroll', function () { if (!raf) raf = requestAnimationFrame(function () { raf = 0; update(); }); }, { passive: true });

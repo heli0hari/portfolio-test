@@ -582,12 +582,22 @@ html, body { overflow-x: clip; }
 @media (min-width: 1100px) { .cw__list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--f2) clamp(20px, 2vw, 32px); } .cw__name { font-size: clamp(20px, 1.7vw, 26px); } }
 /* the title card keeps a quiet frame, so it still reads as a card when it fills a phone screen */
 .cell--slate .cell__pic { outline: 1px solid var(--hair); outline-offset: -1px; background: linear-gradient(180deg, rgba(237,233,226,0.015), rgba(237,233,226,0.04)); padding: clamp(18px, 2vw, 26px); }
-/* phones: pinned while the cards slide sideways with the page scroll (see read.js) */
-@media (max-width: 760px) {
-  .cw.is-pinned { padding-top: 0; }
+/* creative cards: one sideways row on every screen; when they don't all fit, the section pins
+   and the row slides with the page scroll (see read.js) */
+@media (min-width: 761px) {
+  .cw__list { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 40%; gap: clamp(20px, 2vw, 32px); }
+}
+@media (min-width: 1100px) { .cw__list { grid-auto-columns: 22%; } }
+.cw.is-pinned { padding-top: 0; }
+@media all {
   .cw.is-pinned .cw__pin {
     position: sticky; top: 0; min-height: 100svh; box-sizing: border-box;
     display: flex; flex-direction: column; justify-content: center; padding-top: var(--f2); overflow: hidden;
   }
-  .cw.is-pinned .cw__list { overflow: visible; scroll-snap-type: none; will-change: transform; }
+  .cw.is-pinned .cw__list { overflow: hidden; scroll-snap-type: none; }
+}
+@media (min-width: 761px) { .cw__list { overflow-x: auto; scrollbar-width: none; } }
+.cw.is-pinned .cw__list {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
 }
