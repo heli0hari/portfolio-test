@@ -505,7 +505,9 @@ body.modal-open .sx { opacity: 0; pointer-events: none; }
   padding: 5px 0; font-size: 12px; font-variant-numeric: tabular-nums; color: rgba(237, 233, 226, 0.45);
   text-shadow: 0 0 8px rgba(19, 17, 16, 0.9);
 }
-.sx__name { opacity: 0; transform: translateX(6px); transition: opacity 250ms var(--ease), transform 250ms var(--ease); white-space: nowrap; }
+.sx__btn { position: relative; }
+/* names sit outside the button's box, so hidden names never push the numbers out of line */
+.sx__name { position: absolute; right: 100%; margin-right: 10px; opacity: 0; transform: translateX(6px); transition: opacity 250ms var(--ease), transform 250ms var(--ease); white-space: nowrap; pointer-events: none; }
 .sx:hover .sx__name, .sx__btn:focus-visible .sx__name { opacity: 1; transform: none; }
 .sx__btn:hover, .sx__btn[aria-current="true"] { color: #EDE9E2; }
 .sx__no { position: relative; padding-right: 14px; }
