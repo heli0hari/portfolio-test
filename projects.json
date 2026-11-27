@@ -161,7 +161,7 @@
     "year": "2026",
     "hue": 42,
     "description": "A photograph turned into a lithophane lamp: made first as a birthday gift, then turned into a standard workflow I now use to make them on demand.",
-    "image": "images/LithophaneLamp/Lamp_Title.jpg",
+    "image": "images/LithophaneLamp/Lamp_Cover.jpg",
     "tags": [
       "3D Printing",
       "Blender",
@@ -172,8 +172,8 @@
       {
         "type": "image",
         "value": {
-          "src": "images/LithophaneLamp/Lamp_Title.jpg",
-          "alt": "Illuminated portrait lamp standing on a wooden surface.",
+          "src": "images/LithophaneLamp/Lamp_Cover.jpg",
+          "alt": "The finished lithophane lamp glowing warm on a wooden table.",
           "caption": "The finished lamp, switched on."
         }
       },
@@ -190,19 +190,21 @@
         "value": "A lithophane stores the tones of a photograph in the thickness of the material. Thinner areas let more light through and thicker areas let less through. There is no ink on the panel; the image comes from the geometry of the print itself."
       },
       {
-        "type": "portrait-pair",
-        "value": [
-          {
-            "src": "images/LithophaneLamp/Lamp_Unlit.jpg",
-            "alt": "Unlit white portrait panel inside its frame.",
-            "caption": "Light off."
-          },
-          {
-            "src": "images/LithophaneLamp/Lamp_Lit.jpg",
-            "alt": "The same portrait glowing in warm light.",
-            "caption": "Light on."
-          }
-        ]
+        "type": "video",
+        "value": {
+          "items": [
+            {
+              "image": "images/LithophaneLamp/Lamp_Unlit.jpg",
+              "alt": "Unlit white portrait panel inside its frame.",
+              "label": "Light off."
+            },
+            {
+              "image": "images/LithophaneLamp/Lamp_Lit.jpg",
+              "alt": "The same portrait glowing in warm light.",
+              "label": "Light on."
+            }
+          ]
+        }
       },
       {
         "type": "image",
@@ -267,7 +269,8 @@
         "value": {
           "src": "images/LithophaneLamp/Lamp_Slicing.jpg",
           "alt": "Bambu Studio preview of the body, cap and circular disc on the print plate.",
-          "caption": "The enclosure parts sliced in Bambu Studio."
+          "caption": "The enclosure parts sliced in Bambu Studio.",
+          "layout": "offset-r"
         }
       },
       {
@@ -301,19 +304,21 @@
         "value": "What I like about lithophanes is that the same object changes depending on how it is lit. With the light off, the photograph is a textured white surface. With the light on, the depth of the print becomes the contrast of the image. The case and diffuser are there to make that transition work as a lamp, rather than just a backlit print."
       },
       {
-        "type": "portrait-pair",
-        "value": [
-          {
-            "src": "images/LithophaneLamp/Lamp_Unlit_Angle.jpg",
-            "alt": "Unlit lamp photographed from above at a slight angle.",
-            "caption": "The surface of the print in daylight."
-          },
-          {
-            "src": "images/LithophaneLamp/Lamp_Lit_Dark.jpg",
-            "alt": "Illuminated portrait lamp against a dark background.",
-            "caption": "The portrait with the surrounding light reduced."
-          }
-        ]
+        "type": "video",
+        "value": {
+          "items": [
+            {
+              "image": "images/LithophaneLamp/Lamp_Unlit_Angle.jpg",
+              "alt": "Unlit lamp photographed from above at a slight angle.",
+              "label": "The surface of the print in daylight."
+            },
+            {
+              "image": "images/LithophaneLamp/Lamp_Lit_Dark.jpg",
+              "alt": "Illuminated portrait lamp against a dark background.",
+              "label": "The portrait with the surrounding light reduced."
+            }
+          ]
+        }
       }
     ]
   },
