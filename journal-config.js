@@ -53,7 +53,7 @@ window.JOURNAL = {
     ]
   },
   'wealthx': {
-    facts: { Role: 'Product & Brand Designer', Context: 'Personal project', Team: 'Solo', Duration: '3 days', Tools: 'Figma, Photoshop, Illustrator', Platform: 'iOS · Web' },
+    facts: { Role: 'Sole designer', Context: 'Personal project', Team: 'Solo', Duration: '3 days', Tools: 'Figma, Photoshop, Illustrator', Platform: 'iOS · Web' },
     theme: 'visual', cover: 'bleed',
     skip: [1],
     chapters: [{ at: 2, label: 'Outcome' }]

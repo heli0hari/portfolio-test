@@ -624,3 +624,7 @@ html.film-full.has-custom-cursor, html.film-full.has-custom-cursor * { cursor: a
 html.film-full .film__hit, html.film-full .film__btn, html.film-full .film__track { cursor: pointer !important; }
 html.film-full .film.is-idle .film__hit { cursor: none !important; }
 @media (min-width: 761px) { .cw.is-pinned .cw__pin { padding-top: var(--f1); } .cw.is-pinned .cw__head { margin-bottom: var(--f1); } }
+
+/* phone-only line breaks in the role line, so it breaks at the dash and the middot, never mid-phrase */
+.br-m { display: none; }
+@media (max-width: 640px) { .br-m { display: inline; } }
