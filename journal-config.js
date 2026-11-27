@@ -16,7 +16,7 @@
    ========================================================= */
 window.JOURNAL = {
   'lithophane-lamp': {
-    facts: { Role: 'Designer & Maker', Context: 'Birthday gift, now made on demand', Team: 'Solo', Duration: '1 day per lamp · 6.5 hours of work', Tools: 'Blender, Bambu Studio, Bambu Lab A1 mini' },
+    facts: { Role: 'Designer & Maker', Context: 'Birthday gift, now made on demand', Team: 'Solo', Duration: '1 day per lamp · 6.5-hour print', Tools: 'Blender, Bambu Studio, Bambu Lab A1 mini' },
     theme: 'material', cover: 'split',
     chapters: [
       { at: 1, label: 'Overview' },
