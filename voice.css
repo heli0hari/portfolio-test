@@ -587,7 +587,7 @@ html, body { overflow-x: clip; }
 @media (min-width: 761px) {
   .cw__list { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 40%; gap: clamp(20px, 2vw, 32px); }
 }
-@media (min-width: 1100px) { .cw__list { grid-auto-columns: min(22%, calc(48svh * 0.8)); } }
+@media (min-width: 1100px) { .cw__list { grid-auto-columns: min(22%, calc(42svh * 0.8)); } }
 .cw.is-pinned { padding-top: 0; }
 @media all {
   .cw.is-pinned .cw__pin {
@@ -623,3 +623,4 @@ html, body { overflow-x: clip; }
 html.film-full.has-custom-cursor, html.film-full.has-custom-cursor * { cursor: auto !important; }
 html.film-full .film__hit, html.film-full .film__btn, html.film-full .film__track { cursor: pointer !important; }
 html.film-full .film.is-idle .film__hit { cursor: none !important; }
+@media (min-width: 761px) { .cw.is-pinned .cw__pin { padding-top: var(--f1); } .cw.is-pinned .cw__head { margin-bottom: var(--f1); } }
