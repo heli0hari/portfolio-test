@@ -168,7 +168,7 @@
     </section>
 
 <!-- ============ LOOK MOMENT — FORGE (curved reel) ============ -->
-<section class="forge-room look-room" aria-label="Motion and 3D work">
+<section class="forge-room look-room" id="motion" aria-label="Motion and 3D work">
   <div class="reel" id="reel">
     <div class="reel__sticky">
       <header class="reel__head">
@@ -194,7 +194,7 @@
 
     
 <!-- ============ LOOK MOMENT — CHROMA ============ -->
-<section class="chroma" aria-label="Chroma photography">
+<section class="chroma" id="chroma" aria-label="Chroma photography">
 
     <div class="archive look-room" id="archive">
       <div class="archive__sticky">
@@ -224,7 +224,7 @@
 </section>
 
 <!-- ============ LOOK MOMENT — COLOR GRADING ============ -->
-<section class="grade-room" aria-labelledby="gradeTitle">
+<section class="grade-room" id="color-grading" aria-labelledby="gradeTitle">
   <div class="chroma__showcase">
     <header class="grade__head">
       <span class="lk__no" aria-hidden="true">04</span>
@@ -263,10 +263,10 @@
 </section>
 
     <!-- ============ READ — EDITORIAL INDEX ============ -->
-    <section class="ix" id="index" aria-labelledby="ixTitle">
+    <section class="ix" id="more-work" aria-labelledby="ixTitle">
       <header class="ix__head">
         <span class="lk__no" aria-hidden="true">05</span>
-        <h2 class="ix__title" id="ixTitle">Index</h2>
+        <h2 class="ix__title" id="ixTitle">More work</h2>
         <p class="ix__range">7 projects &middot; 2022&ndash;2026</p>
       </header>
 
@@ -494,7 +494,7 @@
   <div class="project-modal journal" id="projectModal" aria-hidden="true" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="jTitle">
     <div class="project-modal__scroll">
       <nav class="jn" aria-label="Project">
-        <button type="button" class="jn__back" data-modal-close>Index</button>
+        <button type="button" class="jn__back" data-modal-close>Back</button>
         <div class="jn__where">
           <span class="jn__proj" id="jnProj"></span>
           <button type="button" class="jn__ch" id="jnCh" aria-expanded="false" aria-controls="jnMenu" aria-label="Chapters">
@@ -533,11 +533,11 @@
 
 
   <script src="journal-config.js?v=14"></script>
-  <script src="journal.js?v=13"></script>
-  <script src="script.js?v=17"></script>
+  <script src="journal.js?v=14"></script>
+  <script src="script.js?v=18"></script>
   <script src="reel.js?v=5"></script>
   <script type="module" src="archive-page.js?v=10"></script>
-    <script src="look.js?v=11"></script>
+    <script src="look.js?v=12"></script>
   <script src="read.js?v=14"></script>
   <script src="cursor.js?v=9" defer></script>
   <script src="photo-grid.js?v=3" defer></script>

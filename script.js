@@ -65,6 +65,24 @@
     return 'look';   // single page: always the dark theme
   }
 
+  /* shareable section links: harigovind.ie/#chroma scrolls straight to Chroma */
+  var SECTION_ALIASES = { index: 'more-work', more: 'more-work', grading: 'color-grading', 'colour-grading': 'color-grading', selected: 'work', '3d': 'motion' };
+  function sectionFromHash() {
+    var h = (location.hash || '').replace('#', '').toLowerCase();
+    if (!h || h.indexOf('project/') === 0) return null;
+    h = SECTION_ALIASES[h] || h;
+    var el = document.getElementById(h);
+    return el && el.closest('#stage') ? el : null;
+  }
+  function goToSection(el, smooth) {
+    if (!el) return;
+    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: smooth ? 'smooth' : 'auto' });
+  }
+  window.goToSection = function (el) {             // used by the section index and the top bar
+    goToSection(el, !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    if (el.id) history.replaceState(null, '', location.pathname + location.search + '#' + el.id);
+  };
+
   function syncURL(mode, projectId) {
     var base = location.pathname + location.search;
     var hash = '';
@@ -144,11 +162,8 @@
         if (cta) cta.click();
         return;
       }
-      var go = function () {
-        var el = document.getElementById(target);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      };
-      go();
+      var el = document.getElementById(target);
+      if (el) window.goToSection(el);
     });
   });
 
@@ -164,6 +179,15 @@
     buttons.forEach(function (btn) {
       btn.setAttribute('aria-selected', String(btn.dataset.modeBtn === initial));
     });
+    var section = sectionFromHash();
+    if (section) {
+      // a shared section link (#chroma, #color-grading …): land on that section once the page has laid out
+      var land = function () { goToSection(section, false); };
+      if (document.readyState === 'complete') setTimeout(land, 60);
+      else window.addEventListener('load', function () { setTimeout(land, 60); });
+      setTimeout(land, 900);                          // again, after the scroll rooms have sized themselves
+      return;
+    }
     syncURL(initial, projectIdFromHash());
 
     // start at the top regardless of what the browser remembered
@@ -181,6 +205,8 @@
     } else {
       switchTo(nextMode);
       if (modal && modal.getAttribute('aria-hidden') === 'false') closeProject();
+      var sec = sectionFromHash();
+      if (sec) goToSection(sec, true);
     }
   });
 

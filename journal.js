@@ -267,7 +267,7 @@
     }
     end.appendChild(endLink(prevId, 'prev'));
     end.appendChild(endLink(nextId, 'next'));
-    var back = el('button', 'jend__back', 'Back to the index');
+    var back = el('button', 'jend__back', 'Back to all work');
     back.type = 'button';
     back.setAttribute('data-modal-close', '');
     back.addEventListener('click', function () { var b = modal.querySelector('.jn__back'); if (b) b.click(); });

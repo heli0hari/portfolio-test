@@ -129,7 +129,7 @@
     var t = s.querySelector('h2');
     b.type = 'button'; b.className = 'sx__btn';
     b.innerHTML = '<span class="sx__no">' + s.querySelector('.lk__no').textContent + '</span><span class="sx__name">' + (t ? t.textContent : '') + '</span>';
-    b.addEventListener('click', function () { jump(s); });
+    b.addEventListener('click', function () { if (window.goToSection) window.goToSection(s); else jump(s); });
     nav.appendChild(b);
     return b;
   });
