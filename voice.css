@@ -597,10 +597,9 @@ html, body { overflow-x: clip; }
   .cw.is-pinned .cw__list { overflow-x: auto; overflow-y: hidden; scroll-snap-type: none; scroll-behavior: auto; }
 }
 @media (min-width: 761px) { .cw__list { overflow-x: auto; scrollbar-width: none; } }
-.cw.is-pinned .cw__list {
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-}
+.cw.is-pinned .cw__list { --fl: #000; --fr: #000; -webkit-mask-image: linear-gradient(to right, var(--fl), #000 5%, #000 95%, var(--fr)); mask-image: linear-gradient(to right, var(--fl), #000 5%, #000 95%, var(--fr)); }
+.cw.is-pinned .cw__list.more-left { --fl: transparent; }
+.cw.is-pinned .cw__list.more-right { --fr: transparent; }
 
 /* phones: the pinned row always fits one screen — cards size from the screen height, two lines of text */
 @media (max-width: 760px) {

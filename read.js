@@ -198,6 +198,13 @@
     var y = Math.min(travel, Math.max(0, -sec.getBoundingClientRect().top));
     lastSet = Math.round(y);
     list.scrollLeft = y;              // scrolled (not moved), so the edge fade stays put
+    edges();
+  }
+  // fade an edge only when there are more cards beyond it
+  function edges() {
+    var x = list.scrollLeft;
+    list.classList.toggle('more-left', x > 4);
+    list.classList.toggle('more-right', x < travel - 4);
   }
   // nearest card start, in the list's scroll coordinates
   function nearest(x) {
@@ -225,6 +232,7 @@
     if (!on || Math.abs(list.scrollLeft - lastSet) < 2) return;
     lastSet = Math.round(list.scrollLeft);
     window.scrollTo(0, secTop() + list.scrollLeft);
+    edges();
   }, { passive: true });
   window.addEventListener('resize', layout);
   window.addEventListener('load', layout);

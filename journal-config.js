@@ -53,7 +53,7 @@ window.JOURNAL = {
     ]
   },
   'wealthx': {
-    facts: { Role: 'Product & Brand Design', Context: 'Personal project', Team: 'Solo', Duration: '3 days', Tools: 'Figma, Photoshop, Illustrator', Platform: 'iOS · Web' },
+    facts: { Role: 'Product & Brand Designer', Context: 'Personal project', Team: 'Solo', Duration: '3 days', Tools: 'Figma, Photoshop, Illustrator', Platform: 'iOS · Web' },
     theme: 'visual', cover: 'bleed',
     skip: [1],
     chapters: [{ at: 2, label: 'Outcome' }]
@@ -86,7 +86,7 @@ window.JOURNAL = {
     ]
   },
   'tolstoy-farm': {
-    facts: { Role: 'Product & Brand Design', Context: 'Client project · branding help', Team: 'Solo', Duration: '4 days', Tools: 'Figma, Photoshop, Illustrator' },
+    facts: { Role: 'Brand & Packaging Designer', Context: 'Client project · branding help', Team: 'Solo', Duration: '4 days', Tools: 'Figma, Photoshop, Illustrator' },
     theme: 'visual', cover: 'bleed',
     chapters: [{ at: 1, label: 'Identity' }]
   },
