@@ -68,7 +68,7 @@ window.JOURNAL = {
     chapters: [{ at: 2, label: 'Outcome' }]
   },
   'infrared-camera': {
-    facts: { Role: 'Designer & Maker', Context: 'Personal project', Team: 'Solo', Duration: '1 week so far · paused', Tools: 'Figma, Blender, Bambu Studio, Claude, ChatGPT' },
+    facts: { Role: 'Designer & Maker', Context: 'Personal project', Team: 'Solo', Duration: '1 week so far · paused', Tools: 'Figma, Blender, Bambu Studio' },
     theme: 'system', cover: 'inset',
     chapters: [
       { at: 1, label: 'Overview' },
@@ -91,8 +91,8 @@ window.JOURNAL = {
       { at: 13, label: 'Concept' },
       { at: 18, label: 'Research' },
       { at: 26, label: 'Development' },
-      { at: 39, label: 'Outcome' },
-      { at: 46, label: 'Reflection' }
+      { at: 37, label: 'Outcome' },
+      { at: 44, label: 'Reflection' }
     ]
   },
   'tolstoy-farm': {
@@ -101,7 +101,7 @@ window.JOURNAL = {
     chapters: [{ at: 1, label: 'Identity' }]
   },
   'hiro-assistant': {
-    facts: { Role: 'UX Designer', Context: 'Personal project · for portfolio', Team: 'Solo', Duration: '1 week', Tools: 'Figma, ChatGPT (research), Photoshop' },
+    facts: { Role: 'UX Designer', Context: 'Personal project · for portfolio', Team: 'Solo', Duration: '1 week', Tools: 'Figma, Photoshop' },
     theme: 'human', cover: 'split',
     chapters: [
       { at: 1, label: 'Overview' },
@@ -125,16 +125,16 @@ window.JOURNAL = {
     ]
   },
   'dub-transit': {
-    facts: { Role: 'UI/UX Designer', Context: 'Personal project · learning API integrations', Team: 'Solo', Duration: '1 week', Tools: 'Figma, Photoshop, Google AI Studio' },
+    facts: { Role: 'UI/UX Designer', Context: 'Personal project · learning API integrations', Team: 'Solo', Duration: '1 week', Tools: 'Figma, Photoshop' },
     theme: 'system', cover: 'inset',
     chapters: [
       { at: 1, label: 'Overview' },
       { at: 4, label: 'Context' },
       { at: 12, label: 'Process' },
       { at: 34, label: 'Development' },
-      { at: 49, label: 'Outcome' },
-      { at: 63, label: 'Future' },
-      { at: 77, label: 'Reflection' }
+      { at: 44, label: 'Outcome' },
+      { at: 58, label: 'Future' },
+      { at: 72, label: 'Reflection' }
     ]
   },
   'theyyam-threads': {

@@ -2614,33 +2614,6 @@
         ]
       },
       {
-        "type": "subheading",
-        "value": "AI-Assisted Prototyping Process"
-      },
-      {
-        "type": "paragraph",
-        "value": "This prototype heavily used AI tools during iteration:"
-      },
-      {
-        "type": "list",
-        "value": [
-          "Google AI Studio: initial drafts of features & logic",
-          "DeepSeek: refining data structures, simulation logic, and route handling",
-          "ChatGPT: final refinements, debugging, API integration, UX adjustments"
-        ]
-      },
-      {
-        "type": "image",
-        "value": {
-          "src": "images/dubtransit/dubaiuses.jpg",
-          "alt": "Usage of Google AI Studio for the development"
-        }
-      },
-      {
-        "type": "paragraph",
-        "value": "AI helped speed up prototyping, letting me focus on design and experience rather than spending too much time on development."
-      },
-      {
         "type": "heading",
         "value": "Live Prototype"
       },
@@ -3123,19 +3096,6 @@
       {
         "type": "list",
         "value": [
-          "Development Workflow: Iteratively coded using ChatGPT, Claude.ai, and Google AI Studio, with final refinements and debugging done manually."
-        ]
-      },
-      {
-        "type": "image",
-        "value": {
-          "src": "images/City/City_AI.jpg",
-          "alt": "Screenshot of code being generated using an AI tool, illustrating the project's development workflow."
-        }
-      },
-      {
-        "type": "list",
-        "value": [
           "Delivery Platforms: Public Installation → large screen or projection in transit hubs. Mobile Application → includes Hierarchy View and AR View linking bubbles to real-world city objects."
         ]
       },
@@ -3204,7 +3164,6 @@
         "value": [
           "Interactive visualization makes complex labor systems easier to approach, and puts people back into the numbers.",
           "Real datasets, not only sentiment, keep the story grounded, and it can still feel poetic.",
-          "The potential and limits of AI-assisted coding as a design partner, and the importance of taking creative control in the final refinements.",
           "Clarity and exploration pull against each other. The piece has to make sense to someone walking past, and still hold up for institutions and stakeholders."
         ]
       },
