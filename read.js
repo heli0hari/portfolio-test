@@ -9,11 +9,11 @@
    the project modal on click — nothing here is needed for that to work.
    ========================================================= */
 (function () {
-  var list = document.querySelector('.ix__list');
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   /* ---------- preview ---------- */
+  var list = document.querySelector('.ix__list');
   if (list && fine) {
     var pv = document.createElement('div');
     pv.className = 'ix-preview';
@@ -145,22 +145,6 @@
     list.addEventListener('click', hide);
   }
 
-  /* ---------- Elsewhere → Look, landing on the right section ---------- */
-  document.querySelectorAll('[data-look-target]').forEach(function (a) {
-    a.addEventListener('click', function (e) {
-      var lookBtn = document.querySelector('[data-mode-btn="look"]');
-      if (!lookBtn) return;                           // no switch: let the #look link do its thing
-      e.preventDefault();
-      lookBtn.click();
-      var sel = a.getAttribute('data-look-target');
-      // wait for the mode switch to show the Look panels, then scroll there
-      setTimeout(function () {
-        var t = document.querySelector(sel);
-        if (t) t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
-      }, 120);
-    });
-  });
-
   /* ---------- footer links ---------- */
   document.querySelectorAll('[data-open-contact]').forEach(function (a) {
     a.addEventListener('click', function (e) {
@@ -168,15 +152,6 @@
       if (!cta) return;
       e.preventDefault();
       cta.click();
-    });
-  });
-  document.querySelectorAll('.colophon a[href="#look"]').forEach(function (a) {
-    a.addEventListener('click', function (e) {
-      var lookBtn = document.querySelector('[data-mode-btn="look"]');
-      if (!lookBtn) return;
-      e.preventDefault();
-      lookBtn.click();
-      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
     });
   });
 })();

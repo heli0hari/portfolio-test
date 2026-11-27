@@ -36,7 +36,7 @@
 
   /* homepage order (the index), falling back to the JSON order */
   function order(all) {
-    var ids = Array.prototype.map.call(document.querySelectorAll('.ix__row[data-project]'), function (r) { return r.dataset.project; });
+    var ids = Array.prototype.map.call(document.querySelectorAll('.cw__card[data-project], .ix__row[data-project]'), function (r) { return r.dataset.project; });
     return ids.length ? ids.filter(function (id) { return all[id]; }) : Object.keys(all);
   }
 

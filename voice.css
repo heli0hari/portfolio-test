@@ -446,3 +446,41 @@ body[data-mode="look"] .xhair__dot { box-shadow: 0 0 0 1.5px rgba(19, 17, 16, 0.
   .hero__role-t { font-size: 17px; }
   .hero__role-s { font-size: 13px; }
 }
+
+/* ==========================================================================
+   Single page (no Read / Look switch) — always the dark theme
+   ========================================================================== */
+html { background: #131110; }
+/* the buttons now sit on the golden line where the switch was */
+.cta { margin-top: var(--f2); }
+body[data-mode="look"] .chroma { margin-top: 0; }
+.forge-room { margin-top: var(--f3); }
+
+/* section heads share the rooms' numeral + title */
+.cw__head, .ix__head, .ab__head { display: block; max-width: none; margin-bottom: var(--f2); }
+.cw__title, .ix .ix__title, .ab .ab__title {
+  margin: 0; font-weight: 600; font-size: clamp(30px, 3.6vw, 52px);
+  line-height: 0.95; letter-spacing: -0.03em; color: var(--ink);
+}
+.ix .ix__range { margin: 12px 0 0; }
+.ix { padding-top: var(--f3); }
+
+/* ---------- creative projects: large cards ---------- */
+.cw { padding: var(--f3) var(--page-pad) 0; }
+.cw__list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--f2) clamp(24px, 3vw, 48px); }
+.cw__card {
+  display: grid; grid-template-columns: auto 1fr; grid-template-areas: "media media" "no name" ". cat" ". desc";
+  column-gap: 16px; color: var(--ink);
+}
+.cw__media { grid-area: media; display: block; overflow: hidden; aspect-ratio: 4 / 3; background: var(--plate); margin-bottom: 20px; }
+.cw__media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 900ms var(--ease), filter 600ms var(--ease); filter: saturate(0.92); }
+.cw__card:hover .cw__media img, .cw__card:focus-visible .cw__media img { transform: scale(1.035); filter: none; }
+.cw__no { grid-area: no; font-size: 13px; color: var(--meta); font-variant-numeric: tabular-nums; padding-top: 0.45em; }
+.cw__name { grid-area: name; font-size: clamp(22px, 2.2vw, 32px); font-weight: 500; line-height: 1.1; letter-spacing: -0.025em; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.cw__cat { grid-area: cat; margin-top: 8px; font-size: 13px; color: var(--meta); }
+.cw__desc { grid-area: desc; margin-top: 10px; font-size: 15px; line-height: 1.5; color: var(--meta); max-width: 46ch; }
+.cw__card:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; }
+@media (max-width: 760px) { .cw__list { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .cw__media img { transition: none; } }
+.ab .ab__range { margin: 12px 0 0; }
+.ab { padding-top: var(--f3); }

@@ -62,10 +62,7 @@
      Project links and in-page Read anchors (#index) belong to Read;
      any other in-page anchor keeps whichever mode is showing. */
   function modeFromURL() {
-    var h = (location.hash || '').replace('#', '').toLowerCase();
-    if (h === 'look') return 'look';
-    if (!h || h === 'read' || h === 'index' || h.indexOf('project/') === 0 || h.indexOf('read/') === 0) return 'read';
-    return body.getAttribute('data-mode') || 'read';
+    return 'look';   // single page: always the dark theme
   }
 
   function syncURL(mode, projectId) {
@@ -74,8 +71,6 @@
 
     if (projectId) {
       hash = 'project/' + projectId;
-    } else if (mode === 'look') {
-      hash = 'look';
     }
 
     var target = base + (hash ? '#' + hash : '');
@@ -117,7 +112,7 @@
     }, transitionMs() + 60);
 
 
-    syncURL(mode, mode === 'read' ? activeProjectId : null);
+    syncURL(mode, activeProjectId);
   }
 
   /* Set the mode WITHOUT the visible blur transition. Used when opening a
@@ -139,7 +134,7 @@
     });
   });
 
-  /* top bar: Work / About jump to their Read sections (switching from Look first); Contact opens the contact sheet */
+  /* top bar: Work / About jump to their sections; Contact opens the contact sheet */
   document.querySelectorAll('.hero__nav [data-goto]').forEach(function (link) {
     link.addEventListener('click', function (e) {
       e.preventDefault();
@@ -153,8 +148,7 @@
         var el = document.getElementById(target);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       };
-      if (body.getAttribute('data-mode') !== 'read') { switchTo('read'); setTimeout(go, 450); }
-      else go();
+      go();
     });
   });
 
@@ -170,7 +164,7 @@
     buttons.forEach(function (btn) {
       btn.setAttribute('aria-selected', String(btn.dataset.modeBtn === initial));
     });
-    syncURL(initial, initial === 'read' ? projectIdFromHash() : null);
+    syncURL(initial, projectIdFromHash());
 
     // start at the top regardless of what the browser remembered
     requestAnimationFrame(function () { window.scrollTo(0, 0); });
@@ -575,7 +569,6 @@
 
     options = options || {};
     activeProjectId = id;
-    setModeSilently('read');
 
     modalLastFocused = document.activeElement;
 
