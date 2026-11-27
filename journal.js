@@ -35,9 +35,12 @@
   function text(html) { var d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
 
   /* homepage order (the index), falling back to the JSON order */
-  function order(all) {
-    var ids = Array.prototype.map.call(document.querySelectorAll('.cw__card[data-project], .ix__row[data-project]'), function (r) { return r.dataset.project; });
-    return ids.length ? ids.filter(function (id) { return all[id]; }) : Object.keys(all);
+  /* pinned projects (Selected work) page through each other; index projects through the index */
+  function order(all, id) {
+    var pinned = document.querySelector('.cw__card[data-project="' + id + '"]');
+    var sel = pinned ? '.cw__card[data-project]' : '.ix__row[data-project]';
+    var ids = Array.prototype.map.call(document.querySelectorAll(sel), function (r) { return r.dataset.project; });
+    return ids.length ? ids.filter(function (k) { return all[k]; }) : Object.keys(all);
   }
 
   /* image modes cycle per theme so consecutive images never repeat a layout */
@@ -63,7 +66,7 @@
     cleanup();
     var cfg = (window.JOURNAL && window.JOURNAL[id]) || { theme: 'system', cover: 'inset', chapters: [] };
     var theme = cfg.theme || 'system';
-    var ids = order(all);
+    var ids = order(all, id);
     var pos = ids.indexOf(id);
     var countEl = document.getElementById('jnCount');
     if (countEl) countEl.textContent = pad(pos + 1) + ' / ' + pad(ids.length);
