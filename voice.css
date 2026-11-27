@@ -580,3 +580,5 @@ html, body { overflow-x: clip; }
 /* four creative projects: one row of four on wide screens, two by two on tablets */
 @media (min-width: 761px) and (max-width: 1099px) { .cw__list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1100px) { .cw__list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--f2) clamp(20px, 2vw, 32px); } .cw__name { font-size: clamp(20px, 1.7vw, 26px); } }
+/* the title card keeps a quiet frame, so it still reads as a card when it fills a phone screen */
+.cell--slate .cell__pic { outline: 1px solid var(--hair); outline-offset: -1px; background: linear-gradient(180deg, rgba(237,233,226,0.015), rgba(237,233,226,0.04)); padding: clamp(18px, 2vw, 26px); }
