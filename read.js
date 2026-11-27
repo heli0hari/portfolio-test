@@ -172,3 +172,33 @@
     card.addEventListener('pointerleave', function () { v.pause(); card.classList.remove('is-playing'); });
   });
 })();
+
+/* Phones: the creative cards slide sideways as you scroll down (the section pins while they pass),
+   like the Motion & 3D reel. Wider screens show all cards at once, so nothing happens there. */
+(function () {
+  var sec = document.querySelector('.cw'), pin = sec && sec.querySelector('.cw__pin'), list = sec && sec.querySelector('.cw__list');
+  if (!list) return;
+  var mq = window.matchMedia('(max-width: 760px)');
+  var travel = 0, on = false;
+  function layout() {
+    on = mq.matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    sec.classList.toggle('is-pinned', on);
+    list.style.transform = '';
+    if (!on) { sec.style.height = ''; return; }
+    travel = Math.max(0, list.scrollWidth - list.clientWidth);
+    sec.style.height = (pin.offsetHeight + travel) + 'px';
+    update();
+  }
+  function update() {
+    if (!on) return;
+    var y = -sec.getBoundingClientRect().top;
+    var p = Math.min(1, Math.max(0, y / Math.max(1, travel)));
+    list.style.transform = 'translate3d(' + (-p * travel).toFixed(1) + 'px,0,0)';
+  }
+  var raf = 0;
+  window.addEventListener('scroll', function () { if (!raf) raf = requestAnimationFrame(function () { raf = 0; update(); }); }, { passive: true });
+  window.addEventListener('resize', layout);
+  window.addEventListener('load', layout);
+  if (mq.addEventListener) mq.addEventListener('change', layout);
+  layout();
+})();
