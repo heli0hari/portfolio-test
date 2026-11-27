@@ -181,7 +181,7 @@
   if (!list) return;
   var phone = window.matchMedia('(max-width: 760px)');
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  var travel = 0, on = false, lastSet = -1, idle = 0;
+  var travel = 0, hold = 0, on = false, lastSet = -1, idle = 0;
   function secTop() { return sec.getBoundingClientRect().top + window.scrollY; }
   function layout() {
     sec.classList.remove('is-pinned'); list.scrollLeft = 0; sec.style.height = '';
@@ -190,12 +190,13 @@
     sec.classList.toggle('is-pinned', on);
     if (!on) return;
     travel = Math.max(0, list.scrollWidth - list.clientWidth);
-    sec.style.height = (pin.offsetHeight + travel) + 'px';
+    hold = Math.round(window.innerHeight * 0.35);      // the row rests a moment before it starts sliding
+    sec.style.height = (pin.offsetHeight + travel + hold) + 'px';
     update();
   }
   function update() {
     if (!on) return;
-    var y = Math.min(travel, Math.max(0, -sec.getBoundingClientRect().top));
+    var y = Math.min(travel, Math.max(0, -sec.getBoundingClientRect().top - hold));
     lastSet = Math.round(y);
     list.scrollLeft = y;              // scrolled (not moved), so the edge fade stays put
     edges();
@@ -217,10 +218,10 @@
   }
   function settle() {
     if (!on || !phone.matches) return;
-    var y = -sec.getBoundingClientRect().top;
+    var y = -sec.getBoundingClientRect().top - hold;
     if (y <= 2 || y >= travel - 2) return;            // only while the row is mid-way
     var t = nearest(y);
-    if (Math.abs(t - y) > 2) window.scrollTo({ top: secTop() + t, behavior: 'smooth' });
+    if (Math.abs(t - y) > 2) window.scrollTo({ top: secTop() + hold + t, behavior: 'smooth' });
   }
   var raf = 0;
   window.addEventListener('scroll', function () {
@@ -231,7 +232,7 @@
   list.addEventListener('scroll', function () {
     if (!on || Math.abs(list.scrollLeft - lastSet) < 2) return;
     lastSet = Math.round(list.scrollLeft);
-    window.scrollTo(0, secTop() + list.scrollLeft);
+    window.scrollTo(0, secTop() + hold + list.scrollLeft);
     edges();
   }, { passive: true });
   window.addEventListener('resize', layout);
