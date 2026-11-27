@@ -515,3 +515,65 @@ body.modal-open .sx { opacity: 0; pointer-events: none; }
 .sx__btn[aria-current="true"] .sx__no::after { width: 10px; right: -4px; }
 .sx__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 @media (max-width: 760px) { .sx { display: none; } .bar__acts { gap: 16px; } }
+
+/* ==========================================================================
+   Phone fixes
+   ========================================================================== */
+/* nothing may widen the page sideways (mobile browsers grow the layout to fit it) */
+html, body { overflow-x: clip; }
+.hero__nav { flex-wrap: wrap; justify-content: flex-end; }
+
+/* 3D reel: cards fade out at both sides instead of being cut by the screen edge */
+.reel__stage {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+}
+
+/* Chroma: fade at the top and bottom; the faded bands take the taps,
+   so pressing a button never opens a photo by accident */
+.archive__sticky::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; z-index: 1;
+  height: clamp(90px, 16vh, 150px);
+  background: linear-gradient(to top, transparent, var(--ground) 70%);
+  pointer-events: none;
+}
+.archive__sticky::after { height: calc(var(--pad) + 110px); background: linear-gradient(to bottom, transparent, var(--ground) 55%); pointer-events: auto; }
+
+/* footer: back to top */
+.colophon__top { all: unset; cursor: pointer; font-size: 16px; color: var(--ink); border-bottom: 1px solid var(--hair); transition: border-color 200ms var(--ease); }
+.colophon__top:hover, .colophon__top:focus-visible { border-color: var(--ink); }
+.colophon__top:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+/* creative cards: grid columns may shrink below the image's own width */
+.cw__list { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 761px) { .cw__list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .cw__list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.cw__card { grid-template-columns: auto minmax(0, 1fr); }
+
+@media (max-width: 760px) {
+  /* room bars: what's showing on one line, the two buttons on the next */
+  .archive__bar, .reel__bar { flex-direction: column; align-items: stretch; gap: 10px; }
+  .archive__status, .reel__now { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar__acts { justify-content: space-between; }
+  .reel__sticky::after { height: calc(var(--pad) + 96px); }
+  .archive__sticky::after { height: calc(var(--pad) + 130px); }
+
+  /* creative projects: a sideways swipe of cards, the next one peeking in */
+  .cw__list {
+    grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 80%;
+    gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+    margin: 0 calc(var(--page-pad) * -1); padding: 0 var(--page-pad) 4px; scroll-padding: 0 var(--page-pad);
+    scrollbar-width: none;
+  }
+  .cw__list::-webkit-scrollbar { display: none; }
+  .cw__item { scroll-snap-align: start; }
+  .cw__name { font-size: 20px; }
+  .cw__desc { font-size: 14px; }
+
+  /* tighter gaps between sections */
+  .grade-room { padding: var(--f2) 0 var(--f1); }
+  .ix, .ab { padding-top: var(--f2); }
+  .ab { padding-bottom: var(--f2); }
+  .cw { padding-top: var(--f2); }
+  .cw__head, .ix__head, .ab__head { margin-bottom: var(--f1); }
+}
