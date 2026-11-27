@@ -15,6 +15,19 @@
    coverImage  optional replacement for the cover image ({ src, alt })
    ========================================================= */
 window.JOURNAL = {
+  'lithophane-lamp': {
+    facts: { Role: 'Designer & Maker', Context: 'Birthday gift, now made on demand', Team: 'Solo', Tools: 'Blender, Bambu Studio, Bambu Lab A1 mini' },
+    theme: 'material', cover: 'split',
+    chapters: [
+      { at: 1, label: 'Overview' },
+      { at: 2, label: 'Lithophane' },
+      { at: 6, label: 'Case' },
+      { at: 10, label: 'Light' },
+      { at: 13, label: 'Printing' },
+      { at: 16, label: 'Workflow' },
+      { at: 19, label: 'Outcome' }
+    ]
+  },
   'alley-creature': {
     facts: { Role: '3D Artist', Context: 'Personal project · experiment', Team: 'Solo', Duration: '1 day · 12-hour render', Tools: 'Blender, Geometry Nodes, DaVinci Resolve' },
     theme: 'material', cover: 'split',

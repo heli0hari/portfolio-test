@@ -155,6 +155,168 @@
       }
     ]
   },
+  "lithophane-lamp": {
+    "title": "Lithophane Lamp",
+    "category": "3D Printing & Product Design",
+    "year": "2026",
+    "hue": 42,
+    "description": "A photograph turned into a lithophane lamp: made first as a birthday gift, then turned into a standard workflow I now use to make them on demand.",
+    "image": "images/LithophaneLamp/Lamp_Title.jpg",
+    "tags": [
+      "3D Printing",
+      "Blender",
+      "Product Design",
+      "Bambu Studio"
+    ],
+    "content": [
+      {
+        "type": "image",
+        "value": {
+          "src": "images/LithophaneLamp/Lamp_Title.jpg",
+          "alt": "Illuminated portrait lamp standing on a wooden surface.",
+          "caption": "The finished lamp, switched on."
+        }
+      },
+      {
+        "type": "paragraph",
+        "value": "It started as a test for a birthday gift. I wanted to turn a photograph into something physical, so I converted it into a <b>lithophane</b> and designed a lamp around the print. The photograph is still there when the lamp is off, but it is the light passing through the print that brings out the detail. Once the first one worked, I turned the process into a standard workflow, and now I make them on demand."
+      },
+      {
+        "type": "heading",
+        "value": "01. From Photograph to Lithophane"
+      },
+      {
+        "type": "paragraph",
+        "value": "A lithophane stores the tones of a photograph in the thickness of the material. Thinner areas let more light through and thicker areas let less through. There is no ink on the panel; the image comes from the geometry of the print itself."
+      },
+      {
+        "type": "portrait-pair",
+        "value": [
+          {
+            "src": "images/LithophaneLamp/Lamp_Unlit.jpg",
+            "alt": "Unlit white portrait panel inside its frame.",
+            "caption": "Light off."
+          },
+          {
+            "src": "images/LithophaneLamp/Lamp_Lit.jpg",
+            "alt": "The same portrait glowing in warm light.",
+            "caption": "Light on."
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "value": {
+          "src": "images/LithophaneLamp/Lamp_Alternate_Portrait.jpg",
+          "alt": "A hand holding a lit lithophane lamp showing a different portrait.",
+          "caption": "Another photograph converted into a lithophane.",
+          "layout": "portrait"
+        }
+      },
+      {
+        "type": "heading",
+        "value": "02. Building the Case"
+      },
+      {
+        "type": "paragraph",
+        "value": "I modelled the enclosure in <b>Blender</b> around the dimensions of the lithophane. The body has grooves for the front panel, a separate cap and space inside for the lighting components. I kept the outside simple so the photograph remains the focus."
+      },
+      {
+        "type": "image",
+        "value": {
+          "src": "images/LithophaneLamp/Lamp_Blender_Assembly.jpg",
+          "alt": "Blender viewport of the enclosure with the portrait panel fitted.",
+          "caption": "The lithophane fitted into the enclosure in Blender."
+        }
+      },
+      {
+        "type": "image",
+        "value": {
+          "src": "images/LithophaneLamp/Lamp_Blender_Interior.jpg",
+          "alt": "Open enclosure showing the grooves and internal reflector disc.",
+          "caption": "Inside the case, with the cap and front panel hidden."
+        }
+      },
+      {
+        "type": "heading",
+        "value": "03. Spreading the Light"
+      },
+      {
+        "type": "paragraph",
+        "value": "The light source is a small circular LED board. Lighting a lithophane directly from a small source can leave a bright spot in the middle and darker areas around it. I added a <b>diffuser</b> to scatter the light across the panel. The enclosure model also includes a reflector disc and space between the lighting components and the image."
+      },
+      {
+        "type": "image",
+        "value": {
+          "src": "images/LithophaneLamp/Lamp_LED.jpg",
+          "alt": "Circular LED board with several surface-mounted LEDs.",
+          "caption": "The LED board used for the lamp.",
+          "layout": "portrait"
+        }
+      },
+      {
+        "type": "heading",
+        "value": "04. Printing and Assembly"
+      },
+      {
+        "type": "paragraph",
+        "value": "I prepared the parts in <b>Bambu Studio</b> and printed them on my <b>Bambu Lab A1 mini</b>. The body, cap and internal disc were modelled as separate parts so they could be printed and assembled afterwards. The slicing setup shown here uses PLA, a 0.4 mm nozzle and a 0.2 mm layer height."
+      },
+      {
+        "type": "image",
+        "value": {
+          "src": "images/LithophaneLamp/Lamp_Slicing.jpg",
+          "alt": "Bambu Studio preview of the body, cap and circular disc on the print plate.",
+          "caption": "The enclosure parts sliced in Bambu Studio."
+        }
+      },
+      {
+        "type": "heading",
+        "value": "05. From One Gift to a Workflow"
+      },
+      {
+        "type": "paragraph",
+        "value": "The first lamp was a one-off gift. After it worked, I standardised the process so the case, the light and the print settings stay the same, and only the photograph changes. Each new lamp no longer starts from scratch, which is what made it possible to start making them on demand."
+      },
+      {
+        "type": "horizontal-flow",
+        "value": {
+          "title": "The workflow",
+          "items": [
+            "Photograph",
+            "Lithophane",
+            "Print panel",
+            "Print case",
+            "Light",
+            "Assemble"
+          ]
+        }
+      },
+      {
+        "type": "heading",
+        "value": "06. The Finished Lamp"
+      },
+      {
+        "type": "paragraph",
+        "value": "What I like about lithophanes is that the same object changes depending on how it is lit. With the light off, the photograph is a textured white surface. With the light on, the depth of the print becomes the contrast of the image. The case and diffuser are there to make that transition work as a lamp, rather than just a backlit print."
+      },
+      {
+        "type": "portrait-pair",
+        "value": [
+          {
+            "src": "images/LithophaneLamp/Lamp_Unlit_Angle.jpg",
+            "alt": "Unlit lamp photographed from above at a slight angle.",
+            "caption": "The surface of the print in daylight."
+          },
+          {
+            "src": "images/LithophaneLamp/Lamp_Lit_Dark.jpg",
+            "alt": "Illuminated portrait lamp against a dark background.",
+            "caption": "The portrait with the surrounding light reduced."
+          }
+        ]
+      }
+    ]
+  },
   "infrared-camera": {
     "title": "Unseen: Infrared Camera",
     "category": "Hardware & Interaction Design",
