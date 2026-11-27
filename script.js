@@ -190,7 +190,7 @@
   /* Project case studies are loaded from projects.json (ported from the old
      portfolio). Rendered by renderBlocks() into the instrument-panel language. */
   var projectData = {};
-  fetch('projects.json?v=7')
+  fetch('projects.json?v=8')
     .then(function (r) { return r.json(); })
     .then(function (d) {
       projectData = d;
@@ -521,17 +521,24 @@
              like a moving image, otherwise the clip gets controls and sound */
           var clips = (v && v.items) || [v];
           node = mk('figure', 'cs-vfig' + (clips.length > 1 ? ' cs-vfig--row' : ''));
+          if (clips.length > 1) node.style.setProperty('--n', clips.length);
           clips.forEach(function (c) {
             var cell = mk('div', 'cs-vfig__cell');
-            var vid = mk('video', 'cs-video');
-            vid.src = c.src || c;
-            vid.setAttribute('playsinline', '');
-            vid.preload = 'metadata';
-            if (c.poster) vid.poster = c.poster;
-            if (c.loop) { vid.muted = true; vid.loop = true; vid.autoplay = true; vid.setAttribute('muted', ''); }
-            else { vid.controls = true; }
             if (c.label) cell.appendChild(mk('span', 'cs-vfig__label', c.label));
-            cell.appendChild(vid);
+            if (c.image) {                                   // a still can sit in the same row
+              var still = mk('img', 'cs-video');
+              still.src = c.image; still.alt = c.alt || ''; still.loading = 'lazy'; still.decoding = 'async';
+              cell.appendChild(still);
+            } else {
+              var vid = mk('video', 'cs-video');
+              vid.src = c.src || c;
+              vid.setAttribute('playsinline', '');
+              vid.preload = 'metadata';
+              vid.controls = true;
+              if (c.poster) vid.poster = c.poster;
+              if (c.loop) { vid.muted = true; vid.loop = true; vid.autoplay = true; vid.setAttribute('muted', ''); }
+              cell.appendChild(vid);
+            }
             node.appendChild(cell);
           });
           if (v.caption) node.appendChild(mk('figcaption', null, v.caption));

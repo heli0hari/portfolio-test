@@ -23,7 +23,7 @@
       },
       {
         "type": "paragraph",
-        "value": "This started as a test. I wanted to see how far a <b>Gaussian splat</b> could go inside Blender: could I relight it, put something in it, and make the two feel like they share the same space? It turned into a short piece of found footage: a creature made entirely in <b>Geometry Nodes</b>, crawling through an alley at 2:14 in the morning."
+        "value": "This started as a one-day test. I wanted to see how far a <b>Gaussian splat</b> could go inside Blender: could I relight it, put something in it, and make the two feel like they share the same space? It turned into a short piece of found footage: a creature made entirely in <b>Geometry Nodes</b>, crawling through an alley at 2:14 in the morning."
       },
       {
         "type": "quote",
@@ -37,7 +37,7 @@
       },
       {
         "type": "paragraph",
-        "value": "The environment is a Gaussian splat of a narrow alley. It isn’t a mesh; it’s a cloud of soft, coloured points. From the right angle it looks like a photograph, but there’s no surface to light, nothing to cast a shadow on, and it falls apart as soon as the camera drifts too far."
+        "value": "The environment is <b>Artillery Passage</b>, a Gaussian splat I found on <a href=\"https://superspl.at/scene/f4897475\" target=\"_blank\" rel=\"noopener\">SuperSplat</a>. It isn’t a mesh; it’s a cloud of soft, coloured points. From the right angle it looks like a photograph, but there’s no surface to light, nothing to cast a shadow on, and it falls apart as soon as the camera drifts too far."
       },
       {
         "type": "video",
@@ -95,28 +95,27 @@
         ]
       },
       {
-        "type": "image",
-        "value": {
-          "src": "images/Alley/Alley_Wire_Side.jpg",
-          "alt": "The creature in the Blender viewport, seen from the side.",
-          "caption": "Viewport, from the side."
-        }
-      },
-      {
-        "type": "image",
-        "value": {
-          "src": "images/Alley/Alley_Wire_Front.jpg",
-          "alt": "The creature in the Blender viewport, legs spread across the alley walls.",
-          "caption": "Front view, legs spread across the alley."
-        }
-      },
-      {
         "type": "video",
         "value": {
-          "src": "images/Alley/Alley_Clay.mp4",
-          "poster": "images/Alley/Alley_Clay_poster.jpg",
-          "loop": true,
-          "caption": "Clay render of the movement, before any material."
+          "items": [
+            {
+              "image": "images/Alley/Alley_Wire_Side.jpg",
+              "alt": "The creature in the Blender viewport, seen from the side.",
+              "label": "Side"
+            },
+            {
+              "image": "images/Alley/Alley_Wire_Front.jpg",
+              "alt": "The creature in the Blender viewport, legs spread across the alley walls.",
+              "label": "Front"
+            },
+            {
+              "src": "images/Alley/Alley_Clay.mp4",
+              "poster": "images/Alley/Alley_Clay_poster.jpg",
+              "loop": true,
+              "label": "Clay, in motion"
+            }
+          ],
+          "caption": "The creature in the viewport, and a clay render of its movement before any material."
         }
       },
       {
@@ -125,7 +124,7 @@
       },
       {
         "type": "paragraph",
-        "value": "Straight out of Blender, the creature looked too clean against the splat. I finished it in <b>DaVinci Resolve</b>: camera effects, grain, a green cast and a camcorder timestamp. The noise hides the soft edges of the splat, and the creature stops looking placed on top of the scene and starts looking recorded."
+        "value": "The render took around <b>12 hours</b>, and straight out of Blender the creature still looked too clean against the splat. I finished it in <b>DaVinci Resolve</b>: camera effects, grain, a green cast and a camcorder timestamp. The noise hides the soft edges of the splat, and the creature stops looking placed on top of the scene and starts looking recorded."
       },
       {
         "type": "video",

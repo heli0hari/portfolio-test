@@ -16,15 +16,15 @@
    ========================================================= */
 window.JOURNAL = {
   'alley-creature': {
-    facts: { Role: '3D Artist', Context: 'Personal project · experiment', Team: 'Solo', Tools: 'Blender, Geometry Nodes, DaVinci Resolve' },
+    facts: { Role: '3D Artist', Context: 'Personal project · experiment', Team: 'Solo', Duration: '1 day · 12-hour render', Tools: 'Blender, Geometry Nodes, DaVinci Resolve' },
     theme: 'material', cover: 'split',
     chapters: [
       { at: 1, label: 'Overview' },
       { at: 3, label: 'Environment' },
       { at: 6, label: 'Lighting' },
       { at: 9, label: 'Creature' },
-      { at: 15, label: 'Edit' },
-      { at: 18, label: 'Reflection' }
+      { at: 13, label: 'Edit' },
+      { at: 16, label: 'Reflection' }
     ]
   },
   'wealthx': {
