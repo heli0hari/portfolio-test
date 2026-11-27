@@ -351,7 +351,7 @@
     "year": "2026",
     "hue": 42,
     "description": "A photograph turned into a lithophane lamp: made first as a birthday gift, then turned into a standard workflow I now use to make them on demand.",
-    "image": "images/LithophaneLamp/Lamp_Title.jpg",
+    "image": "images/LithophaneLamp/Lamp_Cover.jpg",
     "tags": [
       "3D Printing",
       "Blender",
@@ -362,8 +362,8 @@
       {
         "type": "image",
         "value": {
-          "src": "images/LithophaneLamp/Lamp_Title.jpg",
-          "alt": "Illuminated portrait lamp standing on a wooden surface.",
+          "src": "images/LithophaneLamp/Lamp_Cover.jpg",
+          "alt": "The lithophane lamp switched on, lying on a wooden floor.",
           "caption": "The finished lamp, switched on."
         }
       },
