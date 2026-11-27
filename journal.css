@@ -383,3 +383,16 @@
 
 /* drawings: shown whole on white, never cropped */
 .journal .cs-vfig--contain .cs-video { object-fit: contain; background: #fff; }
+
+/* phones: the top bar is a solid strip, so the corner marks never sit on top of the text */
+@media (max-width: 760px) {
+  .journal .jn { mix-blend-mode: normal; background: var(--ground); border-bottom: 1px solid var(--hair) !important; }
+  .journal .jn .jn__back, .journal .jn .jn__ch, .journal .jn .jn__count { color: var(--ink); }
+  .jn .jn__back, .jn .jn__ch, .jn__count { color: var(--ink); }
+  .jn__count { opacity: 0.55; }
+  /* step sequences: four to a row, smaller numerals */
+  .journal .cs-flow__track { grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 22px; }
+  .journal .cs-flow__step { padding: 14px 8px 0 0; gap: 10px; }
+  .journal .cs-flow__num { font-size: 36px; }
+  .journal .cs-flow__txt { font-size: 13px; }
+}
