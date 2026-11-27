@@ -3612,5 +3612,119 @@
         }
       }
     ]
+  },
+  "illustrations": {
+    "title": "Lights and Lamps: Pen Illustrations",
+    "category": "Illustration",
+    "year": "2019",
+    "hue": 30,
+    "description": "A set of hand-drawn illustrations of the lights and lamps around IIT Bombay, drawn with a Micron pen in a sketchbook.",
+    "image": "images/Illustrations/Lamp_Decorative.jpg",
+    "tags": [
+      "Illustration",
+      "Pen & Ink",
+      "Observation"
+    ],
+    "content": [
+      {
+        "type": "image",
+        "value": {
+          "src": "images/Illustrations/Lamp_Decorative.jpg",
+          "alt": "Pen drawing of a decorative egg-shaped lamp among trees.",
+          "caption": "Decorative lamp, drawn on site.",
+          "layout": "portrait"
+        }
+      },
+      {
+        "type": "paragraph",
+        "value": "I made these in 2019 as coursework at IIT Bombay. The brief was to observe something ordinary on campus, so I chose the lights: street lamps, flood lights, tube lights and the paper lanterns students made for Garba night. Every drawing is by hand, in a sketchbook, with a <b>Micron pen</b>. Tone comes only from line, hatching and stippling."
+      },
+      {
+        "type": "heading",
+        "value": "Outdoors"
+      },
+      {
+        "type": "video",
+        "value": {
+          "items": [
+            {
+              "image": "images/Illustrations/Lamp_Twin.jpg",
+              "alt": "Pen drawing of a pole with two lantern-style lamps.",
+              "label": "Decorative lamps"
+            },
+            {
+              "image": "images/Illustrations/Lamp_Wall.jpg",
+              "alt": "Pen drawing of a street lamp mounted on a building wall.",
+              "label": "Wall-hung street lamp"
+            },
+            {
+              "image": "images/Illustrations/Lamp_Flood.jpg",
+              "alt": "Pen drawing of a flood light mast seen from below.",
+              "label": "Flood lights"
+            }
+          ],
+          "aspect": "4 / 5",
+          "fit": "contain",
+          "caption": "Lamps around the campus."
+        }
+      },
+      {
+        "type": "video",
+        "value": {
+          "items": [
+            {
+              "image": "images/Illustrations/Lamp_Street_Dark.jpg",
+              "alt": "Pen drawing of a street lamp against dense black hatching.",
+              "label": "Decorative street lamp"
+            },
+            {
+              "image": "images/Illustrations/Lamp_LED.jpg",
+              "alt": "Pen drawing of an LED street lamp head.",
+              "label": "LED street lamp"
+            }
+          ],
+          "aspect": "4 / 5",
+          "fit": "contain",
+          "caption": "The same subject, worked light on dark and dark on light."
+        }
+      },
+      {
+        "type": "heading",
+        "value": "Indoors"
+      },
+      {
+        "type": "video",
+        "value": {
+          "items": [
+            {
+              "image": "images/Illustrations/Lamp_Window.jpg",
+              "alt": "Pen drawing of paper lanterns hanging in front of a window.",
+              "label": "Paper lanterns at a window"
+            },
+            {
+              "image": "images/Illustrations/Lamp_Lantern.jpg",
+              "alt": "Pen drawing of a layered paper lantern.",
+              "label": "Paper lantern"
+            },
+            {
+              "image": "images/Illustrations/Lamp_Tube.jpg",
+              "alt": "Pen drawing of a fluorescent tube light under a stair.",
+              "label": "Fluorescent tube"
+            }
+          ],
+          "aspect": "4 / 5",
+          "fit": "contain",
+          "caption": "Paper lanterns made by IDC students for Garba night, and the tube lights used across the hostels."
+        }
+      },
+      {
+        "type": "image",
+        "value": {
+          "src": "images/Illustrations/Lamp_Ceiling.jpg",
+          "alt": "Pen drawing of a classroom ceiling with lights and fans in perspective.",
+          "caption": "Ceiling lights in a classroom."
+        }
+      }
+    ]
   }
 }

@@ -216,7 +216,7 @@
   /* Project case studies are loaded from projects.json (ported from the old
      portfolio). Rendered by renderBlocks() into the instrument-panel language. */
   var projectData = {};
-  fetch('projects.json?v=18')
+  fetch('projects.json?v=19')
     .then(function (r) { return r.json(); })
     .then(function (d) {
       projectData = d;
@@ -550,6 +550,7 @@
           if (clips.length > 1) node.style.setProperty('--n', clips.length);
           if (v.aspect) node.style.setProperty('--ar', v.aspect);
           if (v.cols) node.style.setProperty('--n', v.cols);
+          if (v.fit === 'contain') node.classList.add('cs-vfig--contain');
           clips.forEach(function (c) {
             var cell = mk('div', 'cs-vfig__cell');
             if (c.label) cell.appendChild(mk('span', 'cs-vfig__label', c.label));

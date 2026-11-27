@@ -15,6 +15,15 @@
    coverImage  optional replacement for the cover image ({ src, alt })
    ========================================================= */
 window.JOURNAL = {
+  'illustrations': {
+    facts: { Role: 'Illustrator', Context: 'Coursework, IIT Bombay', Team: 'Solo', Tools: 'Micron pen, sketchbook' },
+    theme: 'material', cover: 'split',
+    chapters: [
+      { at: 1, label: 'Overview' },
+      { at: 2, label: 'Outdoors' },
+      { at: 5, label: 'Indoors' }
+    ]
+  },
   'diskfield': {
     facts: { Role: '3D & Motion Designer', Context: 'Client project', Team: 'Solo', Tools: 'Blender, Geometry Nodes, Cycles' },
     theme: 'material', cover: 'split',
