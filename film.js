@@ -7,8 +7,88 @@
    ========================================================= */
 (function () {
   var films = [];
-  function pauseOthers(me) { films.forEach(function (f) { if (f !== me && f.player) f.player.pause().catch(function () {}); }); }
-  document.querySelectorAll('.film').forEach(setup);
+  function pauseOthers(me) { films.forEach(function (f) { if (f !== me && f.player && f.sound !== false) f.player.pause().catch(function () {}); }); }
+  document.querySelectorAll('.film').forEach(function (r) { if (!r.querySelector('video')) setup(r); });
+  window.attachFilm = setupVideo;      // project pages add their clips later
+  document.querySelectorAll('.film--video').forEach(setupVideo);
+
+/* the same controls for a plain <video> (project pages) */
+function setupVideo(root) {
+  var v = root.querySelector('video');
+  var hit = root.querySelector('.film__hit'), toggleBtn = root.querySelector('.film__toggle');
+  var track = root.querySelector('.film__track'), fill = root.querySelector('.film__fill');
+  var timeEl = root.querySelector('.film__time'), muteBtn = root.querySelector('.film__mute'), fsBtn = root.querySelector('.film__fs');
+  var loop = root.classList.contains('film--loop');
+  if (root.dataset.on) return;
+  root.dataset.on = '1';
+  var me = { player: { pause: function () { v.pause(); return Promise.resolve(); } }, sound: !loop };
+  films.push(me);
+  function fmt(s) { s = Math.max(0, Math.floor(s || 0)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+  function sync() {
+    var p = !v.paused;
+    root.classList.toggle('is-playing', p);
+    toggleBtn.textContent = p ? 'Pause' : 'Play';
+    hit.setAttribute('aria-label', p ? 'Pause' : 'Play');
+  }
+  v.addEventListener('play', function () { root.classList.add('has-started'); sync(); if (!v.muted) pauseOthers(me); });
+  v.addEventListener('pause', sync);
+  v.addEventListener('timeupdate', function () {
+    var d = v.duration || 0, p = d ? v.currentTime / d : 0;
+    fill.style.transform = 'scaleX(' + p + ')';
+    track.setAttribute('aria-valuenow', Math.round(p * 100));
+    timeEl.textContent = fmt(v.currentTime) + ' / ' + fmt(d);
+  });
+  v.addEventListener('volumechange', function () { me.sound = !v.muted; muteBtn.textContent = v.muted ? 'Sound on' : 'Sound off'; if (!v.muted) pauseOthers(me); });
+  function playPause() { if (v.paused) v.play().catch(function () {}); else v.pause(); }
+  var clickT = 0;
+  hit.addEventListener('click', function () { clearTimeout(clickT); clickT = setTimeout(playPause, 230); });
+  hit.addEventListener('dblclick', function (e) { e.preventDefault(); clearTimeout(clickT); toggleFull(); });
+  toggleBtn.addEventListener('click', playPause);
+  muteBtn.addEventListener('click', function () { v.muted = !v.muted; if (!v.muted && v.paused) v.play().catch(function () {}); });
+  function seekAt(x) {
+    if (!v.duration) return;
+    var r = track.getBoundingClientRect(), p = Math.min(1, Math.max(0, (x - r.left) / r.width));
+    v.currentTime = p * v.duration;
+  }
+  var seeking = false;
+  track.addEventListener('pointerdown', function (e) { seeking = true; track.setPointerCapture(e.pointerId); seekAt(e.clientX); });
+  track.addEventListener('pointermove', function (e) { if (seeking) seekAt(e.clientX); });
+  track.addEventListener('pointerup', function () { seeking = false; });
+  track.addEventListener('keydown', function (e) {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault(); v.currentTime = Math.max(0, Math.min(v.duration || 0, v.currentTime + (e.key === 'ArrowRight' ? 5 : -5)));
+  });
+  function toggleFull() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    else if (root.requestFullscreen) root.requestFullscreen();
+    else if (root.webkitRequestFullscreen) root.webkitRequestFullscreen();
+    else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen();     // iPhone: the system player
+  }
+  fsBtn.addEventListener('click', toggleFull);
+  function onFull() {
+    var fe = document.fullscreenElement || document.webkitFullscreenElement, on = fe === root;
+    document.documentElement.classList.toggle('film-full', !!fe);
+    root.classList.toggle('is-full', on);
+    fsBtn.textContent = on ? 'Exit full screen' : 'Full screen';
+  }
+  document.addEventListener('fullscreenchange', onFull);
+  document.addEventListener('webkitfullscreenchange', onFull);
+  // off screen: pause; a silent loop starts again when it comes back
+  new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (document.fullscreenElement) return;
+      if (!e.isIntersecting && !v.paused) { v.pause(); root.dataset.resume = loop && v.muted ? '1' : ''; }
+      else if (e.isIntersecting && root.dataset.resume === '1') { root.dataset.resume = ''; v.play().catch(function () {}); }
+    });
+  }, { threshold: 0.2 }).observe(root);
+  var idleT = 0;
+  root.addEventListener('pointermove', function () {
+    root.classList.remove('is-idle'); clearTimeout(idleT);
+    idleT = setTimeout(function () { if (!v.paused) root.classList.add('is-idle'); }, 2200);
+  });
+  root.addEventListener('pointerleave', function () { if (!v.paused) root.classList.add('is-idle'); });
+  sync();
+}
 
 function setup(root) {
   var me = { player: null };

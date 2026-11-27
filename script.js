@@ -557,14 +557,24 @@
               still.src = c.image; still.alt = c.alt || ''; still.loading = 'lazy'; still.decoding = 'async';
               cell.appendChild(still);
             } else {
+              // the site's own player (same controls as the Color Grading films, see film.js)
+              var wrap = mk('div', 'film film--video');
               var vid = mk('video', 'cs-video');
               vid.src = c.src || c;
               vid.setAttribute('playsinline', '');
               vid.preload = 'metadata';
-              vid.controls = true;
               if (c.poster) vid.poster = c.poster;
-              if (c.loop) { vid.muted = true; vid.loop = true; vid.autoplay = true; vid.setAttribute('muted', ''); }
-              cell.appendChild(vid);
+              if (c.loop) { vid.muted = true; vid.loop = true; vid.autoplay = true; vid.setAttribute('muted', ''); wrap.classList.add('film--loop'); }
+              wrap.appendChild(vid);
+              wrap.insertAdjacentHTML('beforeend',
+                '<button type="button" class="film__hit" aria-label="Play"><span class="film__play">Play</span></button>' +
+                '<div class="film__bar"><button type="button" class="film__btn film__toggle">Play</button>' +
+                '<div class="film__track" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i class="film__fill"></i></div>' +
+                '<span class="film__time">00:00</span>' +
+                '<button type="button" class="film__btn film__mute">' + (c.loop ? 'Sound on' : 'Sound off') + '</button>' +
+                '<button type="button" class="film__btn film__fs">Full screen</button></div>');
+              cell.appendChild(wrap);
+              if (window.attachFilm) window.attachFilm(wrap);   // (film.js also picks up any it missed)
             }
             node.appendChild(cell);
           });
