@@ -6,8 +6,13 @@
    Uses Vimeo's Player SDK, loaded only when the film is near.
    ========================================================= */
 (function () {
-  var root = document.getElementById('gradeFilm');
-  if (!root) return;
+  var films = [];
+  function pauseOthers(me) { films.forEach(function (f) { if (f !== me && f.player) f.player.pause().catch(function () {}); }); }
+  document.querySelectorAll('.film').forEach(setup);
+
+function setup(root) {
+  var me = { player: null };
+  films.push(me);
   var iframe = root.querySelector('iframe');
   var hit = root.querySelector('.film__hit');
   var toggleBtn = root.querySelector('.film__toggle');
@@ -28,9 +33,9 @@
 
   function init() {
     if (player || !window.Vimeo) return;
-    player = new window.Vimeo.Player(iframe);
+    player = me.player = new window.Vimeo.Player(iframe);
     player.getDuration().then(function (d) { dur = d; timeEl.textContent = '00:00 / ' + fmt(d); });
-    player.on('play', function () { setPlaying(true); root.classList.add('has-started'); });
+    player.on('play', function () { setPlaying(true); root.classList.add('has-started'); pauseOthers(me); });
     player.on('pause', function () { setPlaying(false); });
     player.on('ended', function () { setPlaying(false); });
     player.on('timeupdate', function (e) {
@@ -43,14 +48,23 @@
   }
   function load() {
     if (window.Vimeo) return init();
-    var s = document.createElement('script');
-    s.src = 'https://player.vimeo.com/api/player.js';
-    s.onload = init;
-    document.head.appendChild(s);
+    var s = document.querySelector('script[data-vimeo-sdk]');
+    if (!s) {
+      s = document.createElement('script');
+      s.src = 'https://player.vimeo.com/api/player.js';
+      s.setAttribute('data-vimeo-sdk', '');
+      document.head.appendChild(s);
+    }
+    s.addEventListener('load', init);
   }
   new IntersectionObserver(function (es, io) {
     if (es.some(function (e) { return e.isIntersecting; })) { load(); io.disconnect(); }
   }, { rootMargin: '600px' }).observe(root);
+
+  // scrolled past: the film pauses on its own
+  new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (!e.isIntersecting && player && playing && !document.fullscreenElement) player.pause().catch(function () {}); });
+  }, { threshold: 0.2 }).observe(root);
 
   function playPause() {
     if (!player) return;
@@ -101,4 +115,5 @@
     idleT = setTimeout(function () { if (playing) root.classList.add('is-idle'); }, 2200);
   });
   root.addEventListener('pointerleave', function () { if (playing) root.classList.add('is-idle'); });
+}
 })();

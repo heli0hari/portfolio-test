@@ -608,3 +608,14 @@ html, body { overflow-x: clip; }
   .cw.is-pinned .cw__desc { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .cw.is-pinned .cw__head { margin-bottom: 20px; }
 }
+
+/* Color Grading: a wide film and a vertical one, the same height side by side */
+.grade__films { display: grid; grid-template-columns: 1.7778fr 0.5625fr; gap: clamp(16px, 2vw, 28px); align-items: start; }
+.chroma__showcase .film--tall { aspect-ratio: 9 / 16; width: 100%; }
+.film--tall .film__bar { flex-wrap: wrap; row-gap: 4px; column-gap: 12px; font-size: 12px; }
+.film--tall .film__track { order: -1; flex-basis: 100%; }
+.film--tall .film__time { margin-right: auto; }
+@media (max-width: 760px) {
+  .grade__films { grid-template-columns: 1fr; }
+  .chroma__showcase .film--tall { width: min(100%, calc(78svh * 9 / 16)); margin: 0 auto; }
+}

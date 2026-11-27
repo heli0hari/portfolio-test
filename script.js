@@ -190,7 +190,7 @@
   /* Project case studies are loaded from projects.json (ported from the old
      portfolio). Rendered by renderBlocks() into the instrument-panel language. */
   var projectData = {};
-  fetch('projects.json?v=14')
+  fetch('projects.json?v=15')
     .then(function (r) { return r.json(); })
     .then(function (d) {
       projectData = d;
