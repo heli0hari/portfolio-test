@@ -21,11 +21,11 @@ window.JOURNAL = {
     chapters: [
       { at: 1, label: 'Overview' },
       { at: 2, label: 'Lithophane' },
-      { at: 6, label: 'Case' },
-      { at: 10, label: 'Light' },
-      { at: 13, label: 'Printing' },
-      { at: 16, label: 'Workflow' },
-      { at: 19, label: 'Outcome' }
+      { at: 5, label: 'Case' },
+      { at: 9, label: 'Light' },
+      { at: 12, label: 'Printing' },
+      { at: 15, label: 'Workflow' },
+      { at: 18, label: 'Outcome' }
     ]
   },
   'alley-creature': {

@@ -202,17 +202,14 @@
               "image": "images/LithophaneLamp/Lamp_Lit.jpg",
               "alt": "The same portrait glowing in warm light.",
               "label": "Light on."
+            },
+            {
+              "image": "images/LithophaneLamp/Lamp_Alternate_Portrait.jpg",
+              "alt": "A hand holding a lit lithophane lamp showing a different portrait.",
+              "label": "Another portrait"
             }
-          ]
-        }
-      },
-      {
-        "type": "image",
-        "value": {
-          "src": "images/LithophaneLamp/Lamp_Alternate_Portrait.jpg",
-          "alt": "A hand holding a lit lithophane lamp showing a different portrait.",
-          "caption": "Another photograph converted into a lithophane.",
-          "layout": "portrait"
+          ],
+          "caption": "One lithophane with the light off and on, and another photograph made the same way."
         }
       },
       {
